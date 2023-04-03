@@ -11,3 +11,9 @@ Lists a VHDL files: entitys, constants, atributes, signals and processes in a si
 > 2nd arg "f" show all, "a" show attributes, "v" show variables, "c" show constants, "p" show processes, "s" show signals
 >
 > example: what_in.py input.vhd a
+
+### make_xdc.py:
+Lists a VHDL files: entitys, constants, atributes, signals and processes in a simple colour coded list
+> This script needs two inputs, .XDC output file name and the input Top level .vhd file.
+> 
+> example: check_xdc.py output input.vhd (opt 3rd argument "q" generates Quartus output
