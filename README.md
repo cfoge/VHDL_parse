@@ -5,6 +5,10 @@ A collection of Python scripts to make working with VHDL easier
 These scripts are designed to run in the command line without needing an libaries other then those included with python 3
 
 ## Scripts:
+### parse_vhdl.py:
+Discription TBS, this is a WIP script that parses VHDL and creates an object with all the VHDL files ports,signals, components... ect.
+Designed to eventualy be used to allow automated component decleration, automated test bench creation, signal traceing/search through multiple files ect...
+
 ### what_in.py:
 Lists a VHDL files: entitys, constants, atributes, signals and processes in a simple colour coded list
 > This script needs one or two inputs, the first is a vhdl file, the second (optional) a paramiter
