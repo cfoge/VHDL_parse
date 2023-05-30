@@ -148,7 +148,7 @@ def parse_vhdl(file_name):
             if(len(tmp1)>0):
                 entity_vhdl.data.append(tmp1[0].strip())
                 entity_vhdl.type.append("file")
-        elif("entity" in i)&(":" in i):
+        elif("entity" in i)&(":" in i)&(entity_found == False):
             entity_found = True
             tmp1 = i.strip()
             if (":" in tmp1) & ("entity" in tmp1) & ("work." in tmp1):
@@ -165,6 +165,27 @@ def parse_vhdl(file_name):
 
             entity_vhdl.children_name.append(instanc( tmp2[1].strip(), tmp2[0].strip(),vhdl_line_str))
             entity_counter = entity_counter + 1
+
+        elif(":" in i)&(";" not in i)&("," not in i)&(entity_found == False)&(port_found == False)&(component_found == False):
+            entity_found = True
+            tmp1 = i.strip()
+            if (":" in tmp1) & ("entity" in tmp1) & ("work." in tmp1):
+                tmp2 = tmp1.split("work.",1)
+            elif (":" in tmp1) & ("entity" in tmp1): 
+                tmp2 = tmp1.split("entity",1)
+            else:
+                tmp2 = tmp1.split(":",1)
+            if (" " in tmp2[1]):
+                tmp2[1] = tmp2[1].split(" ", 1)[0]
+            if ("--" in tmp2[1]):
+                tmp2[1] = tmp2[1].split("--", 1)[0]
+            tmp2[0] = tmp2[0].split(':',1)[0]
+
+            entity_vhdl.children_name.append(instanc( tmp2[1].strip(), tmp2[0].strip(),vhdl_line_str))
+            entity_counter = entity_counter + 1
+            if("port map" in i):
+                entity_port_found = True
+        
         elif(entity_found == True)&("port map" in i):   
             entity_port_found = True
         elif(entity_found == True)&(entity_port_found == True)&("=>" in i): 
@@ -181,26 +202,42 @@ def parse_vhdl(file_name):
                 entity_found = False
 
 
-        elif(("component" in i)&("is" in i)or("component" in i)&(not("is" in i))&(not(";" in i))&(not("--" in i))):
+        elif(("component" in i)&("is" in i)or("component" in i)&(not("is" in i))&(not(";" in i))):
             tmp1 = re.findall("component (.*) is", i)
+            if len(tmp1)==0:
+              tmp1 =  i.split("component")  
+              tmp1 = tmp1[1].strip()
             # entity_vhdl[0].component.append(tmp1)
             component_found = True
             entity_vhdl.component.append(instanc(tmp1, '', vhdl_line_str))
             component_count = component_count + 1
-        elif(component_found == True)&("port" in i):   
+        elif(component_found == True)&(("port " in i)or ("port(" in i) ):   
             component_port_found = True
         elif(component_port_found == True)&("end component" in i)&(";" in i):
             component_port_found = False
             component_found = False
 
-        elif("component" not in i)&("map" not in i)&(component_port_found == True)&(component_found == True)&( ";" in i):
-            if(");" not in i)&(":" in i): 
-                    tmp1 = i.strip()
-                    tmp2 =  tmp1.split(":")    #port name
-                    tmp2[0] = tmp2[0].strip()
-                    tmp2[1] = tmp2[1].strip()
-                    tmp3 = tmp2[1].split(" ")
-                    entity_vhdl.component[component_count].port.append([tmp2[0].strip(), tmp3[0].strip(),  tmp3[len(tmp3)-1].strip()])
+        elif("component" not in i)&("map" not in i)&(component_port_found == True)&(component_found == True):
+            if(":" in i): 
+                tmp1 = i.strip()
+                tmp2 =  tmp1.split(":")    #port name        
+                tmp2[0] = tmp2[0].strip()
+                tmp2[1] = tmp2[1].strip()
+                tmp3 = tmp2[1].split(" ")
+                port_type = find_type(tmp2[1])
+                port_width = find_width(tmp2[1], port_type)
+                if(","in tmp2[0]):
+                    tmp4 =  tmp2[0].split(",") 
+                    for port in tmp4:
+                        entity_vhdl.component[component_count].port.append([port.strip(), tmp3[0].strip(),port_type, port_width])
+                else:
+                    entity_vhdl.component[component_count].port.append([tmp2[0].strip(), tmp3[0].strip(),port_type, port_width])
+                    # tmp1 = i.strip()
+                    # tmp2 =  tmp1.split(":")    #port name
+                    # tmp2[0] = tmp2[0].strip()
+                    # tmp2[1] = tmp2[1].strip()
+                    # tmp3 = tmp2[1].split(" ")
+                    # entity_vhdl.component[component_count].port.append([tmp2[0].strip(), tmp3[0].strip(),  tmp3[len(tmp3)-1].strip()])
                     
 
 
