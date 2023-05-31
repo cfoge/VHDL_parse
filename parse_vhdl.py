@@ -82,6 +82,21 @@ class vhdl_obj(object):
             self.signal = []
             self.search = []
             self.paths = []
+            self.assign = []
+
+    def multi_drive(self): # looks for the same target for multiple signals, doesnt understand if statements tho, #
+        to_list = []
+        for assignments in self.assign:
+            to_list.append(assignments[0])
+        warning_list = set()
+        uniq = []
+        for x in to_list:
+            if x not in uniq:
+                uniq.append(x)
+            else:
+                warning_list.add(x)
+        return warning_list
+
 
     def who_is(self):
         print(self.data[0])
@@ -166,7 +181,7 @@ def parse_vhdl(file_name):
             entity_vhdl.children_name.append(instanc( tmp2[1].strip(), tmp2[0].strip(),vhdl_line_str))
             entity_counter = entity_counter + 1
 
-        elif(":" in i)&(";" not in i)&("," not in i)&(entity_found == False)&(port_found == False)&(component_found == False):
+        elif(":" in i)&(";" not in i)&("," not in i)&(")" not in i)&(entity_found == False)&(port_found == False)&(component_found == False):
             entity_found = True
             tmp1 = i.strip()
             if (":" in tmp1) & ("entity" in tmp1) & ("work." in tmp1):
@@ -242,15 +257,28 @@ def parse_vhdl(file_name):
 
 
         elif("process" in i)&("(" in i)&(")" in i):
-            tmp1 = i.strip()
-            tmp1 = tmp1[7:]
-            tmp1 = tmp1.strip()
-            tmp1 = tmp1[1:-1]
-            if ("," in tmp1):
-                tmp2 = tmp1.split(",")
+            if (":" in i):
+                tmp1 = i.strip()
+                tmp2 = tmp1.split(":")
+                tmp3 = tmp2[1].strip()
+                tmp3 = tmp3[7:].split(")")
+                tmp4 = tmp3[0].strip()
+                tmp4 = tmp4[1:]
+                if ("," in tmp1):
+                    tmp4 = tmp4.split(",")
+
+                entity_vhdl.process.append([tmp2[0],tmp4])
+
             else:
-                tmp2 = tmp1
-            entity_vhdl.process.append([tmp2,vhdl_line_str])
+                tmp1 = i.strip()
+                tmp1 = tmp1[7:]
+                tmp1 = tmp1.strip()
+                tmp1 = tmp1[1:-1]
+                if ("," in tmp1):
+                    tmp2 = tmp1.split(",")
+                else:
+                    tmp2 = tmp1
+                entity_vhdl.process.append(["no name",tmp2])
         elif("constant" in i)&(":=" in i)&(";" in i):
             tmp1 = i.strip()
             tmp1 = tmp1[8:-1]
@@ -331,6 +359,12 @@ def parse_vhdl(file_name):
                     entity_vhdl.port.append([port.strip(), tmp3[0].strip(),port_type, port_width])
             else:
                 entity_vhdl.port.append([tmp2[0].strip(), tmp3[0].strip(),port_type, port_width])
+        elif("<=" in i)&(";" in i):
+            tmp1 = i.strip()
+            tmp2 =  tmp1.split("<=")         
+            tmp2[0] = tmp2[0].strip()
+            tmp2[1] = tmp2[1][:-1].strip()
+            entity_vhdl.assign.append(tmp2)
         # elif(sys.argv[2]  in i):
         #     tmp1 = i.strip()
         #     entity_vhdl[0].search.append([i,vhd.index(i)])
@@ -341,5 +375,6 @@ def parse_vhdl(file_name):
 
 
 vhdl_as_obj = parse_vhdl("C:/Users/robertjo/Documents/FPGA_automation_scripts/testVHDL1.vhd")
+#vhdl_as_obj.multi_drive()
 # vhdl_as_obj.who_is()
 print ("xx")
