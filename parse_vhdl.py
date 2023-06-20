@@ -365,8 +365,11 @@ def parse_vhdl(file_name):
 
             else:
                 generic_found = True
-        elif (generic_found == True) & (");" in i):
+        elif (generic_found == True) & (");" in i) & ("port" not in i):
             generic_found = False
+        elif (generic_found == True) & (");" in i) & ("port" in i):
+            generic_found = False
+            port_found = True
 
         elif (
             ("generic" not in i)
@@ -382,8 +385,7 @@ def parse_vhdl(file_name):
                 tmp2[2] = tmp2[2][1:].strip()
 
             entity_vhdl.generic.append([tmp2, vhdl_line_str])
-
-        elif (("port" in i) & (("(" in i))) or ("port " in i) & ("map" not in i):
+        elif (("port " in i) & (("(" in i))) or (("port(" in i)) and ("map" not in i) and ("=" not in i):
             port_found = True
         elif (port_found == True) & (");" in i) & (not ("(" in i)):
             port_found = False
