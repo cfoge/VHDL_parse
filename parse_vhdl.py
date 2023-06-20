@@ -51,7 +51,7 @@ def find_width(input_line, type_in):
 def extract_bit_len(str_in):
     port_width = re.findall(r'\d+', str_in)
     if len(port_width) < 2:
-        width_final = 1
+        bit_len = 1
     else:
         bit_len = (int(port_width[0])+1)-int(port_width[1])
     return bit_len
@@ -87,14 +87,14 @@ class vhdl_obj(object):
     def multi_drive(self): # looks for the same target for multiple signals, doesnt understand if statements tho, #
         to_list = []
         for assignments in self.assign:
-            to_list.append(assignments[0])
-        warning_list = set()
+            to_list.append([assignments[0][0],assignments[1]])
+        warning_list = []
         uniq = []
         for x in to_list:
-            if x not in uniq:
-                uniq.append(x)
+            if x[0] not in uniq:
+                uniq.append(x[0])
             else:
-                warning_list.add(x)
+                warning_list.append(x)
         return warning_list
 
 
@@ -327,9 +327,23 @@ def parse_vhdl(file_name):
             # entity_vhdl.signal.append(tmp2)
 
         elif("generic" in i)&("(" in i)&("map" not in i):
-            generic_found = True
+            if((')' in i)&(';' in i)):
+                tmp1 = i.strip()
+                tmp2 =  tmp1.split("(") 
+                tmp3 =  tmp2[1].split(":")    
+                tmp3[0] = tmp3[0].strip()
+                tmp3[1] = tmp3[1].strip()
+                tmp3[2] = tmp3[2][1:].strip()
+                tmp_fix = tmp3[2].split(")") 
+                tmp3[2] = tmp_fix[0]
+                entity_vhdl.generic.append([tmp3,vhdl_line_str])
+
+            else:
+                generic_found = True
         elif(generic_found == True)&(");" in i):
             generic_found = False
+
+ 
         
         elif("generic" not in i)&("map" not in i)&(generic_found == True)&( ";" in i):
             tmp1 = i.strip()
@@ -340,7 +354,7 @@ def parse_vhdl(file_name):
             
             entity_vhdl.generic.append([tmp2,vhdl_line_str])
         
-        elif(("port (" in i)or("port " in i)&("map" not in i) ):
+        elif((("port" in i)&(("(" in i)))or("port " in i)&("map" not in i) ):
             port_found = True
         elif(port_found == True)&(");" in i)&(not("(" in i)):
             port_found = False
@@ -361,10 +375,14 @@ def parse_vhdl(file_name):
                 entity_vhdl.port.append([tmp2[0].strip(), tmp3[0].strip(),port_type, port_width])
         elif("<=" in i)&(";" in i):
             tmp1 = i.strip()
-            tmp2 =  tmp1.split("<=")         
+            if("--" in tmp1):
+                tmp_comment =  tmp1.split("--") 
+                tmp2 =  tmp_comment[0].split("<=") 
+            else:
+                tmp2 =  tmp1.split("<=")         
             tmp2[0] = tmp2[0].strip()
             tmp2[1] = tmp2[1][:-1].strip()
-            entity_vhdl.assign.append(tmp2)
+            entity_vhdl.assign.append([tmp2,vhdl_line])
         # elif(sys.argv[2]  in i):
         #     tmp1 = i.strip()
         #     entity_vhdl[0].search.append([i,vhd.index(i)])
@@ -375,6 +393,6 @@ def parse_vhdl(file_name):
 
 
 vhdl_as_obj = parse_vhdl("C:/Users/robertjo/Documents/FPGA_automation_scripts/testVHDL1.vhd")
-#vhdl_as_obj.multi_drive()
+multi = vhdl_as_obj.multi_drive()
 # vhdl_as_obj.who_is()
 print ("xx")
