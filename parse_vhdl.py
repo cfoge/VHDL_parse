@@ -155,7 +155,7 @@ def parse_vhdl(file_name):
         if i.startswith("--"):
             continue
         elif (("library" in i) & (";" in i)) or (
-            (("use" in i) or ("USE" in i)) & ((";" in i) or ("," in i))
+            (("use " in i) or ("USE " in i)) & ((";" in i) or ("," in i))
         ):
             entity_vhdl.lib.append(i)  # basic, not finished
         elif ("entity" in i) & ("is" in i):
@@ -378,7 +378,8 @@ def parse_vhdl(file_name):
             tmp2 = tmp1.split(":")
             tmp2[0] = tmp2[0].strip()
             tmp2[1] = tmp2[1].strip()
-            tmp2[2] = tmp2[2][1:].strip()
+            if len(tmp2) > 2:
+                tmp2[2] = tmp2[2][1:].strip()
 
             entity_vhdl.generic.append([tmp2, vhdl_line_str])
 
@@ -424,7 +425,8 @@ def parse_vhdl(file_name):
 
 
 vhdl_as_obj = parse_vhdl(
-    "C:/Users/robertjo/Documents/FPGA_automation_scripts/testVHDL1.vhd"
+    # "C:/Users/robertjo/Documents/FPGA_automation_scripts/testVHDL1.vhd"
+    "C:/BMD_builds/mem_arb_memalloc/atemtvs3d1/src/atemtvs3d1.vhd"
 )
 # vhdl_as_obj.who_is()
 print("xx")
