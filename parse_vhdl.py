@@ -1,6 +1,16 @@
 import sys
 import re
 import os
+import argparse
+
+def parse_vhdl_arg_parse():
+  # Create the parser
+  parser = argparse.ArgumentParser()
+  # Add an argument
+  parser.add_argument('-i', '--input', type=str, required=True)
+  # Parse the argument
+  args = parser.parse_args()
+  return args
 
 
 class color:
@@ -35,6 +45,10 @@ def find_type(input_line):
     elif "signed" in input_line:
         type_found = "signed"
     # add more types
+    if "std_ulogic_vector" in input_line:
+        type_found = "std_ulogic_vector"
+    elif "std_ulogic" in input_line:
+        type_found = "std_ulogic"
     return type_found
 
 
@@ -49,6 +63,10 @@ def find_width(input_line, type_in):
     elif "bit" in input_line:
         size_found = 1
         # add for more types
+    elif type_in == "std_ulogic_vector":
+        size_found = extract_bit_len(input_line)
+    elif type_in == "std_ulogic":
+        size_found = 1
     return size_found
 
 
@@ -425,10 +443,9 @@ def parse_vhdl(file_name):
     entity_vhdl.children_name = list(dict.fromkeys(entity_vhdl.children_name))
     return entity_vhdl
 
+args = parse_vhdl_arg_parse()
+inp_fname = args.input
 
-vhdl_as_obj = parse_vhdl(
-    # "C:/Users/robertjo/Documents/FPGA_automation_scripts/testVHDL1.vhd"
-    "C:/BMD_builds/mem_arb_memalloc/atemtvs3d1/src/atemtvs3d1.vhd"
-)
-# vhdl_as_obj.who_is()
+vhdl_as_obj = parse_vhdl(inp_fname)
+vhdl_as_obj.who_is()
 print("xx")
