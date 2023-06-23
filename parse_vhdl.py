@@ -144,11 +144,12 @@ class vhdl_obj(object):
 
 
 def parse_vhdl(file_name):
-    with open(file_name) as f:
-        file_in = f.readlines()
+    # with open(file_name) as f:
+    #     file_in = f.readlines()
 
     with open(file_name) as f:
         vhd = f.readlines()
+        
 
     generic_found = False
     port_found = False
@@ -169,6 +170,7 @@ def parse_vhdl(file_name):
         vhdl_line_str = ""  # "#" + str(vhdl_line)
         # Strip leading and trailing whitespace from the line
         i = i.strip()
+        i = i.lower()
         # Skip commented lines
         if i.startswith("--"):
             continue
@@ -398,7 +400,8 @@ def parse_vhdl(file_name):
             tmp1 = i.strip()
             tmp2 = tmp1.split(":")
             tmp2[0] = tmp2[0].strip()
-            tmp2[1] = tmp2[1].strip()
+            if len(tmp2) > 1:
+                tmp2[1] = tmp2[1].strip()
             if len(tmp2) > 2:
                 tmp2[2] = tmp2[2][1:].strip()
 
@@ -443,9 +446,9 @@ def parse_vhdl(file_name):
     entity_vhdl.children_name = list(dict.fromkeys(entity_vhdl.children_name))
     return entity_vhdl
 
-args = parse_vhdl_arg_parse()
-inp_fname = args.input
+# args = parse_vhdl_arg_parse()
+# inp_fname = args.input
 
-vhdl_as_obj = parse_vhdl(inp_fname)
-vhdl_as_obj.who_is()
-print("xx")
+# vhdl_as_obj = parse_vhdl(inp_fname)
+# vhdl_as_obj.who_is()
+# print("xx")
