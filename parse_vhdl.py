@@ -153,6 +153,7 @@ def parse_vhdl(file_name):
 
     generic_found = False
     port_found = False
+    port_final_line = False
     entity_found = False
     entity_port_found = False
     component_found = False
@@ -211,6 +212,7 @@ def parse_vhdl(file_name):
             & (entity_found == False)
             & (port_found == False)
             & (component_found == False)
+            & (generic_found == False)
         ):
             entity_found = True
             tmp1 = i.strip()
@@ -353,6 +355,7 @@ def parse_vhdl(file_name):
                     [tmp2[0].strip(), tmp3[0].strip(), vhdl_line_str]
                 )
         elif (("signal" in i) & (":" in i) & (";" in i)) & ("attribute" not in i):
+            port_found = False
             tmp1 = i.strip()
             tmp1 = tmp1[6:-1]
             tmp2 = tmp1.split(":")
@@ -395,7 +398,7 @@ def parse_vhdl(file_name):
             ("generic" not in i)
             & ("map" not in i)
             & (generic_found == True)
-            & (";" in i)
+            # & (";" in i)
         ):
             tmp1 = i.strip()
             tmp2 = tmp1.split(":")
@@ -408,7 +411,7 @@ def parse_vhdl(file_name):
             entity_vhdl.generic.append([tmp2, vhdl_line_str])
         elif (("port " in i) & (("(" in i))) or (("port(" in i)) and ("map" not in i) and ("=" not in i):
             port_found = True
-        elif (port_found == True) & (");" in i) & (not ("(" in i)):
+        elif (port_found == True) & (");" in i)& (":"not in i) & (not ("(" in i)):
             port_found = False
 
         elif ("port " not in i) & ("map " not in i) & (port_found == True) & (":" in i):
@@ -429,7 +432,7 @@ def parse_vhdl(file_name):
                 entity_vhdl.port.append(
                     [tmp2[0].strip(), tmp3[0].strip(), port_type, port_width]
                 )
-        elif ("<=" in i) & (";" in i):
+        elif ("<=" in i) & (";" in i): # assignment detector
             tmp1 = i.strip()
             if "--" in tmp1:
                 tmp_comment = tmp1.split("--")
