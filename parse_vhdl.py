@@ -36,8 +36,8 @@ def find_type(input_line):
         type_found = "bit_vector"
     elif "bit" in input_line:
         type_found = "bit"
-    elif "BOOLEAN " in input_line:
-        type_found = "BOOLEAN"
+    elif "boolean" in input_line:
+        type_found = "boolean"
     elif "interger" in input_line:
         type_found = "interger"
     elif "unsigned" in input_line:
@@ -161,17 +161,22 @@ def parse_vhdl(file_name):
     entity_counter = -1
     component_count = -1
     entity_vhdl = []
-    vhdl_line = 0
+    vhdl_line = -1
     vhdl_line_str = ""
 
     # Initialize the VHDL object
     entity_vhdl = vhdl_obj()
     for i in vhd:
         vhdl_line = vhdl_line + 1  # increment line number
+        # if vhdl_line == 556: # use to debug specific lines of the vhdl file
+        #     print("BREAK")
         vhdl_line_str = ""  # "#" + str(vhdl_line)
         # Strip leading and trailing whitespace from the line
         i = i.strip()
         i = i.lower()
+        # remove coments from end of lines
+        if (not i.startswith("--")  and "--" in i):
+            i = i.split("--", 1)[0]
         # Skip commented lines
         if i.startswith("--"):
             continue
@@ -209,6 +214,7 @@ def parse_vhdl(file_name):
             & (";" not in i)
             & ("," not in i)
             & (")" not in i)
+            & ("process" not in i)
             & (entity_found == False)
             & (port_found == False)
             & (component_found == False)
@@ -322,6 +328,19 @@ def parse_vhdl(file_name):
                 else:
                     tmp2 = tmp1
                 entity_vhdl.process.append(["no name", tmp2])
+                
+        elif ("process" in i) & (":" in i) & ("(" not in i):
+            tmp1 = i.strip()
+            tmp2 = tmp1.split(":")
+            tmp3 = tmp2[1].strip()
+            tmp3 = tmp3[7:].split(")")
+            tmp4 = tmp3[0].strip()
+            tmp4 = tmp4[1:]
+            if "," in tmp1:
+                tmp4 = tmp4.split(",")
+
+            entity_vhdl.process.append([tmp2[0], tmp4])
+
         elif ("constant" in i) & (":=" in i) & (";" in i):
             tmp1 = i.strip()
             tmp1 = tmp1[8:-1]

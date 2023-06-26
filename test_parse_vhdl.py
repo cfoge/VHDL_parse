@@ -29,7 +29,7 @@ def test_file(file_name):
     vhdl_as_obj = parse_vhdl("tests/"+file_name +".vhdl")
 
 # Save a test object if it is correct!!!
-#     with open('test2.vhdlobj', 'wb') as test_file:
+#     with open('test6.vhdlobj', 'wb') as test_file:
 #       pickle.dump(vhdl_as_obj, test_file)
 
 # load a test object with the same name as our test file
@@ -68,4 +68,6 @@ diff_object = test_file("test2")
 diff_object = test_file("test3")
 diff_object = test_file("test4") 
 diff_object = test_file("test5") 
+diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
+diff_object = test_file("test7")
 print("")
