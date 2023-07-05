@@ -3,6 +3,8 @@ import re
 import os
 import argparse
 
+entity_vhdl = None
+
 def parse_vhdl_arg_parse():
   # Create the parser
   parser = argparse.ArgumentParser()
@@ -49,6 +51,10 @@ def find_type(input_line):
         type_found = "std_ulogic_vector"
     elif "std_ulogic" in input_line:
         type_found = "std_ulogic"
+    elif "positive" in input_line:
+        type_found = "positive"
+    elif "natural" in input_line:
+        type_found = "natural"
     return type_found
 
 
@@ -59,7 +65,7 @@ def find_width(input_line, type_in):
     elif type_in == "std_logic":
         size_found = 1
     elif "bit_vector" in input_line:
-        type_found = "bit_vector"
+        size_found = "bit_vector"
     elif "bit" in input_line:
         size_found = 1
         # add for more types
@@ -71,6 +77,10 @@ def find_width(input_line, type_in):
 
 
 def extract_bit_len(str_in):
+    for gen in entity_vhdl.generic[0][0]:
+        if gen in str_in:
+            extracted = re.findall(r'\((.*?)\)', str_in)
+            return extracted
     port_width = re.findall(r"\d+", str_in)
     if len(port_width) < 2:
         bit_len = 1
@@ -146,7 +156,7 @@ class vhdl_obj(object):
 def parse_vhdl(file_name):
     # with open(file_name) as f:
     #     file_in = f.readlines()
-
+    global entity_vhdl
     with open(file_name) as f:
         vhd = f.readlines()
         
@@ -165,6 +175,7 @@ def parse_vhdl(file_name):
     vhdl_line_str = ""
 
     # Initialize the VHDL object
+     
     entity_vhdl = vhdl_obj()
     for i in vhd:
         vhdl_line = vhdl_line + 1  # increment line number
