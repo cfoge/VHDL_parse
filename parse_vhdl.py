@@ -77,10 +77,11 @@ def find_width(input_line, type_in):
 
 
 def extract_bit_len(str_in):
-    for gen in entity_vhdl.generic[0][0]:
-        if gen in str_in:
-            extracted = re.findall(r'\((.*?)\)', str_in)
-            return extracted
+    if len(entity_vhdl.generic) != 0:
+        for gen in entity_vhdl.generic[0][0]:
+            if gen in str_in:
+                extracted = re.findall(r'\((.*?)\)', str_in)
+                return extracted
     port_width = re.findall(r"\d+", str_in)
     if len(port_width) < 2:
         bit_len = 1
