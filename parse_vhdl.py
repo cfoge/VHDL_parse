@@ -81,7 +81,7 @@ def extract_bit_len(str_in):
         for gen in entity_vhdl.generic[0][0]:
             if gen in str_in:
                 extracted = re.findall(r'\((.*?)\)', str_in)
-                return extracted
+                return extracted[0]
     port_width = re.findall(r"\d+", str_in)
     if len(port_width) < 2:
         bit_len = 1
@@ -361,11 +361,11 @@ def parse_vhdl(file_name):
             tmp2[1] = tmp2[1].strip()
             tmp3 = tmp2[2].split(";")
             tmp2[2] = tmp3[0][1:].strip()
-            entity_vhdl.constant.append([tmp2, vhdl_line_str])
+            entity_vhdl.constant.append(tmp2)
         elif ("Variable" in i) & (":" in i) & (";" in i):
             tmp1 = i.strip()
             tmp1 = tmp1[8:-1]
-            entity_vhdl.variable.append([tmp1, vhdl_line_str])
+            entity_vhdl.variable.append(tmp1)
         elif ("attribute" in i) & (":" in i) & (";" in i):
             tmp1 = i.strip()
             tmp1 = tmp1[9:-1]
@@ -379,11 +379,11 @@ def parse_vhdl(file_name):
                 tmp2[0] = tmp4[1].strip()
             if len(tmp3) > 1:
                 entity_vhdl.attribute.append(
-                    [tmp2[0].strip(), tmp3[0].strip(), tmp3[1].strip(), vhdl_line_str]
+                    [tmp2[0].strip(), tmp3[0].strip(), tmp3[1].strip()]
                 )
             else:
                 entity_vhdl.attribute.append(
-                    [tmp2[0].strip(), tmp3[0].strip(), vhdl_line_str]
+                    [tmp2[0].strip(), tmp3[0].strip()]
                 )
         elif (("signal" in i) & (":" in i) & (";" in i)) & ("attribute" not in i):
             port_found = False
@@ -415,7 +415,7 @@ def parse_vhdl(file_name):
                 tmp3[2] = tmp3[2][1:].strip()
                 tmp_fix = tmp3[2].split(")")
                 tmp3[2] = tmp_fix[0]
-                entity_vhdl.generic.append([tmp3, vhdl_line_str])
+                entity_vhdl.generic.append(tmp3)
 
             else:
                 generic_found = True
@@ -439,7 +439,7 @@ def parse_vhdl(file_name):
             if len(tmp2) > 2:
                 tmp2[2] = tmp2[2][1:].strip()
 
-            entity_vhdl.generic.append([tmp2, vhdl_line_str])
+            entity_vhdl.generic.append(tmp2)
         elif (("port " in i) & (("(" in i))) or (("port(" in i)) and ("map" not in i) and ("=" not in i):
             port_found = True
         elif (port_found == True) & (");" in i)& (":"not in i) & (not ("(" in i)):
@@ -472,7 +472,7 @@ def parse_vhdl(file_name):
                 tmp2 = tmp1.split("<=")
             tmp2[0] = tmp2[0].strip()
             tmp2[1] = tmp2[1][:-1].strip()
-            entity_vhdl.assign.append([tmp2, vhdl_line])
+            entity_vhdl.assign.append([tmp2[0],tmp2[1], vhdl_line])
         # elif(sys.argv[2]  in i):
         #     tmp1 = i.strip()
         #     entity_vhdl[0].search.append([i,vhd.index(i)])
