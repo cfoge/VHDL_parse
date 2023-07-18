@@ -81,7 +81,10 @@ def extract_bit_len(str_in):
         for gen in entity_vhdl.generic[0][0]:
             if gen in str_in:
                 extracted = re.findall(r'\((.*?)\)', str_in)
-                return extracted[0]
+                if len(extracted) > 0:
+                    return extracted[0]
+                else:
+                    return 0
     port_width = re.findall(r"\d+", str_in)
     if len(port_width) < 2:
         bit_len = 1
@@ -335,7 +338,9 @@ def parse_vhdl(file_name):
                 tmp1 = tmp1[7:]
                 tmp1 = tmp1.strip()
                 tmp1 = tmp1[1:-1]
-                if "," in tmp1:
+                if ")" in tmp1:
+                    tmp2 = tmp1.split(")")[0]
+                elif "," in tmp1:
                     tmp2 = tmp1.split(",")
                 else:
                     tmp2 = tmp1
@@ -412,9 +417,10 @@ def parse_vhdl(file_name):
                 tmp3 = tmp2[1].split(":")
                 tmp3[0] = tmp3[0].strip()
                 tmp3[1] = tmp3[1].strip()
-                tmp3[2] = tmp3[2][1:].strip()
-                tmp_fix = tmp3[2].split(")")
-                tmp3[2] = tmp_fix[0]
+                if len(tmp3) > 2:
+                    tmp3[2] = tmp3[2][1:].strip()
+                    tmp_fix = tmp3[2].split(")")
+                    tmp3[2] = tmp_fix[0]
                 entity_vhdl.generic.append(tmp3)
 
             else:

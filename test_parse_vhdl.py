@@ -32,7 +32,7 @@ def test_file(file_name):
     vhdl_as_obj = parse_vhdl("tests/"+file_name +".vhdl")
 
 # Save a test object if it is correct!!!
-#     with open('test8.vhdlobj', 'wb') as test_file:
+#     with open('test3.vhdlobj', 'wb') as test_file:
 #       pickle.dump(vhdl_as_obj, test_file)
 
 # load a test object with the same name as our test file
@@ -58,22 +58,82 @@ def test_file(file_name):
     if len(diff_obj.constant[0])!=0:
          print("test: " + file_name + " Failed! = constant") #works
     if len(diff_obj.assign[0])!=0:
-         print("test: " + file_name + " Failed! = assignments") #works
+         print("test: " + file_name + " Failed! = assignments") 
     if len(diff_obj.process[0])!=0:
          print("test: " + file_name + " Failed! = process")
     if len(diff_obj.signal[0])!=0:
          print("test: " + file_name + " Failed! = signal") #works
     return diff_obj
 
+
+#dependency search
+root_dir = 'C:/BMD_builds/time_code_in/atemtvs3d1/src'
+tld = 'C:/BMD_builds/time_code_in/atemtvs3d1/src/atemtvs3d1.vhd'
+vhdl_files = []
+#print("VHDL Files Found:")
+for root, dirs, files in os.walk(root_dir):
+    for file in files: 
+        if file.endswith(".vhd"):
+             #print(os.path.join(root, file))
+             vhdl_files.append(os.path.join(root, file))
+
+vhdl_file_as_obj = []
+
+# make list of VHDL files as parsed objects
+for files in vhdl_files:
+    vhdl_file_as_obj.append(parse_vhdl(files))
+
+target_vhdl = parse_vhdl(tld)
+
+# search list and and attach dependent objects as childeren
+for vhdl_o in vhdl_file_as_obj:
+    for child in vhdl_o.children_name:
+        for vhdl_objsB in vhdl_file_as_obj:
+            if len(vhdl_objsB.data)>0:
+                if vhdl_objsB.data[0] == child.mod:
+                    vhdl_o.children.append(vhdl_objsB)
+                    #vhdl_o.children_name.remove(child)
+                    break
+
+def print_child(object,depth):
+
+    if (len(object.children) > 0):
+        spacing = "    " * (depth)
+        print (spacing + "├─ " + object.data[0])
+        for child in range(len(object.children)):
+            print_child(object.children[child], (depth + 1))
+        for childeren in object.children_name:
+            print(spacing +"├─ " + childeren.mod + " : " + childeren.name)
+    else:
+        spacing = "    " * (depth)
+        if (depth != 0):
+            print(spacing + "├─ " + object.data[0])
+        for childeren in object.children_name:
+           print(spacing +"├─ " + childeren.mod + " : " + childeren.name)
+     
+    return 
+
+# print hierarchy    
+
+print("---------------------------------------------------")
+for vhdl_objs in vhdl_file_as_obj:
+    if len(vhdl_objs.data) > 0 :
+        if (target_vhdl.data[0] in vhdl_objs.data[0] ):
+            print(vhdl_objs.data[0])
+            print_child(vhdl_objs,0)
+print("---------------------------------------------------")
+
+
 # assignement errors may not be triggered?
-# diff_object = test_file("test1")
-# diff_object = test_file("test2")
-# diff_object = test_file("test3")
-# diff_object = test_file("test4") 
+diff_object = test_file("test1")
+diff_object = test_file("test2")
+diff_object = test_file("test3")
+diff_object = test_file("test4") 
 # diff_object = test_file("test5") 
 # diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
 # diff_object = test_file("test7")
-diff_object = test_file("test8")
+# diff_object = test_file("test8")
 
 #somthing is up with the tests it is not recognising types of changes
+# script doesnt recognise := after signals and maybe ports and constants
 print("")
