@@ -100,6 +100,7 @@ class instanc(object):
         self.line_num = line_num
         self.generic = []
         self.port = []
+        self.vhdl_obj = []
 
 
 class vhdl_obj(object):

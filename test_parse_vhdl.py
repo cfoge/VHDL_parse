@@ -113,6 +113,16 @@ def print_child(object,depth):
      
     return 
 
+def print_sig_path(object,sig):
+    found_signal = []
+    for child in object.children_name:
+        for port_ass in child.port:
+            if port_ass[1] == sig:
+                found_signal.append([child.mod,child.name])
+                print(child.mod + " " + child.name)
+    return found_signal
+
+
 # print hierarchy    
 
 print("---------------------------------------------------")
