@@ -127,9 +127,7 @@ for vhdl_o in vhdl_file_as_obj:
 # search for other lines involving this signal
 #search each child for 
 find_str = 'clk_25'
-print("---------------------------------------------------")
-print ("Searching for " + find_str + " in " + target_vhdl.data[0])
-print("")
+
 
 
 
@@ -194,7 +192,10 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 string_out = y[0] + " => " + y[1]
                 if (y[1] == find_str):
                     find_str_sub = y[0]
-                    new_node = TreeNode(x.mod,y[0],"module", x.mod, find_str_sub)
+                    if len(x.mod)==0:
+                        new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
+                    else:
+                        new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
                     
                     curent_node.add_child(new_node)
                     if len(x.vhdl_obj)>0:
@@ -229,11 +230,16 @@ path_tree = nodes[0].paths()
 
 
 
+print("---------------------------------------------------")
+print ("Searching for " + find_str + " in " + target_vhdl.data[0])
 
 for path in path_tree:
-    print("path ==>")
     for step in path:
-        print(step + " --> ",end='')
+        print( " --> ",end='')
+        if len(step)==2:
+            print(step[0] + " : " + step[1] ,end='')
+        else:
+            print(step ,end='')
     print("")
 print("")
 print("---------------------------------------------------")

@@ -78,9 +78,14 @@ def find_width(input_line, type_in):
 
 def extract_bit_len(str_in):
     if len(entity_vhdl.generic) != 0:
-        for gen in entity_vhdl.generic[0][0]:
-            if gen in str_in:
+        for gen in entity_vhdl.generic:
+            if gen[0] in str_in and gen[0]!="":
                 extracted = re.findall(r'\((.*?)\)', str_in)
+                # if "downto" in extracted[0]:
+                #     extracted = extracted[0].split("downto")
+                # if "-" in extracted[0]:
+                #     tmp1 = extracted[0].split("-")
+                #     bit_len = (int(gen[2]) + 1)-(int(tmp1[1])) - int(port_width[1])
                 if len(extracted) > 0:
                     return extracted[0]
                 else:
@@ -100,7 +105,7 @@ class instanc(object):
         self.line_num = line_num
         self.generic = []
         self.port = []
-        self.vhdl_obj = []
+        self.vhdl_obj = None
 
 
 class vhdl_obj(object):

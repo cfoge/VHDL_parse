@@ -67,8 +67,8 @@ def test_file(file_name):
 
 
 #dependency search
-root_dir = 'C:/BMD_builds/time_code_in/atemtvs3d1/src'
-tld = 'C:/BMD_builds/time_code_in/atemtvs3d1/src/atemtvs3d1.vhd'
+root_dir = 'C:/BMD_builds/nios_timer/atemtvs3d1/src'
+tld = 'C:/BMD_builds/nios_timer/atemtvs3d1/src/atemtvs3d1.vhd'
 vhdl_files = []
 #print("VHDL Files Found:")
 for root, dirs, files in os.walk(root_dir):
@@ -91,54 +91,65 @@ for vhdl_o in vhdl_file_as_obj:
         for vhdl_objsB in vhdl_file_as_obj:
             if len(vhdl_objsB.data)>0:
                 if vhdl_objsB.data[0] == child.mod:
-                    vhdl_o.children.append(vhdl_objsB)
+                    child.vhdl_obj = (vhdl_objsB)
                     #vhdl_o.children_name.remove(child)
                     break
 
-def print_child(object,depth):
+def print_child(object,depth,parent):
+    if depth == 0:
+        spacing =  ""
+    if depth > 1:
+        spacing =  "    " * (depth - 1) + "│   "
+    else: 
+        spacing = "    "
+    if isinstance(object,vhdl_obj): 
+        obj_type = "obj"
+        child_var = object.children_name
+        if (len(child_var) > 0):
+            spacing = "    " * (depth)
+            if obj_type == "obj":
+                print (spacing + "├─ " + object.data[0])
 
-    if (len(object.children) > 0):
-        spacing = "    " * (depth)
-        print (spacing + "├─ " + object.data[0])
-        for child in range(len(object.children)):
-            print_child(object.children[child], (depth + 1))
-        for childeren in object.children_name:
-            print(spacing +"├─ " + childeren.mod + " : " + childeren.name)
-    else:
-        spacing = "    " * (depth)
-        if (depth != 0):
-            print(spacing + "├─ " + object.data[0])
-        for childeren in object.children_name:
-           print(spacing +"├─ " + childeren.mod + " : " + childeren.name)
-     
+                for child in range(len(child_var)):
+                    hierachy_vis.append([object.data[0],child_var[child].name])
+                    print_child(object.children_name[child], (depth + 1),object.data[0])
+
+
+    if isinstance(object,instanc): 
+        obj_type = "inst"
+        temp1 = object.vhdl_obj
+        if temp1 != None:
+            if object.mod == "":
+                print(spacing +"├─ " + object.name)
+            else:
+                print(spacing +"├─ " + object.mod + " : " + object.name)
+            hierachy_vis.append([parent,object.name])
+            print_child(object.vhdl_obj, (depth + 1), object.name)
+        else:
+            if object.mod == "":
+                print(spacing +"├─ " + object.name)
+            else:
+                print(spacing +"├─ " + object.mod + " : " + object.name)
     return 
-
-def print_sig_path(object,sig):
-    found_signal = []
-    for child in object.children_name:
-        for port_ass in child.port:
-            if port_ass[1] == sig:
-                found_signal.append([child.mod,child.name])
-                print(child.mod + " " + child.name)
-    return found_signal
 
 
 # print hierarchy    
 
 print("---------------------------------------------------")
+hierachy_vis = [['',target_vhdl.data[0]]]
 for vhdl_objs in vhdl_file_as_obj:
     if len(vhdl_objs.data) > 0 :
         if (target_vhdl.data[0] in vhdl_objs.data[0] ):
-            print(vhdl_objs.data[0])
-            print_child(vhdl_objs,0)
+            # print(vhdl_objs.data[0])
+            print_child(vhdl_objs,0,"")
 print("---------------------------------------------------")
 
 
 # assignement errors may not be triggered?
 diff_object = test_file("test1")
-diff_object = test_file("test2")
-diff_object = test_file("test3")
-diff_object = test_file("test4") 
+# diff_object = test_file("test2")
+# diff_object = test_file("test3")
+# diff_object = test_file("test4") 
 # diff_object = test_file("test5") 
 # diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
 # diff_object = test_file("test7")
