@@ -127,6 +127,7 @@ class vhdl_obj(object):
         self.search = []
         self.paths = []
         self.assign = []
+        self.modname = ''
 
     def who_is(self):
         print(self.data[0])

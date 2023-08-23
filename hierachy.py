@@ -33,6 +33,7 @@ for vhdl_o in vhdl_file_as_obj:
 def print_child(object,depth,parent):
     if depth == 0:
         spacing =  ""
+        object.modname = object.data[0]
     if depth > 1:
         spacing =  "    " * (depth - 1) + "│   "
     else: 
@@ -46,7 +47,7 @@ def print_child(object,depth,parent):
                 print (spacing + "├─ " + object.data[0])
 
                 for child in range(len(child_var)):
-                    hierachy_vis.append([object.data[0],child_var[child].name])
+                    hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
                     print_child(object.children_name[child], (depth + 1),object.data[0])
 
 
@@ -54,11 +55,12 @@ def print_child(object,depth,parent):
         obj_type = "inst"
         temp1 = object.vhdl_obj
         if temp1 != None:
+            object.vhdl_obj.modname = object.name
             if object.mod == "":
                 print(spacing +"├─ " + object.name)
             else:
                 print(spacing +"├─ " + object.mod + " : " + object.name)
-            hierachy_vis.append([parent,object.name])
+            hierachy_vis.append([parent,object.name,depth,object.mod])
             print_child(object.vhdl_obj, (depth + 1), object.name)
         else:
             if object.mod == "":
@@ -72,7 +74,7 @@ def extract(lst,addr):
 
 
 print("---------------------------------------------------")
-hierachy_vis = [['',target_vhdl.data[0]]]
+hierachy_vis = [['',target_vhdl.data[0],0,""]] # structure is parent, child, depth, mod name (only relivnt some time)
 for vhdl_objs in vhdl_file_as_obj:
     if len(vhdl_objs.data) > 0 :
         if (target_vhdl.data[0] in vhdl_objs.data[0] ):
@@ -80,17 +82,47 @@ for vhdl_objs in vhdl_file_as_obj:
             print_child(vhdl_objs,0,"")
 print("---------------------------------------------------")
 
-names_val = extract(hierachy_vis,1)
-parents_val = extract(hierachy_vis,0)
+# there is an issue with elements that have the same name in the plotly lib, it doesnt understand how to deal with multiples, can i encode the instance number somehow??
+# # re order parent/modules based on depth
+# hierachy_vis_ordered = []
+# max_depth = 0
 
-fig = px.treemap(
-    names = names_val[0:20], # there cant be a perent referenced that hasnt been listed in the names yet!!
-    parents = parents_val[0:20]
-    #     names = ["Eve","Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-    # parents = ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"]
-)
-fig.update_traces(root_color="lightgrey")
-fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
-fig.show()
+# for depth_val in hierachy_vis:
+#     if depth_val[2] > max_depth:
+#         max_depth = depth_val[2]
+
+# for depth in range(max_depth):
+#     for entry in hierachy_vis:
+#         if entry[2] == depth:
+#            if entry[1] == '':
+#                 hierachy_vis_ordered.append([entry[0],entry[3],entry[2],entry[3]]) 
+#            else:
+#                hierachy_vis_ordered.append([entry[0],entry[1],entry[2],entry[3]]) 
+# #
+# # extract the parent and child names from the sorted list
+# names_val = extract(hierachy_vis_ordered,1)
+# parents_val = extract(hierachy_vis_ordered,0)
+# # result_1 = list(set(names_val).difference(parents_val))
+# #remove modules without a valid name/parent relationship
+
+# # names_val_final = extract(hierachy_vis_ordered,1)
+# # parents_val_final = extract(hierachy_vis_ordered,0)
+# seen = set()
+# for i, e in enumerate(names_val):
+#     if e in seen:
+#         names_val[i] = names_val[i]+'_'
+#     else:
+#         seen.add(e)
+
+# fig = px.treemap(
+#     names = names_val[0:150], # there cant be a perent referenced that hasnt been listed in the names yet!!
+#     parents = parents_val[0:150]
+#     # names = ["tvs3d","dve_1","thing2",'1','2','3' ,"newthing"],
+#     # parents = ["", "tvs3d","tvs3d","tvs3d","tvs3d","tvs3d", "dve_1"]
+    
+# )
+# fig.update_traces(root_color="lightgrey")
+# fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+# fig.show()
 
 print("")
