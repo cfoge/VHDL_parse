@@ -1,9 +1,23 @@
 from parse_vhdl import *
-import plotly.express as px
+# import plotly.express as px
+import graphviz
+import os
+
+
+def create_tree(parents, children):
+    tree = {}
+    for parent, child in zip(parents, children):
+        if parent not in tree:
+            tree[parent] = []
+        if child not in tree:
+            tree[child] = []           
+        tree[parent].append(child)
+    return tree
+
 
 #dependency search
-root_dir = 'C:/BMD_builds/nios_timer/atemtvs3d1/src'
-tld = 'C:/BMD_builds/nios_timer/atemtvs3d1/src/atemtvs3d1.vhd'
+root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
+tld = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd'
 vhdl_files = []
 #print("VHDL Files Found:")
 for root, dirs, files in os.walk(root_dir):
@@ -30,10 +44,14 @@ for vhdl_o in vhdl_file_as_obj:
                     #vhdl_o.children_name.remove(child)
                     break
 
-def print_child(object,depth,parent):
+def print_child(object,depth,parent, print_url):
+    url = ''
     if depth == 0:
         spacing =  ""
         object.modname = object.data[0]
+        if (print_url == True):
+            url = object.url
+        print (object.data[0] + " " + url)
     if depth > 1:
         spacing =  "    " * (depth - 1) + "│   "
     else: 
@@ -44,85 +62,66 @@ def print_child(object,depth,parent):
         if (len(child_var) > 0):
             spacing = "    " * (depth)
             if obj_type == "obj":
-                print (spacing + "├─ " + object.data[0])
+                # print (spacing + "├─ " + object.data[0])
 
                 for child in range(len(child_var)):
-                    hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
-                    print_child(object.children_name[child], (depth + 1),object.data[0])
+                    # hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
+                    print_child(object.children_name[child], (depth + 1),object.data[0], print_url)
 
 
     if isinstance(object,instanc): 
+        if (print_url == True) and (object.vhdl_obj != None):
+            url = object.vhdl_obj.url
         obj_type = "inst"
         temp1 = object.vhdl_obj
         if temp1 != None:
             object.vhdl_obj.modname = object.name
             if object.mod == "":
-                print(spacing +"├─ " + object.name)
+                print(spacing +"├─ " + object.name + " " + url)
             else:
-                print(spacing +"├─ " + object.mod + " : " + object.name)
+                print(spacing +"├─ " + object.mod + " : " + object.name + " " + url)
             hierachy_vis.append([parent,object.name,depth,object.mod])
-            print_child(object.vhdl_obj, (depth + 1), object.name)
+            print_child(object.vhdl_obj, (depth + 1), object.name, print_url)
         else:
             if object.mod == "":
-                print(spacing +"├─ " + object.name)
+                print(spacing +"├─ " + object.name + " " + url)
             else:
-                print(spacing +"├─ " + object.mod + " : " + object.name)
+                print(spacing +"├─ " + object.mod + " : " + object.name + " " + url)
     return 
 
 def extract(lst,addr):
     return [item[addr] for item in lst]
 
-
+print_url = True
 print("---------------------------------------------------")
-hierachy_vis = [['',target_vhdl.data[0],0,""]] # structure is parent, child, depth, mod name (only relivnt some time)
+hierachy_vis = []#[['',target_vhdl.data[0],0,""]] # structure is parent, child, depth, mod name (only relivnt some time)
 for vhdl_objs in vhdl_file_as_obj:
     if len(vhdl_objs.data) > 0 :
-        if (target_vhdl.data[0] in vhdl_objs.data[0] ):
+        if (target_vhdl.data[0] == vhdl_objs.data[0] ):
             # print(vhdl_objs.data[0])
-            print_child(vhdl_objs,0,"")
+            print_child(vhdl_objs,0,"",print_url)
 print("---------------------------------------------------")
 
-# there is an issue with elements that have the same name in the plotly lib, it doesnt understand how to deal with multiples, can i encode the instance number somehow??
-# # re order parent/modules based on depth
-# hierachy_vis_ordered = []
-# max_depth = 0
 
-# for depth_val in hierachy_vis:
-#     if depth_val[2] > max_depth:
-#         max_depth = depth_val[2]
-
-# for depth in range(max_depth):
-#     for entry in hierachy_vis:
-#         if entry[2] == depth:
-#            if entry[1] == '':
-#                 hierachy_vis_ordered.append([entry[0],entry[3],entry[2],entry[3]]) 
-#            else:
-#                hierachy_vis_ordered.append([entry[0],entry[1],entry[2],entry[3]]) 
-# #
 # # extract the parent and child names from the sorted list
-# names_val = extract(hierachy_vis_ordered,1)
-# parents_val = extract(hierachy_vis_ordered,0)
-# # result_1 = list(set(names_val).difference(parents_val))
-# #remove modules without a valid name/parent relationship
+child = extract(hierachy_vis, 3) # file name
+parents = extract(hierachy_vis,0)
+name = extract(hierachy_vis, 1) # module name
 
-# # names_val_final = extract(hierachy_vis_ordered,1)
-# # parents_val_final = extract(hierachy_vis_ordered,0)
-# seen = set()
-# for i, e in enumerate(names_val):
-#     if e in seen:
-#         names_val[i] = names_val[i]+'_'
-#     else:
-#         seen.add(e)
+tree = create_tree(parents, child)
 
-# fig = px.treemap(
-#     names = names_val[0:150], # there cant be a perent referenced that hasnt been listed in the names yet!!
-#     parents = parents_val[0:150]
-#     # names = ["tvs3d","dve_1","thing2",'1','2','3' ,"newthing"],
-#     # parents = ["", "tvs3d","tvs3d","tvs3d","tvs3d","tvs3d", "dve_1"]
-    
-# )
-# fig.update_traces(root_color="lightgrey")
-# fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
-# fig.show()
+dot = graphviz.Digraph( format='png')  # You can choose other formats like SVG, PDF, etc.
+
+
+for parent, children in tree.items():
+    dot.node(parent, shape='note', )
+    for child in children:
+      
+        dot.node(child)
+        dot.edge(parent, child)
+
+dot.render('tree.png', view=True)  # This will create and display 'tree.png'
+
+
 
 print("")

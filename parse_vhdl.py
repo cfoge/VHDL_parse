@@ -1,19 +1,8 @@
-import sys
+
 import re
-import os
 import argparse
 
 entity_vhdl = None
-
-def parse_vhdl_arg_parse():
-  # Create the parser
-  parser = argparse.ArgumentParser()
-  # Add an argument
-  parser.add_argument('-i', '--input', type=str, required=True)
-  # Parse the argument
-  args = parser.parse_args()
-  return args
-
 
 class color:
     PURPLE = "\033[95m"
@@ -128,6 +117,7 @@ class vhdl_obj(object):
         self.paths = []
         self.assign = []
         self.modname = ''
+        self.url = ''
 
     def who_is(self):
         print(self.data[0])
@@ -165,8 +155,6 @@ class vhdl_obj(object):
 
 
 def parse_vhdl(file_name):
-    # with open(file_name) as f:
-    #     file_in = f.readlines()
     global entity_vhdl
     with open(file_name) as f:
         vhd = f.readlines()
@@ -188,6 +176,7 @@ def parse_vhdl(file_name):
     # Initialize the VHDL object
      
     entity_vhdl = vhdl_obj()
+    entity_vhdl.url = file_name
     for i in vhd:
         vhdl_line = vhdl_line + 1  # increment line number
         # if vhdl_line == 556: # use to debug specific lines of the vhdl file
@@ -413,9 +402,6 @@ def parse_vhdl(file_name):
                     entity_vhdl.signal.append([signal.strip(), port_type, port_width])
             else:
                 entity_vhdl.signal.append([tmp2[0].strip(), port_type, port_width])
-            # if(len(tmp2)>2):
-            #     tmp2[2] = tmp2[2][1:].strip()
-            # entity_vhdl.signal.append(tmp2)
 
         elif ("generic" in i) & ("(" in i) & ("map" not in i):
             if (")" in i) & (";" in i):
@@ -486,16 +472,6 @@ def parse_vhdl(file_name):
             tmp2[0] = tmp2[0].strip()
             tmp2[1] = tmp2[1][:-1].strip()
             entity_vhdl.assign.append([tmp2[0],tmp2[1], vhdl_line])
-        # elif(sys.argv[2]  in i):
-        #     tmp1 = i.strip()
-        #     entity_vhdl[0].search.append([i,vhd.index(i)])
 
     entity_vhdl.children_name = list(dict.fromkeys(entity_vhdl.children_name))
     return entity_vhdl
-
-# args = parse_vhdl_arg_parse()
-# inp_fname = args.input
-
-# vhdl_as_obj = parse_vhdl(inp_fname)
-# vhdl_as_obj.who_is()
-# print("xx")

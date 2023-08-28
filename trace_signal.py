@@ -87,7 +87,7 @@ def get_data_slim(node):
 
 vhdl_files = []
 #print("VHDL Files Found:")
-for root, dirs, files in os.walk('C:/BMD_builds/time_code_in/atemtvs3d1/src'):
+for root, dirs, files in os.walk('C:/Users/robertjo/Documents/other/28_7_23_ems/src'):
     for file in files: 
         if file.endswith(".vhd"):
              #print(os.path.join(root, file))
@@ -99,7 +99,7 @@ vhdl_file_as_obj = []
 for files in vhdl_files:
     vhdl_file_as_obj.append(parse_vhdl(files))
 
-target_vhdl = parse_vhdl('C:/BMD_builds/time_code_in/atemtvs3d1/src/atemtvs3d1.vhd')
+target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
 
 # search list and and attach dependent objects as childeren
 # for vhdl_o in vhdl_file_as_obj:
@@ -111,16 +111,16 @@ target_vhdl = parse_vhdl('C:/BMD_builds/time_code_in/atemtvs3d1/src/atemtvs3d1.v
 #                         target_vhdl.children.append(vhdl_o) #this needs a way to signal a file change?
 #                     # target_vhdl.children_name.remove(child)
 #                         break
-for vhdl_o in vhdl_file_as_obj:
+for vhdl_o in vhdl_file_as_obj: # make external function!!!
     for child in vhdl_o.children_name:
         for vhdl_objsB in vhdl_file_as_obj:
             if len(vhdl_objsB.data)>0:
                 if vhdl_objsB.data[0] == child.mod:
-                    # vhdl_o.children.append(vhdl_objsB)
-                    child.vhdl_obj.append(vhdl_objsB)
-
+                    child.vhdl_obj = (vhdl_objsB)
                     #vhdl_o.children_name.remove(child)
                     break
+
+
 
 
 # search for arg 2 in each each part of the top level file
@@ -198,8 +198,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                         new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
                     
                     curent_node.add_child(new_node)
-                    if len(x.vhdl_obj)>0:
-                        create_path(x.vhdl_obj[0],find_str_sub, new_node)
+                    if x.vhdl_obj != None:
+                        create_path(x.vhdl_obj,find_str_sub, new_node)
 
 
     # for node in nodes:
@@ -222,7 +222,11 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
 
 # path_unsorted = create_path(target_vhdl,find_str)
-path_unsorted = create_path(vhdl_file_as_obj[0],find_str,nodes[0])
+treetop = None
+for entity in vhdl_file_as_obj:
+    if entity.data == target_vhdl.data:
+        treetop = entity
+path_unsorted = create_path(treetop,find_str,nodes[0])
 
 
 
@@ -237,9 +241,9 @@ for path in path_tree:
     for step in path:
         print( " --> ",end='')
         if len(step)==2:
-            print(step[0] + " : " + step[1] ,end='')
+            print(step[0] + " = " + step[1] ,end='')
         else:
-            print(step ,end='')
+            print(step + " = " + find_str ,end='')
     print("")
 print("")
 print("---------------------------------------------------")
