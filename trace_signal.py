@@ -1,11 +1,9 @@
 # A command line program for tracing signals through hieracys of of vhdl docs
 # Robert D Jordan 2022
 
-import sys
-import re
 import os
 from parse_vhdl import *
-
+import graphviz
 
 ########################### search node
 class TreeNode(object):
@@ -126,7 +124,7 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'clk_25'
+find_str = 'clk_x'
 
 
 
@@ -189,7 +187,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
     for x in vhdl_obj_in.children_name:
         for y in x.port:
             if (find_str in y[1]):
-                string_out = y[0] + " => " + y[1]
+                # string_out = y[0] + " => " + y[1]
                 if (y[1] == find_str):
                     find_str_sub = y[0]
                     if len(x.mod)==0:
@@ -248,3 +246,56 @@ for path in path_tree:
 print("")
 print("---------------------------------------------------")
 
+
+
+import graphviz
+
+def create_tree(data):
+    tree = graphviz.Digraph(format='png')
+    parent_node = None
+    existing_edges = set()
+    
+    for path in data:
+        for item in path:
+            if isinstance(item, str):
+                parent_node = item
+                tree.node(parent_node, shape='note', label= f"{item}\\n{find_str}")
+            elif isinstance(item, list):
+                if len(item) == 1:  # Only label the node itself
+                    node_label = item[0]
+                    child_node = f"{node_label}_Self"
+                    tree.node(child_node, label=node_label)
+                    if parent_node is not None:
+                        edge = (parent_node, child_node)
+                        if edge not in existing_edges:
+                            tree.edge(parent_node, child_node)
+                            existing_edges.add(edge)
+                elif len(item) == 2:  # Label the edge as well
+                    node_label, edge_label = item
+                    child_node = f"{node_label}_{edge_label}"
+                    tree.node(child_node, label=f"{node_label}\\n{edge_label}")
+                    if parent_node is not None:
+                        edge = (parent_node, child_node)
+                        if edge not in existing_edges:
+                            tree.edge(parent_node, child_node)
+                            existing_edges.add(edge)
+                    parent_node = child_node
+                else:
+                    raise ValueError("Invalid data format")
+    return tree
+
+# data = [
+#     "Start",
+#     ["Node1", "Edge1"],
+#     ["Node2", "Edge2"],
+#     ["Node3", "Edge3"],
+#     ["Node4", "Edge4"],
+#     "End"
+# ]
+data = path_tree
+
+tree_map = create_tree(data)
+tree_map.render('tree', format='png', view=True)
+
+
+print("")
