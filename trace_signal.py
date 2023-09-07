@@ -85,7 +85,9 @@ def get_data_slim(node):
 
 vhdl_files = []
 #print("VHDL Files Found:")
-for root, dirs, files in os.walk('C:/Users/robertjo/Documents/other/28_7_23_ems/src'):
+# for root, dirs, files in os.walk('C:/Users/robertjo/Documents/other/28_7_23_ems/src'):
+for root, dirs, files in os.walk('C:/BMD_builds/nios_timer/atemtvs3d1/src'):
+
     for file in files: 
         if file.endswith(".vhd"):
              #print(os.path.join(root, file))
@@ -97,7 +99,9 @@ vhdl_file_as_obj = []
 for files in vhdl_files:
     vhdl_file_as_obj.append(parse_vhdl(files))
 
-target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+target_vhdl = parse_vhdl('C:/BMD_builds/nios_timer/atemtvs3d1/src/atemtvs3d1.vhd')
+
 
 # search list and and attach dependent objects as childeren
 # for vhdl_o in vhdl_file_as_obj:
@@ -124,113 +128,61 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'clk_x'
+# find_str = 'clk_x'
+find_str = 'genlock_sof'
 
 
 
 
-####################when you find somthing crate a node and link it together
-# create dependency graph from results 
-# tr = Tree()
-# n1 = tr.root
+
 nodes = []
 search_list_modules = []
-# for i in range(len(instance_final_nodup)):
-#     nodes.append(TreeNode(instance_final_nodup[i]))
-# for i in nodes:
-#     n2.add_child(i)
-# for i in nodes:
-#     n2.add_depth(n2)
+assignments = []
+
 nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
-#  fname,find_str,hdl_type, if_mod_name, assigned_to):
 
 ###################################
 
 
 def create_path(vhdl_obj_in, find_str, curent_node):
-    port_search = False
-    sig_search = False
-    comp_search = False
     find_str_sub = ''
-    # if(vhdl_obj_in.type == "file"): # because im not storing it corectly 
-       # nodes.append(TreeNode(vhdl_obj_in.data,find_str,"file", "", ""))
-    # else:
-        # for x in vhdl_obj_in.port:
-        #     if (find_str in x): 
-        #         tmp1 = x.split(":")
-        #         tmp1[0] = tmp1[0].strip()
-        #         tmp1[1] = tmp1[1].strip()
-        #         if (tmp1[0] == find_str):
-        #             nodes.append(TreeNode(vhdl_obj_in.data,find_str,"port", "", ""))
-        #             port_search = True
-        #             break
 
-        # if (port_search == False):
-        #     for x in vhdl_obj_in.signal:
-        #         if (find_str in x[0]):          
-        #                 nodes.append(TreeNode(vhdl_obj_in.data,find_str,"signal", "", ""))
-        #                 sig_search = True
-        #                 break
 
-        # if (sig_search == False)&(port_search == False) :
-        #     for y in vhdl_obj_in.component:
-        #         for x in y.port:
-        #             if (find_str in x): 
-        #                 tmp1 = x.split(":")
-        #                 tmp1[0] = tmp1[0].strip()
-        #                 tmp1[1] = tmp1[1].strip()
-        #                 if (tmp1[0] == find_str):
-        #                     nodes.append(TreeNode(vhdl_obj_in.data,find_str,"component port", "", ""))
-        #                     comp_search = True
-        #                     break
-
-    for x in vhdl_obj_in.children_name:
-        for y in x.port:
-            if (find_str in y[1]):
-                # string_out = y[0] + " => " + y[1]
-                if (y[1] == find_str):
-                    find_str_sub = y[0]
-                    if len(x.mod)==0:
-                        new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
-                    else:
-                        new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+    for x in vhdl_obj_in.assign:
+        if (find_str in x[0] or find_str in x[1] ):       
+                if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
-                    curent_node.add_child(new_node)
-                    if x.vhdl_obj != None:
-                        create_path(x.vhdl_obj,find_str_sub, new_node)
+                    assignments.append([vhdl_obj_in.data[0], x[0],x[1], x[2] ]) # filen name, assigned to, line number
+                    break
+    for string in find_str:  
+        for x in vhdl_obj_in.children_name: # search for assignments in sub modules that have our search term going into them
+            for y in x.port:
+                if (string in y[1]):
+                    # string_out = y[0] + " => " + y[1]
+                    if (y[1] == string):
+                        find_str_sub = y[0]
+                        if len(x.mod)==0:
+                            new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
+                        else:
+                            new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+                        
+                        curent_node.add_child(new_node)
+                        if x.vhdl_obj != None:
+                            create_path(x.vhdl_obj,find_str_sub, new_node)
 
 
-    # for node in nodes:
-    #     if (node.type == "port")or(node.type == "signal")or(node.type == "component port") :
-    #             previous_node = nodes.index(node)-1
-    #             nodes[previous_node].add_child(node)
-    #     if (node.type == "module"):
-            
-    #         for sub_mod in node.children:
-    #             if (node.find_str == sub_mod.data):
-                    
-    #                 create_path(sub_mod,find_str_sub,curent_node)
-    #                 break
-            
-    #         # nodes[1].add_child(node)
-    #         nodes[0].add_child(node)
+
 
 
     return 
 
-
-# path_unsorted = create_path(target_vhdl,find_str)
 treetop = None
 for entity in vhdl_file_as_obj:
     if entity.data == target_vhdl.data:
         treetop = entity
 path_unsorted = create_path(treetop,find_str,nodes[0])
 
-
-
 path_tree = nodes[0].paths()
-
-
 
 print("---------------------------------------------------")
 print ("Searching for " + find_str + " in " + target_vhdl.data[0])
@@ -247,9 +199,6 @@ print("")
 print("---------------------------------------------------")
 
 
-
-import graphviz
-
 def create_tree(data):
     tree = graphviz.Digraph(format='png')
     parent_node = None
@@ -261,7 +210,7 @@ def create_tree(data):
                 parent_node = item
                 tree.node(parent_node, shape='note', label= f"{item}\\n{find_str}")
             elif isinstance(item, list):
-                if len(item) == 1:  # Only label the node itself
+                if len(item) == 1:  
                     node_label = item[0]
                     child_node = f"{node_label}_Self"
                     tree.node(child_node, label=node_label)
@@ -270,7 +219,7 @@ def create_tree(data):
                         if edge not in existing_edges:
                             tree.edge(parent_node, child_node)
                             existing_edges.add(edge)
-                elif len(item) == 2:  # Label the edge as well
+                elif len(item) == 2:  
                     node_label, edge_label = item
                     child_node = f"{node_label}_{edge_label}"
                     tree.node(child_node, label=f"{node_label}\\n{edge_label}")
@@ -284,14 +233,7 @@ def create_tree(data):
                     raise ValueError("Invalid data format")
     return tree
 
-# data = [
-#     "Start",
-#     ["Node1", "Edge1"],
-#     ["Node2", "Edge2"],
-#     ["Node3", "Edge3"],
-#     ["Node4", "Edge4"],
-#     "End"
-# ]
+
 data = path_tree
 
 tree_map = create_tree(data)
