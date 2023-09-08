@@ -166,26 +166,24 @@ def find_name(token_type,current_position, search_limit):
         search_position = current_position
         token_list = []
         start = search_position
-        end = len(tokens) - search_position
-        for i in range(start, end):
+        end = len(tokens)
+        for i in range(start, 0,-1):
             if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
                 return "Unnammed"
             this_token_type = token_type
             token_type, token_text = tokens[i]
             if token_text == ':':
-                for j in range(current_position, search_limit):
+                for j in range(current_position, current_position-search_limit,-1):
                     this_token_type = token_type
-                    token_type, token_text = tokens[i]
+                    token_type, token_text = tokens[j]
                     if token_type == 'IdentifierToken':
                         return token_text
-                    current_position = current_position - 1
+                    if token_type == 'EndKeyword':
+                        return "end"
                 return "Unnammed"
             if token_type != 'SpaceToken' and token_type != this_token_type:
                 token_list.append((token_type, token_text))
-            # Check if the token is a delimiter token (adjust the condition as needed)
 
-            # Update the current position for future searches
-            current_position = current_position - 1
         return -1
 
 def decode_port(token_type,current_position,end_token,port_token): #decodes lines with the strcutre of a port such as generics/assignements ect
@@ -232,6 +230,8 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
             # Update the current position for future searches
         current_position = current_position + 1
         return -1
+        
+
 
 def find_type(input_line):
     type_found = "null"
@@ -383,7 +383,14 @@ if __name__ == "__main__":
         if token_type == 'ConstantKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))
             entity_vhdl.constant.append(format_port(decoded_por)[0])
-        # if token_type == 'ProcessKeyword':
+        if token_type == 'ProcessKeyword':
+            # test = find_name("IdentifierToken", current_position, 5)
+            if find_name("IdentifierToken", current_position, 5) != 'end': # make sure there isnt an end just before this making it the end of a process statement
+                prcess_name = find_name("IdentifierToken", current_position, 6)
+                if prcess_name == "generate":
+                    prcess_name = 'unnamed'
+                process_dep = make_block(token_type,current_position,")").replace('(','')
+                entity_vhdl.process.append([prcess_name, process_dep])
         #     # test = make_block(token_type,current_position,"end", 0, 5)
         #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
         #         prcess_name = find_name("IdentifierToken", current_position, 4)
