@@ -41,7 +41,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|entity|architecture|begin|end|process|generic|port|process)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|entity|architecture|begin|end|process|generic|port|process|signal|constant)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -66,7 +66,9 @@ keyword_mapping = {
     'process': 'ProcessKeyword',
     'generic': 'GenericKeyword',
     'port': 'PortKeyword',
-    'process' : 'ProcessKeyword'
+    'process' : 'ProcessKeyword',
+    'signal' : 'SignalKeyword',
+    'constant' : 'ConstantKeyword'
 }
 
 # Define a function to tokenize VHDL code
@@ -195,10 +197,31 @@ def decode_port(token_type,current_position,end_token,port_token): #decodes line
             token_type, token_text = tokens[i]
 
             if token_type in end_token.values() and token_type != port_token:
-                return token_list
+                return token_list[0:-1]
             if token_text == ';':
                 port_num = port_num + 1
                 token_list.append('')
+
+            if token_type != 'SpaceToken' and token_type != this_token_type:
+
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
+                        token_list[port_num] = token_list[port_num] + token_text + " "
+            # Check if the token is a delimiter token (adjust the condition as needed)
+
+            # Update the current position for future searches
+        current_position = current_position + 1
+        return -1
+
+def decode_sig(token_type,current_position,end_token): #decodes lines with the strcutre of a port such as generics/assignements ect
+        search_position = current_position
+        token_list = ['']
+        port_num = 0
+        for i in range(search_position, len(tokens)):
+            this_token_type = token_type
+            token_type, token_text = tokens[i]
+
+            if token_text == end_token:
+                return token_list
 
             if token_type != 'SpaceToken' and token_type != this_token_type:
 
@@ -328,6 +351,7 @@ if __name__ == "__main__":
     search_position = 0 
     global_entity = 0
     global_arch = 0
+    global_sig = 0
     for token_type, token_text in tokens:
         if token_type == 'LibraryKeyword':
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
@@ -351,6 +375,14 @@ if __name__ == "__main__":
             if global_arch == 0: # detect first arch decleration which is module arch
                 entity_vhdl.arch=(make_block(token_type,current_position,"of"))
                 global_arch = 1
+
+        if token_type == 'SignalKeyword' : 
+            decoded_por = (decode_sig(token_type,current_position,";"))
+            entity_vhdl.signal.append(format_port(decoded_por)[0])
+
+        if token_type == 'ConstantKeyword' : 
+            decoded_por = (decode_sig(token_type,current_position,";"))
+            entity_vhdl.constant.append(format_port(decoded_por)[0])
         # if token_type == 'ProcessKeyword':
         #     # test = make_block(token_type,current_position,"end", 0, 5)
         #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
