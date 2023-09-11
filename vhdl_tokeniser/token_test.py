@@ -137,7 +137,70 @@ def replace_end_process_tokens(tokens):
     while i < len(tokens):
         token_type, token_text = tokens[i]
 
+        if token_text == '=':
+             token_type_next, token_text_next = tokens[i+1]
+             token_type_prev, token_text_prev = tokens[i-1]
+             if token_text_next == '>':
+                tokens[i] = ('AssignKeyword', '=>')
+                tokens.pop(i+1)
+             if token_text_prev == ':':
+                tokens[i] = ('AssignKeyword', ':=')
+                tokens.pop(i+1)
+             if token_text_prev == '<':
+                tokens[i] = ('AssignKeyword', '<=')
+                tokens.pop(i+1)
+
         if token_type == 'EndKeyword':
+            # Search for the next keyword token
+            next_keyword_index = i + 1
+            while next_keyword_index < len(tokens) and not tokens[next_keyword_index][0].endswith('Keyword'):
+                next_keyword_index += 1
+
+            if next_keyword_index < len(tokens):
+                next_keyword_type = tokens[next_keyword_index][0]
+
+                if next_keyword_type == 'ProcessKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndProcessKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'IfKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndIfKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'FunctionKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndFunctionKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'GenerateKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndGenerateKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'EntityKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndEntityKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+
+        i += 1
+
+    return tokens
+
+
+    i = 0
+    while i < len(tokens):
+        token_type, token_text = tokens[i]
+
+        if token_text == 'to_unsigned':
+            funct = extract_tokens_between(tokens, "(", ")",current_position)
             # Search for the next keyword token
             next_keyword_index = i + 1
             while next_keyword_index < len(tokens) and not tokens[next_keyword_index][0].endswith('Keyword'):
@@ -282,17 +345,23 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
 
         return -1
 
-def decode_port(token_type,current_position,end_token,port_token): #decodes lines with the strcutre of a port such as generics/assignements ect
-        search_position = current_position
+def decode_port(token_type,current_position,end_token,port_token, token_in = 0, splitter = ';'): #decodes lines with the strcutre of a port such as generics/assignements ect
+        if token_in != 0:
+            tokens_int = token_in
+            search_position = 0
+        else:
+            tokens_int = tokens
+            search_position = current_position
         token_list = ['']
         port_num = 0
-        for i in range(search_position, len(tokens)):
+        for i in range(search_position, len(tokens_int)):
             this_token_type = token_type
-            token_type, token_text = tokens[i]
+
+            token_type, token_text = tokens_int[i]
 
             if token_type in end_token.values() and token_type != port_token:
                 return token_list[0:-1]
-            if token_text == ';':
+            if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
 
@@ -304,6 +373,45 @@ def decode_port(token_type,current_position,end_token,port_token): #decodes line
 
             # Update the current position for future searches
         current_position = current_position + 1
+        return -1
+
+def decode_ent_port(token_in): #decodes lines with the strcutre of a port such as generics/assignements ect
+
+        tokens_int = token_in
+        search_position = 0
+
+        token_list = ['']
+        port_num = 0
+        found_function = 0
+
+        for i in range(search_position, len(tokens_int)):
+            
+            token_type, token_text = tokens_int[i]
+
+            
+
+            if "to_" in token_text:
+                 found_function = 1
+            if token_text == ';':
+                return token_list[0:-1]
+            if token_text == ',' and found_function == 0:
+                port_num = port_num + 1
+                token_list.append('')
+            if token_text == ',' and found_function == 1:
+                token_text = '/' #replace , with / to avoid parser confusion
+                found_function = 0
+            if token_type != 'SpaceToken':
+
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
+                        if token_text != "," and token_text != 'map':
+                            token_list[port_num] = token_list[port_num] + token_text + " "
+                if token_text == "=>":
+                        token_list[port_num] = token_list[port_num] + token_text + " "
+
+
+            # Check if the token is a delimiter token (adjust the condition as needed)
+
+            # Update the current position for future searches
         return -1
 
 def decode_block(block,endLine): #decodes lines with the strcutre of a port such as generics/assignements ect
@@ -493,6 +601,8 @@ if __name__ == "__main__":
     vhdl_code = read_vhdl_file(file_path)
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     tokens = replace_end_process_tokens(tokens_raw)
+
+
     proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
     generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
     func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
@@ -524,7 +634,28 @@ if __name__ == "__main__":
                 else: 
                     mod_name =  entity[0][1]
                 
+                generic = []
+                port = []
+                if any(token_type == 'GenericKeyword' for token_type, _ in entity):
+                    generic = extract_tokens_between(tokens, "generic", ";",current_position)
+                if any(token_type == 'PortKeyword' for token_type, _ in entity):
+                    port = extract_tokens_between(tokens, "port", ";",current_position)
+                    port.append(('DelimiterToken',';'))
+                    port.append(('EndKeyword','end'))
+
                 mod = instanc(mod_name, ent_name, 0)
+
+                if len(generic) > 0:
+                    gen_dec = decode_ent_port(generic)
+                    for generic in gen_dec:
+                        mod.gen.append(generic.split("=>"))
+                if len(port) > 0:
+                    port_dec = decode_ent_port(port)
+                    for ports in port_dec:
+                        temp1 = ports.split("=>")
+                        mod.port.append([temp1[0].strip(), temp1[1].strip()])
+                #decode the port and genric if it exists
+
                 entity_vhdl.children_name.append(mod)
 
         if token_type == 'EntityKeyword':
