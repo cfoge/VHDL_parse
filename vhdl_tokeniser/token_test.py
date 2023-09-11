@@ -43,7 +43,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -71,8 +71,11 @@ keyword_mapping = {
     'signal' : 'SignalKeyword',
     'constant' : 'ConstantKeyword',
     'if' : 'IfKeyword',
-    'function' : 'FunctionKeyword'
+    'function' : 'FunctionKeyword',
+    'generate' : 'GenerateKeyword',
+    'work' : 'WorkKeyword'
 }
+
 
 # Define a function to tokenize VHDL code
 def tokenize_vhdl_code(code):
@@ -161,10 +164,55 @@ def replace_end_process_tokens(tokens):
                         tokens[i] = ('EndFunctionKeyword', tokens[i][1])
                         tokens.pop(next_keyword_index)
 
+                if next_keyword_type == 'GenerateKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndGenerateKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'EntityKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndEntityKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
 
         i += 1
 
     return tokens
+
+def extract_process_lines(tokens, start_keyword, end_keyword):
+    process_lines = []
+    inside_process = False
+    process_start = None
+
+    for i, (token_type, _) in enumerate(tokens):
+        if token_type == start_keyword and not inside_process:
+            inside_process = True
+            process_start = i
+        elif token_type == end_keyword and inside_process:
+            inside_process = False
+            process_lines.append((process_start, i))
+    
+    return process_lines
+
+# Example usage:
+# tokens = [...]  # Your list of tokens
+# keyword_mapping = {...}  # Your keyword mapping
+# keyword_ranges = find_keyword_pairs(tokens, keyword_mapping)
+# for keyword_type, ranges in keyword_ranges.items():
+#     for start_index, end_index in ranges:
+#         print(f'{keyword_type}: Line {start_index +
+
+
+# Example usage:
+# tokens = [...]  # Your list of tokens
+# keyword_mapping = {...}  # Your keyword mapping
+# keyword_ranges = find_keyword_pairs(tokens, keyword_mapping)
+# for keyword_type, ranges in keyword_ranges.items():
+#     for start_index, end_index in ranges:
+#         print(f'{keyword_type}: Line {start_index + 1} to Line {end_index + 1}')
+
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
         start_pos = current_position
@@ -204,24 +252,29 @@ def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=
             current_position = current_position - 1
         return -1
 
-def find_name(token_type,current_position, search_limit):
+def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'):
+        if dir == 0:
+            end = 0
+            step = -1
+        else:
+            end = len(tokens)
+            step = 1
         start_pos = current_position
         search_position = current_position
         token_list = []
         start = search_position
-        end = len(tokens)
-        for i in range(start, 0,-1):
+        for i in range(start, end, step):
             if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
                 return "Unnammed"
             this_token_type = token_type
             token_type, token_text = tokens[i]
-            if token_text == ':':
+            if token_text == sperator:
                 for j in range(current_position, current_position-search_limit,-1):
                     this_token_type = token_type
                     token_type, token_text = tokens[j]
                     if token_type == 'IdentifierToken':
                         return token_text
-                    if token_type == 'EndKeyword':
+                    if token_type == 'EndKeyword' or token_text == 'port':
                         return "end"
                 return "Unnammed"
             if token_type != 'SpaceToken' and token_type != this_token_type:
@@ -440,6 +493,9 @@ if __name__ == "__main__":
     vhdl_code = read_vhdl_file(file_path)
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     tokens = replace_end_process_tokens(tokens_raw)
+    proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
+    generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
+    func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -449,11 +505,28 @@ if __name__ == "__main__":
     global_entity = 0
     global_arch = 0
     global_sig = 0
+
+
     for token_type, token_text in tokens:
         if token_type == 'LibraryKeyword':
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
         if token_type == 'UseKeyword':
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
+
+
+        if token_type == 'EntityKeyword' and global_entity == 1:
+                ent_name = find_name("IdentifierToken", current_position, 6)
+                if ent_name == "generate":
+                    ent_name = 'unnamed'
+                entity = extract_tokens_between(tokens, "entity", ";",current_position)
+                if entity[0][1] == 'work':
+                    mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
+                else: 
+                    mod_name =  entity[0][1]
+                
+                mod = instanc(mod_name, ent_name, 0)
+                entity_vhdl.children_name.append(mod)
+
         if token_type == 'EntityKeyword':
             if global_entity == 0: # detect first entity decleration which is module
                 entity_vhdl.data = make_block(token_type,current_position,"is")
@@ -505,11 +578,8 @@ if __name__ == "__main__":
 
                 return_type_tmp = extract_tokens_between(tokens, "return", "is",current_position)
                 return_type = ("returnType", return_type_tmp[0][1])
-                
-
-                # process_contents = extract_process_blocks(current_position)
-                #need to handle contents in process block now like ifs and assignements, cases ect
                 entity_vhdl.func.append([funct_name,func_inputs, return_type] )
+        
 
 
         #     # test = make_block(token_type,current_position,"end", 0, 5)
