@@ -29,6 +29,8 @@ class vhdl_obj(object):
         self.search = []
         self.paths = []
         self.assign = []
+        self.nonSynth = []
+        self.func = []
         self.modname = ''
         self.url = ''
 
@@ -41,7 +43,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|entity|architecture|begin|end|process|generic|port|process|signal|constant)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -66,9 +68,10 @@ keyword_mapping = {
     'process': 'ProcessKeyword',
     'generic': 'GenericKeyword',
     'port': 'PortKeyword',
-    'process' : 'ProcessKeyword',
     'signal' : 'SignalKeyword',
-    'constant' : 'ConstantKeyword'
+    'constant' : 'ConstantKeyword',
+    'if' : 'IfKeyword',
+    'function' : 'FunctionKeyword'
 }
 
 # Define a function to tokenize VHDL code
@@ -126,7 +129,44 @@ def tokenize_vhdl_code(code):
 
     return tokens
 
-def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0):
+def replace_end_process_tokens(tokens):
+    i = 0
+    while i < len(tokens):
+        token_type, token_text = tokens[i]
+
+        if token_type == 'EndKeyword':
+            # Search for the next keyword token
+            next_keyword_index = i + 1
+            while next_keyword_index < len(tokens) and not tokens[next_keyword_index][0].endswith('Keyword'):
+                next_keyword_index += 1
+
+            if next_keyword_index < len(tokens):
+                next_keyword_type = tokens[next_keyword_index][0]
+
+                if next_keyword_type == 'ProcessKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndProcessKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'IfKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndIfKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'FunctionKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
+
+                        tokens[i] = ('EndFunctionKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+
+        i += 1
+
+    return tokens
+
+def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
         start_pos = current_position
         search_position = current_position
         token_list = []
@@ -147,7 +187,10 @@ def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=
                 else:
                     out_str = ''
                     for token_type, token_text in token_list:
-                        out_str = out_str + token_text
+                        if add_space == 1:
+                            out_str = out_str + " " + token_text
+                        else:
+                            out_str = out_str + token_text
                     return out_str
 
             if token_type != 'SpaceToken' and token_type != this_token_type:
@@ -210,6 +253,24 @@ def decode_port(token_type,current_position,end_token,port_token): #decodes line
         current_position = current_position + 1
         return -1
 
+def decode_block(block,endLine): #decodes lines with the strcutre of a port such as generics/assignements ect
+        token_list = ['']
+        block_num = 0
+        for i in range(len(block)):
+            token_type, token_text = block[i]
+            if token_text == endLine:
+                block_num = block_num + 1
+                token_list.append('')
+
+            if token_type != 'SpaceToken':
+
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
+                        token_list[block_num] = token_list[block_num] + token_text + " "
+            # Check if the token is a delimiter token (adjust the condition as needed)
+
+            # Update the current position for future searches
+        return token_list
+
 def decode_sig(token_type,current_position,end_token): #decodes lines with the strcutre of a port such as generics/assignements ect
         search_position = current_position
         token_list = ['']
@@ -230,8 +291,6 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
             # Update the current position for future searches
         current_position = current_position + 1
         return -1
-        
-
 
 def find_type(input_line):
     type_found = "null"
@@ -263,7 +322,6 @@ def find_type(input_line):
     elif "real" in input_line:
         type_found = "real"
     return type_found
-
 
 def find_width(input_line, type_in):
     size_found = "null"
@@ -331,7 +389,45 @@ def format_port(decoded_gen):
                     )
             return result
 
+def extract_process_blocks(start):
+    blocks = []
+    block = []
+    i = start
 
+    token_type, token_text = tokens[i]
+
+    if token_type == 'ProcessKeyword':
+        block = []
+        while i < len(tokens) and not (token_type == 'EndProcessKeyword'):
+            block.append((token_type, token_text))
+            i += 1
+            if i < len(tokens):
+                token_type, token_text = tokens[i]
+
+        if i < len(tokens):
+            # Skip the "end" keyword
+            i += 1
+
+    return block
+
+def extract_tokens_between(tokens, start_token_text, end_token_text, current_index=0):
+    extracted_tokens = []
+    found_start = False
+
+    for i in range(current_index, len(tokens)):
+        token_type, token_text = tokens[i]
+
+        if token_text == start_token_text:
+            found_start = True
+            extracted_tokens = []
+
+        if found_start:
+            if token_type != 'SpaceToken' and token_text != start_token_text and token_text != end_token_text:
+                extracted_tokens.append((token_type, token_text))
+
+        if token_text == end_token_text:
+            found_start = False
+            return extracted_tokens
 
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
@@ -342,7 +438,8 @@ def read_vhdl_file(file_path):
 if __name__ == "__main__":
     file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
     vhdl_code = read_vhdl_file(file_path)
-    tokens = tokenize_vhdl_code(vhdl_code)
+    tokens_raw = tokenize_vhdl_code(vhdl_code)
+    tokens = replace_end_process_tokens(tokens_raw)
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -384,13 +481,37 @@ if __name__ == "__main__":
             decoded_por = (decode_sig(token_type,current_position,";"))
             entity_vhdl.constant.append(format_port(decoded_por)[0])
         if token_type == 'ProcessKeyword':
-            # test = find_name("IdentifierToken", current_position, 5)
-            if find_name("IdentifierToken", current_position, 5) != 'end': # make sure there isnt an end just before this making it the end of a process statement
                 prcess_name = find_name("IdentifierToken", current_position, 6)
                 if prcess_name == "generate":
                     prcess_name = 'unnamed'
                 process_dep = make_block(token_type,current_position,")").replace('(','')
-                entity_vhdl.process.append([prcess_name, process_dep])
+                
+                process_def = [prcess_name, process_dep]
+                # process_contents = extract_process_blocks(current_position)
+                #need to handle contents in process block now like ifs and assignements, cases ect
+                entity_vhdl.process.append([prcess_name, process_dep] )
+
+                #search inside process for contents
+        if token_text == 'assert':
+            assert_tok = make_block("",current_position,";",1, 0, 1) 
+            entity_vhdl.nonSynth.append(assert_tok)
+
+
+        if token_type == 'FunctionKeyword':
+                funct_name =  make_block(token_type,current_position,"(")
+                func_inputs_tmp = extract_tokens_between(tokens, "(", ")",current_position)
+                func_inputs_tmp2 = decode_block(func_inputs_tmp,';')
+                func_inputs = format_port(func_inputs_tmp2)
+
+                return_type_tmp = extract_tokens_between(tokens, "return", "is",current_position)
+                return_type = ("returnType", return_type_tmp[0][1])
+                
+
+                # process_contents = extract_process_blocks(current_position)
+                #need to handle contents in process block now like ifs and assignements, cases ect
+                entity_vhdl.func.append([funct_name,func_inputs, return_type] )
+
+
         #     # test = make_block(token_type,current_position,"end", 0, 5)
         #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
         #         prcess_name = find_name("IdentifierToken", current_position, 4)
