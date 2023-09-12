@@ -31,6 +31,7 @@ class vhdl_obj(object):
         self.assign = []
         self.nonSynth = []
         self.func = []
+        self.generate = []
         self.modname = ''
         self.url = ''
 
@@ -332,12 +333,14 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
             this_token_type = token_type
             token_type, token_text = tokens[i]
             if token_text == sperator:
-                for j in range(current_position, current_position-search_limit,-1):
+                global gen_trigger
+                gen_trigger = tokens[i:current_position]
+                for j in range(i, current_position-search_limit,-1):
                     this_token_type = token_type
                     token_type, token_text = tokens[j]
                     if token_type == 'IdentifierToken':
                         return token_text
-                    if token_type == 'EndKeyword' or token_text == 'port':
+                    if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
                         return "end"
                 return "Unnammed"
             if token_type != 'SpaceToken' and token_type != this_token_type:
@@ -501,7 +504,6 @@ def find_width(input_line, type_in):
         size_found = 1
     return size_found
 
-
 def extract_bit_len(str_in):
            # Find the number before and after 'downto'
     match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
@@ -663,7 +665,6 @@ if __name__ == "__main__":
                 entity_vhdl.data = make_block(token_type,current_position,"is")
                 global_entity = 1
         if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-            
             decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
             entity_vhdl.generic = format_port(decoded_gen)
             
@@ -684,6 +685,13 @@ if __name__ == "__main__":
         if token_type == 'ConstantKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))
             entity_vhdl.constant.append(format_port(decoded_por)[0])
+
+        if token_type == 'GenerateKeyword' : 
+            
+            generate_name = find_name("IdentifierToken", current_position, 26)
+            gen_triger_str = decode_block(gen_trigger,';')
+            entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
+        
         if token_type == 'ProcessKeyword':
                 prcess_name = find_name("IdentifierToken", current_position, 6)
                 if prcess_name == "generate":
