@@ -338,7 +338,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
                 for j in range(i, current_position-search_limit,-1):
                     this_token_type = token_type
                     token_type, token_text = tokens[j]
-                    if token_type == 'IdentifierToken':
+                    if token_type == 'IdentifierToken' and token_text != 'downto':
                         return token_text
                     if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
                         return "end"
@@ -708,6 +708,25 @@ if __name__ == "__main__":
             assert_tok = make_block("",current_position,";",1, 0, 1) 
             entity_vhdl.nonSynth.append(assert_tok)
 
+        if token_text == '<=':
+            ignore = 0
+            #find out if the assign is inside of a func, generate or process and if so ignore for now
+            for start, end in func_ranges:
+                if start <= current_position <= end:
+                    ignore = 1
+                    break
+            for start, end in proces_ranges:
+                if start <= current_position <= end:
+                    ignore = 1
+                    break
+            for start, end in generate_ranges:
+                if start <= current_position <= end:
+                    ignore = 1
+                    break
+            if ignore == 0:
+                assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
+                assign_to  = find_name("IdentifierToken", current_position, 20, 0, " ") #using " " as a seperator could make issues in the future
+                entity_vhdl.assign.append([assign_to, assign_from])
 
         if token_type == 'FunctionKeyword':
                 funct_name =  make_block(token_type,current_position,"(")
