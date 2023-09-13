@@ -41,9 +41,9 @@ token_patterns = [
     (r'^\s+', 'SpaceToken'),  # Match whitespace characters
     (r'^--.*', 'SingleLineCommentToken'),  # Match single-line comments
     (r'^\b--.*\n', 'SingleLineCommentToken'),  # Match single-line comments ending with newline
-    (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
+    # (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
-    (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
+    # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
     (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
@@ -598,10 +598,13 @@ def read_vhdl_file(file_path):
         vhdl_code = file.read()
     return vhdl_code
 
-if __name__ == "__main__":
-    file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
+def parse_vhdl(file_name):
+    global entity_vhdl
+    file_path = file_name
+    # file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
     vhdl_code = read_vhdl_file(file_path)
     tokens_raw = tokenize_vhdl_code(vhdl_code)
+    global tokens
     tokens = replace_end_process_tokens(tokens_raw)
 
 
@@ -630,12 +633,15 @@ if __name__ == "__main__":
                 ent_name = find_name("IdentifierToken", current_position, 6)
                 if ent_name == "generate":
                     ent_name = 'unnamed'
+
                 entity = extract_tokens_between(tokens, "entity", ";",current_position)
                 if entity[0][1] == 'work':
                     mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
                 else: 
                     mod_name =  entity[0][1]
-                
+                if 'work.' in mod_name:
+                    tmp1 = mod_name.replace("work.", "")
+                mod_name = tmp1
                 generic = []
                 port = []
                 if any(token_type == 'GenericKeyword' for token_type, _ in entity):
@@ -649,8 +655,9 @@ if __name__ == "__main__":
 
                 if len(generic) > 0:
                     gen_dec = decode_ent_port(generic)
-                    for generic in gen_dec:
-                        mod.gen.append(generic.split("=>"))
+                    if gen_dec != -1:
+                        for generic in gen_dec:
+                            mod.gen.append(generic.split("=>"))
                 if len(port) > 0:
                     port_dec = decode_ent_port(port)
                     for ports in port_dec:
@@ -696,7 +703,9 @@ if __name__ == "__main__":
                 prcess_name = find_name("IdentifierToken", current_position, 6)
                 if prcess_name == "generate":
                     prcess_name = 'unnamed'
-                process_dep = make_block(token_type,current_position,")").replace('(','')
+                process_dep = make_block(token_type,current_position,")")
+                if process_dep != -1:
+                     process_dep.replace('(','')
                 
                 process_def = [prcess_name, process_dep]
                 # process_contents = extract_process_blocks(current_position)
@@ -747,11 +756,11 @@ if __name__ == "__main__":
         #         entity_vhdl.process.append([prcess_name, process_dep])
         current_position = current_position + 1
 
+    return entity_vhdl
 
 
 
 
 
 
-
-print("")
+# print("")
