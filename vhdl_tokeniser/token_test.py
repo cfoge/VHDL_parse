@@ -641,7 +641,7 @@ def parse_vhdl(file_name):
                     mod_name =  entity[0][1]
                 if 'work.' in mod_name:
                     tmp1 = mod_name.replace("work.", "")
-                mod_name = tmp1
+                    mod_name = tmp1
                 generic = []
                 port = []
                 if any(token_type == 'GenericKeyword' for token_type, _ in entity):
@@ -662,7 +662,8 @@ def parse_vhdl(file_name):
                     port_dec = decode_ent_port(port)
                     for ports in port_dec:
                         temp1 = ports.split("=>")
-                        mod.port.append([temp1[0].strip(), temp1[1].strip()])
+                        if len(temp1)>1:
+                            mod.port.append([temp1[0].strip(), temp1[1].strip()])
                 #decode the port and genric if it exists
 
                 entity_vhdl.children_name.append(mod)
