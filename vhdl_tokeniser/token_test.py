@@ -41,7 +41,7 @@ token_patterns = [
     (r'^\s+', 'SpaceToken'),  # Match whitespace characters
     (r'^--.*', 'SingleLineCommentToken'),  # Match single-line comments
     (r'^\b--.*\n', 'SingleLineCommentToken'),  # Match single-line comments ending with newline
-    # (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
+    (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
     (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
@@ -100,8 +100,12 @@ def tokenize_vhdl_code(code):
                 match = re.match(pattern, code[current_position:])
                 if match:
                     matched_text = match.group(0)
-                    if token_type == 'MultiLineCommentToken' and '/*' in matched_text:
-                        in_multi_line_comment = True
+                    if "/" in matched_text:
+                        if code[current_position+1] == '*':
+                            in_multi_line_comment = True
+
+                    # if token_type == 'MultiLineCommentToken' and '/*' in matched_text:
+                    #     in_multi_line_comment = True
                     elif token_type == 'SingleLineCommentToken' and '--' in matched_text:
                         single_line_comment_end = matched_text.find('\n')
                         if single_line_comment_end != -1:
