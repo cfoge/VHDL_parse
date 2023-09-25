@@ -137,19 +137,38 @@ def replace_end_process_tokens(tokens):
     i = 0
     while i < len(tokens):
         token_type, token_text = tokens[i]
-
+        next_prev_pop = 2
         if token_text == '=':
-             token_type_next, token_text_next = tokens[i+1]
-             token_type_prev, token_text_prev = tokens[i-1]
+             try:
+                token_type_next, token_text_next = tokens[i+1]
+                next_prev_pop = 1
+             except:
+                  token_text_next = None
+             try:
+                token_type_prev, token_text_prev = tokens[i-1]
+                next_prev_pop = 0
+             except:
+                  token_text_prev = None
+             
              if token_text_next == '>':
                 tokens[i] = ('AssignKeyword', '=>')
-                tokens.pop(i+1)
+                if next_prev_pop == 1:
+                    tokens.pop(i+1)
+                elif next_prev_pop == 0: 
+                    tokens.pop(i-1)
              if token_text_prev == ':':
                 tokens[i] = ('AssignKeyword', ':=')
-                tokens.pop(i+1)
+                if next_prev_pop == 1:
+                    tokens.pop(i+1)
+                elif next_prev_pop == 0: 
+                    tokens.pop(i-1)
              if token_text_prev == '<':
                 tokens[i] = ('AssignKeyword', '<=')
-                tokens.pop(i+1)
+                if next_prev_pop == 1:
+                    tokens.pop(i+1)
+                elif next_prev_pop == 0: 
+                    tokens.pop(i-1)
+                
 
         if token_type == 'EndKeyword':
             # Search for the next keyword token
@@ -267,15 +286,6 @@ def extract_process_lines(tokens, start_keyword, end_keyword):
 # for keyword_type, ranges in keyword_ranges.items():
 #     for start_index, end_index in ranges:
 #         print(f'{keyword_type}: Line {start_index +
-
-
-# Example usage:
-# tokens = [...]  # Your list of tokens
-# keyword_mapping = {...}  # Your keyword mapping
-# keyword_ranges = find_keyword_pairs(tokens, keyword_mapping)
-# for keyword_type, ranges in keyword_ranges.items():
-#     for start_index, end_index in ranges:
-#         print(f'{keyword_type}: Line {start_index + 1} to Line {end_index + 1}')
 
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
@@ -595,7 +605,10 @@ def extract_tokens_between(tokens, start_token_text, end_token_text, current_ind
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
     with open(file_path, 'r') as file:
-        vhdl_code = file.read()
+        try:
+            vhdl_code = file.read()
+        except:
+             return ""
     return vhdl_code
 
 def parse_vhdl(file_name):
@@ -670,7 +683,11 @@ def parse_vhdl(file_name):
 
         if token_type == 'EntityKeyword':
             if global_entity == 0: # detect first entity decleration which is module
-                entity_vhdl.data = make_block(token_type,current_position,"is")
+                ent_name_found =   make_block(token_type,current_position,"is")
+                if isinstance(ent_name_found,str):
+                    entity_vhdl.data = ent_name_found
+                else: 
+                    entity_vhdl.data = "None"
                 global_entity = 1
         if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
             decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
@@ -745,7 +762,10 @@ def parse_vhdl(file_name):
                 func_inputs = format_port(func_inputs_tmp2)
 
                 return_type_tmp = extract_tokens_between(tokens, "return", "is",current_position)
-                return_type = ("returnType", return_type_tmp[0][1])
+                if return_type_tmp != None:
+                    return_type = ("returnType", return_type_tmp[0][1])
+                else:
+                     return_type = ("returnType", "None")
                 entity_vhdl.func.append([funct_name,func_inputs, return_type] )
         
 

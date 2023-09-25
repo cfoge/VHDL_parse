@@ -99,8 +99,8 @@ def cl_depend(root_dir,tld, print_url):
 
     return
 
-# root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
-# tld = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd'
-# cl_depend(root_dir,tld, False)
+root_dir = 'C:/BMD_builds/avc_delay_out'
+tld = 'C:/BMD_builds/avc_delay_out/atemavsc1/src/atemavsc1.vhd'
+cl_depend(root_dir,tld, False)
 
 print("")

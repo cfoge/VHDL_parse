@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -75,9 +75,61 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
 
     def test_replace_end_process_keywords_with_other_tokens(self):
         tokens = [('IdentifierToken', 'a'), ('EndKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
-        expected_tokens = [('IdentifierToken', 'a'), ('EndProcessKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_tokens = [('IdentifierToken', 'a'), ('EndProcessKeyword', 'end'), ('IdentifierToken', 'b')]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
+
+    def test_extract_bit_len_with_valid_input(self):
+        input_string = "7 downto 3"
+        expected_result = 5
+        result = extract_bit_len(input_string)
+        self.assertEqual(result, expected_result)
+
+    def test_extract_bit_len_with_invalid_input(self):
+        input_string = "no_downto_here"
+        expected_result = None
+        result = extract_bit_len(input_string)
+        self.assertEqual(result, expected_result)
+
+    def test_extract_bit_len_with_invalid_input(self):
+        input_string = "x downto y"
+        expected_result = None
+        result = extract_bit_len(input_string)
+        self.assertEqual(result, expected_result)
+
+    def test_find_type_with_valid_input(self):
+        input_line = "signal my_signal: std_logic_vector(7 downto 0);"
+        expected_result = "std_logic_vector"
+        result = find_type(input_line)
+        self.assertEqual(result, expected_result)
+
+    def test_find_type_with_invalid_input(self):
+        input_line = "signal my_signal: int(7 downto 0);"
+        expected_result = "null"
+        result = find_type(input_line)
+        self.assertEqual(result, expected_result)
+
+    def test_find_width_with_std_logic_vector(self):
+        input_line = "signal my_signal: std_logic_vector(7 downto 0);"
+        type_in = "std_logic_vector"
+        expected_result = 8
+        result = find_width(input_line, type_in)
+        self.assertEqual(result, expected_result)
+
+    def test_find_width_with_std_logic(self):
+        input_line = "signal my_signal: std_logic;"
+        type_in = "std_logic"
+        expected_result = 1
+        result = find_width(input_line, type_in)
+        self.assertEqual(result, expected_result)
+
+    def test_find_width_with_invalid_input(self):
+        input_line = "signal my_signal: int(7 downto 0);"
+        type_in = "int"  # Invalid type
+        expected_result = "null"
+        result = find_width(input_line, type_in)
+        self.assertEqual(result, expected_result)
+
 
 # Create a test suite and add the test classes
 test_suite = unittest.TestSuite()

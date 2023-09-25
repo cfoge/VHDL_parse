@@ -82,7 +82,7 @@ def get_data_slim(node):
     
 
 
-root_dir = 'C:/BMD_builds/new_idx_test/atemtvs3d1'
+root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
 vhdl_files = []
 #print("VHDL Files Found:")
 # for root, dirs, files in os.walk('C:/Users/robertjo/Documents/other/28_7_23_ems/src'):
@@ -93,37 +93,23 @@ for root, dirs, files in os.walk(root_dir):
              #print(os.path.join(root, file))
              vhdl_files.append(os.path.join(root, file))
 
-# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
-target_vhdl = parse_vhdl('C:/BMD_builds/new_idx_test/atemtvs3d1/src/audio/audio_wrapper.vhd')
-
-vhdl_file_as_obj = [target_vhdl]
+vhdl_file_as_obj = []
 
 # make list of VHDL files as parsed objects
-# for files in vhdl_files: this only goers 1 layer deep
-#     for child_name in target_vhdl.children_name:
-#         if (child_name.mod in files):
-#             vhdl_file_as_obj.append(parse_vhdl(files))
+for files in vhdl_files:
+    vhdl_file_as_obj.append(parse_vhdl(files))
 
-
-# search list and and attach dependent objects as childeren
-# for vhdl_o in vhdl_file_as_obj:
-#     if(not(vhdl_o.data == target_vhdl.data)):
-#        # for child in vhdl_o.children_name:
-#             for vhdl_objsB in target_vhdl.children_name:
-#                 if len(vhdl_objsB.mod)>0:
-#                     if vhdl_objsB.mod == vhdl_o.data:
-#                         target_vhdl.children.append(vhdl_o) #this needs a way to signal a file change?
-#                     # target_vhdl.children_name.remove(child)
-#                         break
+# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
 
 for vhdl_o in vhdl_file_as_obj: # make external function!!!
-        for child in vhdl_o.children_name:
-            for vhdl_objsB in vhdl_file_as_obj:
-                if len(vhdl_objsB.data)>0:
-                    if vhdl_objsB.data == child.mod:
-                        child.vhdl_obj = (vhdl_objsB)
-                        #vhdl_o.children_name.remove(child)
-                        break
+    for child in vhdl_o.children_name:
+        for vhdl_objsB in vhdl_file_as_obj:
+            if len(vhdl_objsB.data)>0:
+                if vhdl_objsB.data == child.mod:
+                    child.vhdl_obj = (vhdl_objsB)
+                    #vhdl_o.children_name.remove(child)
+                    break
 
 
 
@@ -131,7 +117,7 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'clk_150'
+find_str = 'clk_x'
 # find_str = 'genlock_sof'
 
 
@@ -154,6 +140,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
                     assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
+                    find_str.append(x[0])
                     break
     if type(find_str) == list:
         for string in find_str:  
