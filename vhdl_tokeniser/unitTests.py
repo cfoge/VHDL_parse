@@ -130,6 +130,40 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         result = find_width(input_line, type_in)
         self.assertEqual(result, expected_result)
 
+    # def test_tokenize_vhdl_code_with_single_line_comment(self):
+    #     code = "entity Test is\n-- This is a single-line comment\nend entity;"
+    #     expected_tokens = [
+    #         ('KeywordToken', 'entity'),
+    #         ('IdentifierToken', 'Test'),
+    #         ('KeywordToken', 'is'),
+    #         ('SingleLineCommentToken', '-- This is a single-line comment'),
+    #         ('KeywordToken', 'end'),
+    #         ('KeywordToken', 'entity'),
+    #         ('CharacterToken', ';')
+    #     ]
+    #     tokens = tokenize_vhdl_code(code)
+    #     self.assertEqual(tokens, expected_tokens)
+
+    # def test_tokenize_vhdl_code_with_multi_line_comment(self):
+    #     code = "/* This is\na multi-line\ncomment */"
+    #     expected_tokens = [('MultiLineCommentToken', '/* This is\na multi-line\ncomment */')]
+    #     tokens = tokenize_vhdl_code(code)
+    #     self.assertEqual(tokens, expected_tokens)
+
+    def test_tokenize_vhdl_code_with_identifiers(self):
+        code = "signal my_signal: std_logic;"
+        expected_tokens = [
+            ('SignalKeyword', 'signal'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'my_signal'),
+            ('DelimiterToken', ':'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'std_logic'),
+            ('DelimiterToken', ';')
+        ]
+        tokens = tokenize_vhdl_code(code)
+        self.assertEqual(tokens, expected_tokens)
+
 
 # Create a test suite and add the test classes
 test_suite = unittest.TestSuite()
