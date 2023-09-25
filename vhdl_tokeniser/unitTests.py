@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -168,6 +168,80 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         ]
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, expected_tokens)
+
+    def test_extract_tokens_between_with_valid_tokens(self):
+        # Sample tokens for testing
+        sample_tokens = [
+            ('KeywordToken', 'entity'),
+            ('IdentifierToken', 'my_entity'),
+            ('KeywordToken', 'is'),
+            ('KeywordToken', 'port'),
+            ('IdentifierToken', 'input_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'in'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';'),
+            ('IdentifierToken', 'output_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'out'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';'),
+            ('KeywordToken', 'end'),
+            ('KeywordToken', 'entity'),
+            ('CharacterToken', ';')
+        ]
+        # Assuming you want to extract tokens between 'port' and 'end entity'
+        start_token_text = 'port'
+        end_token_text = 'end'
+        expected_tokens = [
+            ('IdentifierToken', 'input_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'in'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';'),
+            ('IdentifierToken', 'output_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'out'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';')
+        ]
+        
+        result = extract_tokens_between(sample_tokens, start_token_text, end_token_text)
+        
+        # Assert that the result is a list of extracted tokens
+        self.assertIsInstance(result, list)
+        # Assert that the result contains the expected tokens
+        self.assertEqual(result, expected_tokens)
+
+    def test_extract_tokens_between_with_missing_end_token(self):
+        # Sample tokens for testing
+        sample_tokens = [
+            ('KeywordToken', 'entity'),
+            ('IdentifierToken', 'my_entity'),
+            ('KeywordToken', 'is'),
+            ('KeywordToken', 'port'),
+            ('IdentifierToken', 'input_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'in'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';'),
+            ('IdentifierToken', 'output_signal'),
+            ('CharacterToken', ':'),
+            ('KeywordToken', 'out'),
+            ('KeywordToken', 'std_logic'),
+            ('CharacterToken', ';'),
+            ('KeywordToken', 'end'),
+            ('KeywordToken', 'entity'),
+            ('CharacterToken', ';')
+        ]
+        # Test when the end token is not found
+        start_token_text = 'port'
+        end_token_text = 'missing_token'
+        
+        result = extract_tokens_between(sample_tokens, start_token_text, end_token_text)
+        
+        # Assert that the result is an empty list when the end token is missing
+        self.assertEqual(result, None)
 
 
 # Create a test suite and add the test classes
