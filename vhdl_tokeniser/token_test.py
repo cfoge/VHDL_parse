@@ -452,7 +452,7 @@ def decode_block(block,endLine): #decodes lines with the strcutre of a port such
             # Check if the token is a delimiter token (adjust the condition as needed)
 
             # Update the current position for future searches
-        if token_list[:-1] == '':
+        if token_list[-1] == '':
             token_list.remove('')                  
         return token_list
 
