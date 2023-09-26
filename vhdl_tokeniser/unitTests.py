@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -242,6 +242,84 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         
         # Assert that the result is an empty list when the end token is missing
         self.assertEqual(result, None)
+
+    def test_decode_block(self):
+        # Test input data
+        block = [
+            ('IdentifierToken', 'foo'),
+            ('SpaceToken', ' '),
+            ('CharacterToken', '='),
+            ('SpaceToken', ' '),
+            ('NumberToken', '42'),
+            ('CharacterToken', ';'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'bar'),
+            ('SpaceToken', ' '),
+            ('CharacterToken', '='),
+            ('SpaceToken', ' '),
+            ('NumberToken', '123'),
+            ('CharacterToken', ';'),
+        ]
+
+        endLine = ';'
+
+        # Expected output
+        expected_result = ['foo = 42 ', 'bar = 123 ']
+
+        # Call the function being tested
+        result = decode_block(block, endLine)
+
+        # Assert that the result matches the expected output
+        self.assertEqual(result, expected_result)
+
+    def test_extract_process_lines(self):
+        # Test input data
+        tokens = [
+            ('ProcessKeyword', 'PROCESS'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'Process1'),
+            ('SpaceToken', ' '),
+            ('KeywordToken', 'BEGIN'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'A'),
+            ('SpaceToken', ' '),
+            ('CharacterToken', '='),
+            ('SpaceToken', ' '),
+            ('NumberToken', '1'),
+            ('SpaceToken', ' '),
+            ('EndKeyword', 'END'),
+            ('SpaceToken', ' '),
+            ('ProcessKeyword', 'PROCESS'),
+            ('SpaceToken', ' '),
+            ('ProcessKeyword', 'PROCESS'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'Process2'),
+            ('SpaceToken', ' '),
+            ('KeywordToken', 'BEGIN'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'B'),
+            ('SpaceToken', ' '),
+            ('CharacterToken', '='),
+            ('SpaceToken', ' '),
+            ('NumberToken', '2'),
+            ('SpaceToken', ' '),
+            ('EndKeyword', 'END'),
+            ('SpaceToken', ' '),
+            ('ProcessKeyword', 'PROCESS'),
+        ]
+
+        start_keyword = 'ProcessKeyword'
+        end_keyword = 'EndProcessKeyword'
+
+        test_toekens = replace_end_process_tokens(tokens)
+        # Expected output
+        expected_result = [(0, 12), (15, 27)]
+
+        # Call the function being tested
+        result = extract_process_lines(test_toekens, start_keyword, end_keyword)
+
+        # Assert that the result matches the expected output
+        self.assertEqual(result, expected_result)
 
 
 # Create a test suite and add the test classes

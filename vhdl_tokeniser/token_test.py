@@ -29,6 +29,8 @@ class vhdl_obj(object):
         self.search = []
         self.paths = []
         self.assign = []
+        self.subtype = []
+        self.type_dec = []
         self.nonSynth = []
         self.func = []
         self.generate = []
@@ -44,7 +46,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -74,7 +76,10 @@ keyword_mapping = {
     'if' : 'IfKeyword',
     'function' : 'FunctionKeyword',
     'generate' : 'GenerateKeyword',
-    'work' : 'WorkKeyword'
+    'work'    : 'WorkKeyword',
+    'package' : 'PackageKeyword',
+    'subtype' : 'SubtypeKeyword', #needs beter decoding
+    'type'    : 'TypeKeyword'     #needs beter decoding
 }
 
 
@@ -104,8 +109,8 @@ def tokenize_vhdl_code(code):
                         if code[current_position+1] == '*':
                             in_multi_line_comment = True
 
-                    # if token_type == 'MultiLineCommentToken' and '/*' in matched_text:
-                    #     in_multi_line_comment = True
+                    if token_type == 'MultiLineCommentToken' and '/*' in matched_text:
+                         in_multi_line_comment = True
                     elif token_type == 'SingleLineCommentToken' and '--' in matched_text:
                         single_line_comment_end = matched_text.find('\n')
                         if single_line_comment_end != -1:
@@ -440,13 +445,15 @@ def decode_block(block,endLine): #decodes lines with the strcutre of a port such
                 block_num = block_num + 1
                 token_list.append('')
 
-            if token_type != 'SpaceToken':
+            if token_type != 'SpaceToken' and token_text != endLine:
 
                 if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
                         token_list[block_num] = token_list[block_num] + token_text + " "
             # Check if the token is a delimiter token (adjust the condition as needed)
 
             # Update the current position for future searches
+        if token_list[:-1] == '':
+            token_list.remove('')                  
         return token_list
 
 def decode_sig(token_type,current_position,end_token): #decodes lines with the strcutre of a port such as generics/assignements ect
@@ -693,6 +700,18 @@ def parse_vhdl(file_name):
                 else: 
                     entity_vhdl.data = "None"
                 global_entity = 1
+        
+        if token_type == 'PackageKeyword':
+            if global_entity == 0: # detect first entity decleration which is module
+                ent_name_found =   make_block(token_type,current_position,"is")
+                if isinstance(ent_name_found,str):
+                    entity_vhdl.data = ent_name_found
+                else: 
+                    entity_vhdl.data = "None"
+                global_entity = 1
+                entity_vhdl.type = "package"
+
+
         if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
             decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
             entity_vhdl.generic = format_port(decoded_gen)
@@ -714,6 +733,14 @@ def parse_vhdl(file_name):
         if token_type == 'ConstantKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))
             entity_vhdl.constant.append(format_port(decoded_por)[0])
+
+        if token_type == 'SubtypeKeyword' : 
+            decoded_por = (decode_sig(token_type,current_position,";"))
+            entity_vhdl.subtype.append(format_port(decoded_por)[0])
+
+        if token_type == 'TypeKeyword' : 
+            decoded_por = (decode_sig(token_type,current_position,";"))
+            entity_vhdl.type_dec.append(format_port(decoded_por)[0])
 
         if token_type == 'GenerateKeyword' : 
             
