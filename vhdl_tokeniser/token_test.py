@@ -106,13 +106,13 @@ def tokenize_vhdl_code(code):
                 match = re.match(pattern, code[current_position:])
                 if match:
                     matched_text = match.group(0)
-                    if "/" in matched_text:
-                        # if code[current_position+1] == '*':
-                        #     in_multi_line_comment = True
-                        #     current_position += 2
-                            current_position += 1
+                    # if "/" in matched_text:
+                    #     # if code[current_position+1] == '*':
+                    #     #     in_multi_line_comment = True
+                    #     #     current_position += 2
+                    #         current_position += 1
 
-                    elif token_type == 'SingleLineCommentToken' and '--' in matched_text:
+                    if token_type == 'SingleLineCommentToken' and '--' in matched_text:
                         single_line_comment_end = matched_text.find('\n')
                         if single_line_comment_end != -1:
                             tokens.append(('SingleLineCommentToken', matched_text[:single_line_comment_end]))
