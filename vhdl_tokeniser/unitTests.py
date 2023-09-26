@@ -151,7 +151,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
 
     def test_tokenize_vhdl_code_with_multi_line_comment(self):
         code = "/* This is\na multi-line\ncomment */"
-        expected_tokens = [('MultiLineCommentToken', '/* This is\na multi-line\ncomment */')]
+        expected_tokens = [('MultiLineCommentToken', ' This is\na multi-line\ncomment ')]
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, expected_tokens)
 

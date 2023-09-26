@@ -94,7 +94,8 @@ def tokenize_vhdl_code(code):
         if in_multi_line_comment:
             multi_line_comment_end = code.find('*/', current_position)
             if multi_line_comment_end != -1:
-                tokens.append(('MultiLineCommentToken', code[current_position:multi_line_comment_end + 2]))
+
+                tokens.append(('MultiLineCommentToken', code[current_position:multi_line_comment_end]))
                 current_position = multi_line_comment_end + 2
                 in_multi_line_comment = False
             else:
@@ -106,11 +107,11 @@ def tokenize_vhdl_code(code):
                 if match:
                     matched_text = match.group(0)
                     if "/" in matched_text:
-                        if code[current_position+1] == '*':
-                            in_multi_line_comment = True
+                        # if code[current_position+1] == '*':
+                        #     in_multi_line_comment = True
+                        #     current_position += 2
+                            current_position += 1
 
-                    if token_type == 'MultiLineCommentToken' and '/*' in matched_text:
-                         in_multi_line_comment = True
                     elif token_type == 'SingleLineCommentToken' and '--' in matched_text:
                         single_line_comment_end = matched_text.find('\n')
                         if single_line_comment_end != -1:
