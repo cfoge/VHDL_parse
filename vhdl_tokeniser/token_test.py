@@ -546,15 +546,16 @@ def format_port(decoded_gen):
         result = [] 
         for i in decoded_gen:
                 type_found = False
-                if "subtype" in i:
+                if " subtype " in i:
                     i = i.replace("subtype" , "")
                     i = i.strip()
-                if "type" in i:
+                if " type " in i:
                     i = i.replace("type" , "")
                     i = i.strip()
                     type_found = True
-                    type_val = i.split("of")
-                    type_val[1] = type_val[1].replace(";", "")
+                    type_val = i.split(" of ")
+                    if ";" in type_val[1]:
+                        type_val[1] = type_val[1].replace(";", "")
 
                 if "," in i and ":" in i :
                     split_sig = i.split(": ")
