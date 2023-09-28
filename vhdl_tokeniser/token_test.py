@@ -480,7 +480,10 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
 
 def find_type(input_line):
     type_found = "null"
-    if "std_logic_vector" in input_line:
+    if "array" in input_line:
+        array_type = find_type(input_line.replace("array",''))
+        type_found = "array: " + array_type  
+    elif "std_logic_vector" in input_line:
         type_found = "std_logic_vector"
     elif "std_logic" in input_line:
         type_found = "std_logic"
@@ -540,8 +543,19 @@ def extract_bit_len(str_in):
         return None
 
 def format_port(decoded_gen):
-        result = []
+        result = [] 
         for i in decoded_gen:
+                type_found = False
+                if "subtype" in i:
+                    i = i.replace("subtype" , "")
+                    i = i.strip()
+                if "type" in i:
+                    i = i.replace("type" , "")
+                    i = i.strip()
+                    type_found = True
+                    type_val = i.split("of")
+                    type_val[1] = type_val[1].replace(";", "")
+
                 if "," in i and ":" in i :
                     split_sig = i.split(": ")
                     sig_names = split_sig[0]
@@ -552,6 +566,8 @@ def format_port(decoded_gen):
                     port_type = find_type(i)
                     port_width = find_width(i, port_type)
                     port_val = None
+                    if type_found == True:
+                        port_val = type_val[1].strip()
                     if "=" in i:
                         equal_sign_index = i.find('=')
                         if equal_sign_index != -1:
@@ -578,6 +594,8 @@ def format_port(decoded_gen):
                     port_type = find_type(i)
                     port_width = find_width(i, port_type)
                     port_val = None
+                    if type_found == True:
+                        port_val = type_val[1].strip()
                     if "=" in i:
                         equal_sign_index = i.find('=')
                         if equal_sign_index != -1:

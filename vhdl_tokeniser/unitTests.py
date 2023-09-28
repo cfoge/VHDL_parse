@@ -347,6 +347,16 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         decoded_gen = ["data real := abc"]
         expected_result = [["data", "real", 'null', "abc"]]
         self.assertEqual(format_port(decoded_gen), expected_result)
+    
+    def test_format_port_subtype(self):
+        decoded_gen = ["subtype data is unsigned(12 downto 0);"]
+        expected_result = [["data", "unsigned", 'null', None]]
+        self.assertEqual(format_port(decoded_gen), expected_result)
+    
+    def test_format_port_type(self):
+        decoded_gen = ["type data is array (natural range<>) of dataType;"]
+        expected_result = [["data", "array: natural", 'dataType', None]]
+        self.assertEqual(format_port(decoded_gen), expected_result)
 
 ######
 
