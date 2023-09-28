@@ -540,39 +540,63 @@ def extract_bit_len(str_in):
         return None
 
 def format_port(decoded_gen):
-            result = []
-            for i in decoded_gen:
-                split = i.split(" ")
-                name = split[0]
-                port_type = find_type(i)
-                port_width = find_width(i, port_type)
-                port_val = None
-                if "=" in i:
-                    equal_sign_index = i.find('=')
-                    if equal_sign_index != -1:
-                        # Extract the text after '=' with no spaces
-                        port_temp = i[equal_sign_index + 1:].replace(' ', '')
-                        port_temp = port_temp.replace("'", '')
-                            # Check if the result is a number and convert it if it is
-                        try:
-                            if port_type in ["real", "natural"]:
-                                port_val = float(port_temp) 
-                            else:
-                                port_val = int(port_temp)  # Convert to float (or int if it's an integer)
-                        except ValueError:
-                            port_val = port_temp
-                if "," in i:
-
-                    tmp4 = i.split(",")
-                    for port in tmp4:
+        result = []
+        for i in decoded_gen:
+                if "," in i and ":" in i :
+                    split_sig = i.split(": ")
+                    sig_names = split_sig[0]
+                    sig_dec = split_sig[1]
+                    i = sig_dec
+                    split = i.split(" ")
+                    name = sig_names.split(",")
+                    port_type = find_type(i)
+                    port_width = find_width(i, port_type)
+                    port_val = None
+                    if "=" in i:
+                        equal_sign_index = i.find('=')
+                        if equal_sign_index != -1:
+                            # Extract the text after '=' with no spaces
+                            port_temp = i[equal_sign_index + 1:].replace(' ', '')
+                            port_temp = port_temp.replace("'", '')
+                                # Check if the result is a number and convert it if it is
+                            try:
+                                if port_type in ["real", "natural"]:
+                                    port_val = float(port_temp) 
+                                else:
+                                    port_val = int(port_temp)  # Convert to float (or int if it's an integer)
+                            except ValueError:
+                                port_val = port_temp
+                    for sig_name in name:
                         result.append(
-                            [port.strip(), tmp3[0].strip(), port_type, port_width, port_val]
-                        )
+                            [sig_name.strip(), port_type, port_width, port_val]
+                            )
+
                 else:
+## dont repeat this break it oput into a func
+                    split = i.split(" ")
+                    name = split[0]
+                    port_type = find_type(i)
+                    port_width = find_width(i, port_type)
+                    port_val = None
+                    if "=" in i:
+                        equal_sign_index = i.find('=')
+                        if equal_sign_index != -1:
+                            # Extract the text after '=' with no spaces
+                            port_temp = i[equal_sign_index + 1:].replace(' ', '')
+                            port_temp = port_temp.replace("'", '')
+                                # Check if the result is a number and convert it if it is
+                            try:
+                                if port_type in ["real", "natural"]:
+                                    port_val = float(port_temp) 
+                                else:
+                                    port_val = int(port_temp)  # Convert to float (or int if it's an integer)
+                            except ValueError:
+                                port_val = port_temp
+        
                     result.append(
                         [name, port_type, port_width, port_val]
-                    )
-            return result
+                        )
+        return result
 
 def extract_process_blocks(start):
     blocks = []

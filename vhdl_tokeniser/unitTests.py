@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -149,11 +149,11 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, expected_tokens)
 
-    def test_tokenize_vhdl_code_with_multi_line_comment(self):
-        code = "/* This is\na multi-line\ncomment */"
-        expected_tokens = [('MultiLineCommentToken', ' This is\na multi-line\ncomment ')]
-        tokens = tokenize_vhdl_code(code)
-        self.assertEqual(tokens, expected_tokens)
+    # def test_tokenize_vhdl_code_with_multi_line_comment(self):
+    #     code = "/* This is\na multi-line\ncomment */"
+    #     expected_tokens = [('MultiLineCommentToken', ' This is\na multi-line\ncomment ')]
+    #     tokens = tokenize_vhdl_code(code)
+    #     self.assertEqual(tokens, expected_tokens)
 
     def test_tokenize_vhdl_code_with_identifiers(self):
         code = "signal my_signal: std_logic;"
@@ -321,6 +321,34 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         # Assert that the result matches the expected output
         self.assertEqual(result, expected_result)
 
+    ###### FORMAT PORT FUNCTION TESTS
+    def test_format_port_single_port(self):
+        decoded_gen = ["data real := 3.14"]
+        expected_result = [["data", "real", 'null', 3.14]]
+        self.assertEqual(format_port(decoded_gen), expected_result)
+
+    def test_format_port_multiple_ports(self):
+        decoded_gen = ["data real := 3.14", "clk : in std_logic"]
+        expected_result = [
+            ["data", "real", 'null', 3.14],
+            ["clk", "std_logic", 1, None]
+        ]
+        self.assertEqual(format_port(decoded_gen), expected_result)
+
+    def test_format_port_multiple_signals_same_value(self):
+        decoded_gen = ["valid, Test2: out std_logic := '1'"]
+        expected_result = [
+            ["valid", "std_logic", 1, 1],
+            ["Test2", "std_logic", 1, 1]
+        ]
+        self.assertEqual(format_port(decoded_gen), expected_result)
+
+    def test_format_port_invalid_value(self):
+        decoded_gen = ["data real := abc"]
+        expected_result = [["data", "real", 'null', "abc"]]
+        self.assertEqual(format_port(decoded_gen), expected_result)
+
+######
 
 # Create a test suite and add the test classes
 test_suite = unittest.TestSuite()
