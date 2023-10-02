@@ -3,22 +3,34 @@ import os
 
 decoded = parse_vhdl('fan_control.vhd')
 
+#add arg parser
+# add function to allign => based on gen/port lenghth
+
+verbose = True
 
 f = open("instance_out.vhdl", "a")
 f.write(f"{decoded.data}_i : entity work.{decoded.data} \n")
 if len(decoded.generic) > 0:
     f.write(f"generic map (\n")
     for gen in decoded.generic[:-1]:
-        f.write(f"{gen[0]} => {gen[0]}, --{gen[1]} width = {gen[2]}\n")
+        if verbose:
+            vb = f"--{gen[1]} width = {gen[2]}"
+        f.write(f"{gen[0]}    => {gen[0]}, {vb}\n")
     gen = decoded.generic[-1]
-    f.write(f"{gen[0]} => {gen[0]} --{gen[1]} width =  {gen[2]}\n")
+    if verbose:
+        vb = f"--{gen[1]} width = {gen[2]}"
+    f.write(f"{gen[0]}    => {gen[0]} {vb}\n")
     f.write(f");\n")
 if len(decoded.port) > 0:
     f.write(f"port map (\n")
     for port in decoded.port[:-1]:
-        f.write(f"{port[0]} => {port[0]}, --{port[1]} width =  {port[2]}\n")
+        if verbose:
+            vb = f"--{port[1]} width = {port[2]}"
+        f.write(f"{port[0]}    => {port[0]}, {vb}\n")
     port = decoded.port[-1]
-    f.write(f"{port[0]} => {port[0]} --{port[1]} width = {port[2]}\n")
+    if verbose:
+        vb = f"--{port[1]} width = {port[2]}"
+    f.write(f"{port[0]}    => {port[0]} {vb}\n")
     f.write(f");\n")
     f.write(f"\n")
 
