@@ -564,6 +564,8 @@ def format_port(decoded_gen):
                     i = sig_dec
                     split = i.split(" ")
                     name = sig_names.split(",")
+                    if name[0] == "":
+                        continue
                     port_type = find_type(i)
                     port_width = find_width(i, port_type)
                     port_val = None
@@ -592,6 +594,8 @@ def format_port(decoded_gen):
 ## dont repeat this break it oput into a func
                     split = i.split(" ")
                     name = split[0]
+                    if name == "":
+                        continue
                     port_type = find_type(i)
                     port_width = find_width(i, port_type)
                     port_val = None
