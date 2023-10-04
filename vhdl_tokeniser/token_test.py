@@ -470,7 +470,7 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
 
             if token_type != 'SpaceToken' and token_type != this_token_type:
 
-                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword':
                         token_list[port_num] = token_list[port_num] + token_text + " "
             # Check if the token is a delimiter token (adjust the condition as needed)
 
