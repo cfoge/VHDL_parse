@@ -162,22 +162,21 @@ def replace_end_process_tokens(tokens):
              
              if token_text_next == '>':
                 tokens[i] = ('AssignKeyword', '=>')
-                if next_prev_pop == 1:
-                    tokens.pop(i+1)
-                elif next_prev_pop == 0: 
-                    tokens.pop(i-1)
+                tokens.pop(i+1)
+                # elif next_prev_pop == 0: 
+                #     tokens.pop(i-1)
              if token_text_prev == ':':
                 tokens[i] = ('AssignKeyword', ':=')
-                if next_prev_pop == 1:
-                    tokens.pop(i+1)
-                elif next_prev_pop == 0: 
-                    tokens.pop(i-1)
+                # if next_prev_pop == 1:
+                #     tokens.pop(i+1)
+                # elif next_prev_pop == 0: 
+                tokens.pop(i-1)
              if token_text_prev == '<':
                 tokens[i] = ('AssignKeyword', '<=')
-                if next_prev_pop == 1:
-                    tokens.pop(i+1)
-                elif next_prev_pop == 0: 
-                    tokens.pop(i-1)
+                # if next_prev_pop == 1:
+                #     tokens.pop(i+1)
+                # elif next_prev_pop == 0: 
+                tokens.pop(i-1)
                 
 
         if token_type == 'EndKeyword':
@@ -448,7 +447,7 @@ def decode_block(block,endLine): #decodes lines with the strcutre of a port such
 
             if token_type != 'SpaceToken' and token_text != endLine:
 
-                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken':
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword':
                         token_list[block_num] = token_list[block_num] + token_text + " "
             # Check if the token is a delimiter token (adjust the condition as needed)
 
@@ -802,7 +801,7 @@ def parse_vhdl(file_name):
                     prcess_name = 'unnamed'
                 process_dep = make_block(token_type,current_position,")")
                 if process_dep != -1:
-                     process_dep.replace('(','')
+                     process_dep = process_dep[1:]
                 
                 process_def = [prcess_name, process_dep]
                 # process_contents = extract_process_blocks(current_position)
@@ -814,7 +813,7 @@ def parse_vhdl(file_name):
             assert_tok = make_block("",current_position,";",1, 0, 1) 
             entity_vhdl.nonSynth.append(assert_tok)
 
-        if token_text == '<=':
+        if token_text == '<=': # detect assignements
             ignore = 0
             #find out if the assign is inside of a func, generate or process and if so ignore for now
             for start, end in func_ranges:
