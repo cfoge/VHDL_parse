@@ -1,7 +1,7 @@
 from token_test import *
 import os
 
-decoded = parse_vhdl('fan_control.vhd')
+decoded = parse_vhdl('tests\lifo.vhdl')
 
 #add arg parser
 # add function to allign => based on gen/port lenghth

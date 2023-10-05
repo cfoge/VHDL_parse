@@ -382,7 +382,7 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
             token_type, token_text = tokens_int[i]
 
             if token_type in end_token.values() and token_type != port_token:
-                return token_list[0:-1]
+                return token_list[0:-2]
             if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
@@ -545,6 +545,15 @@ def format_port(decoded_gen):
         result = [] 
         for i in decoded_gen:
                 type_found = False
+                in_out_inout = ''
+                if "in" in i:
+                    in_out_inout = 'in'
+                elif "out" in i:
+                    in_out_inout = 'out'
+                elif "inout" in i:
+                    in_out_inout = 'inout'
+
+
                 if " subtype " in i:
                     i = i.replace("subtype" , "")
                     i = i.strip()
@@ -585,9 +594,14 @@ def format_port(decoded_gen):
                             except ValueError:
                                 port_val = port_temp
                     for sig_name in name:
-                        result.append(
-                            [sig_name.strip(), port_type, port_width, port_val]
-                            )
+                        if in_out_inout != "":
+                            result.append(
+                                [sig_name.strip(),in_out_inout, port_type, port_width, port_val]
+                                )
+                        else:
+                            result.append(
+                                [sig_name.strip(), port_type, port_width, port_val]
+                                )
 
                 else:
 ## dont repeat this break it oput into a func
@@ -614,10 +628,14 @@ def format_port(decoded_gen):
                                     port_val = int(port_temp)  # Convert to float (or int if it's an integer)
                             except ValueError:
                                 port_val = port_temp
-        
-                    result.append(
-                        [name, port_type, port_width, port_val]
-                        )
+                    if in_out_inout != "":
+                        result.append(
+                            [name,in_out_inout, port_type, port_width, port_val]
+                            )
+                    else:
+                        result.append(
+                            [name, port_type, port_width, port_val]
+                            )
         return result
 
 def extract_process_blocks(start):

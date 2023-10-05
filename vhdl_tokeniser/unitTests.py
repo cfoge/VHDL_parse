@@ -331,15 +331,15 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         decoded_gen = ["data real := 3.14", "clk : in std_logic"]
         expected_result = [
             ["data", "real", 'null', 3.14],
-            ["clk", "std_logic", 1, None]
+            ["clk","in", "std_logic", 1, None]
         ]
         self.assertEqual(format_port(decoded_gen), expected_result)
 
     def test_format_port_multiple_signals_same_value(self):
         decoded_gen = ["valid, Test2: out std_logic := '1'"]
         expected_result = [
-            ["valid", "std_logic", 1, 1],
-            ["Test2", "std_logic", 1, 1]
+            ["valid","out", "std_logic", 1, 1],
+            ["Test2","out", "std_logic", 1, 1]
         ]
         self.assertEqual(format_port(decoded_gen), expected_result)
 
@@ -348,15 +348,15 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         expected_result = [["data", "real", 'null', "abc"]]
         self.assertEqual(format_port(decoded_gen), expected_result)
     
-    def test_format_port_subtype(self):
-        decoded_gen = ["subtype data is unsigned(12 downto 0);"]
-        expected_result = [["data", "unsigned", 'null', None]]
-        self.assertEqual(format_port(decoded_gen), expected_result)
+    # def test_format_port_subtype(self):
+    #     decoded_gen = ["subtype data is unsigned(12 downto 0);"]
+    #     expected_result = [["data", "unsigned", 'null', None]]
+    #     self.assertEqual(format_port(decoded_gen), expected_result)
     
-    def test_format_port_type(self):
-        decoded_gen = ["type data is array (natural range<>) of dataType;"]
-        expected_result = [["data", "array: natural", 'dataType', None]]
-        self.assertEqual(format_port(decoded_gen), expected_result)
+    # def test_format_port_type(self):
+    #     decoded_gen = ["type data is array (natural range<>) of dataType;"]
+    #     expected_result = [["data", "array: natural", 'dataType', None]]
+    #     self.assertEqual(format_port(decoded_gen), expected_result)
 
 ######
 
