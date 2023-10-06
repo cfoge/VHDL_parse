@@ -530,16 +530,43 @@ def find_width(input_line, type_in):
 
 def extract_bit_len(str_in):
            # Find the number before and after 'downto'
-    match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
-    
-    if match:
-        # Extract the numbers
-        before_downto = int(match.group(1))
-        after_downto = int(match.group(2))
-        bit_len = (before_downto + 1 - after_downto)
+    if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
+        split_str = str_in.split('downto')
+        msb = calculate_equations(split_str[0])
+        lsb = calculate_equations(split_str[1])
+        bit_len = (int(msb) + 1 - int(lsb))
         return bit_len
-    else:
-        return None
+
+    else:    
+        match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
+        
+        if match:
+            first_part = match.group(1)
+            # Extract the numbers
+            before_downto = int(match.group(1))
+            after_downto = int(match.group(2))
+            bit_len = (before_downto + 1 - after_downto)
+            return bit_len
+        else:
+            return None
+    
+def calculate_equations(string):
+    # Regular expression to find more complex mathematical equations
+    pattern = r'([-+]?\d*\.\d+|\d+|\w+)\s*([-+*/])\s*([-+]?\d*\.\d+|\d+|\w+)'
+
+    equations = re.findall(pattern, string)
+
+    results = []
+    for equation in equations:
+        try:
+            result = eval(''.join(equation))
+            # results.append((equation, result))
+            results =  result
+        except (ZeroDivisionError, SyntaxError, TypeError) as e:
+            results.append((equation, f"Error: {e}"))
+    if results == []:
+        results = string
+    return results
 
 def format_port(decoded_gen):
         result = [] 
