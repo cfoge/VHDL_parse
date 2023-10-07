@@ -224,55 +224,6 @@ def replace_end_process_tokens(tokens):
     return tokens
 
 
-    i = 0
-    while i < len(tokens):
-        token_type, token_text = tokens[i]
-
-        if token_text == 'to_unsigned':
-            funct = extract_tokens_between(tokens, "(", ")",current_position)
-            # Search for the next keyword token
-            next_keyword_index = i + 1
-            while next_keyword_index < len(tokens) and not tokens[next_keyword_index][0].endswith('Keyword'):
-                next_keyword_index += 1
-
-            if next_keyword_index < len(tokens):
-                next_keyword_type = tokens[next_keyword_index][0]
-
-                if next_keyword_type == 'ProcessKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndProcessKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'IfKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndIfKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'FunctionKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndFunctionKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'GenerateKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndGenerateKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'EntityKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndEntityKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-
-        i += 1
-
-    return tokens
-
 def extract_process_lines(tokens, start_keyword, end_keyword):
     process_lines = []
     inside_process = False
@@ -549,6 +500,14 @@ def extract_bit_len(str_in):
             return bit_len
         else:
             return None
+        
+def is_port_type_dec(i, entity_vhdl):
+    type_found = "null"
+    for types in entity_vhdl.type_dec:
+        if types[0] in i:
+            type_found = types[0]
+    return type_found
+
     
 def calculate_equations(string):
     # Regular expression to find more complex mathematical equations
@@ -602,6 +561,8 @@ def format_port(decoded_gen):
                     if name[0] == "":
                         continue
                     port_type = find_type(i)
+                    if port_type == "null":
+                        port_type = is_port_type_dec(i, entity_vhdl)
                     port_width = find_width(i, port_type)
                     port_val = None
                     if type_found == True:
@@ -637,6 +598,8 @@ def format_port(decoded_gen):
                     if name == "":
                         continue
                     port_type = find_type(i)
+                    if port_type == "null":
+                        port_type = is_port_type_dec(i, entity_vhdl)
                     port_width = find_width(i, port_type)
                     port_val = None
                     if type_found == True:
