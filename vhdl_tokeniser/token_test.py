@@ -310,7 +310,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
                     token_type, token_text = tokens[j]
                     if token_type == 'IdentifierToken' and token_text != 'downto':
                         return token_text
-                    if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
+                    if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';' or token_text == ":":
                         return "end"
                 return "Unnammed"
             if token_type != 'SpaceToken' and token_type != this_token_type:
@@ -333,14 +333,14 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
             token_type, token_text = tokens_int[i]
 
             if token_type in end_token.values() and token_type != port_token:
-                return token_list[0:-2]
+                return token_list[0:-1]
             if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
 
             if token_type != 'SpaceToken' and token_type != this_token_type:
 
-                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword':
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword' or token_text == "," or token_text == ":":
                         token_list[port_num] = token_list[port_num] + token_text + " "
             # Check if the token is a delimiter token (adjust the condition as needed)
 
@@ -420,7 +420,7 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
 
             if token_type != 'SpaceToken' and token_type != this_token_type:
 
-                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword':
+                if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword' or token_text == "," or token_text == ":":
                         token_list[port_num] = token_list[port_num] + token_text + " "
             # Check if the token is a delimiter token (adjust the condition as needed)
 
@@ -430,6 +430,7 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
 
 def find_type(input_line):
     type_found = "null"
+    input_line = input_line.lower()
     if "array" in input_line:
         array_type = find_type(input_line.replace("array",''))
         type_found = "array: " + array_type  
@@ -783,7 +784,12 @@ def parse_vhdl(file_name):
 
         if token_type == 'SignalKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))
-            entity_vhdl.signal.append(format_port(decoded_por)[0])
+            format_sig_tmp = format_port(decoded_por)
+            if len(format_sig_tmp) == 1:
+                entity_vhdl.signal.append(format_sig_tmp[0])
+            else:
+                for i in format_sig_tmp:
+                    entity_vhdl.signal.append(i)
 
         if token_type == 'ConstantKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))

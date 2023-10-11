@@ -1,0 +1,2 @@
+cant handle this:
+signal current_state, next_state: FSM_States;
