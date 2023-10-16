@@ -557,17 +557,19 @@ def calculate_equations(string):
         results = string
     return results
 
-def format_port(decoded_gen):
+def format_port(decoded_gen, generic = False):
         result = [] 
         for i in decoded_gen:
                 type_found = False
                 in_out_inout = ''
-                if "in" in i:
-                    in_out_inout = 'in'
-                elif "out" in i:
-                    in_out_inout = 'out'
-                elif "inout" in i:
-                    in_out_inout = 'inout'
+                if generic == False:
+                    
+                    if "in" in i:
+                        in_out_inout = ' in'
+                    elif "out" in i:
+                        in_out_inout = ' out'
+                    elif "inout" in i:
+                        in_out_inout = ' inout'
 
 
                 if " subtype " in i:
@@ -711,7 +713,7 @@ def parse_vhdl(file_name):
     global entity_vhdl
     file_path = file_name
     # file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
-    vhdl_code = read_vhdl_file(file_path)
+    vhdl_code = read_vhdl_file(file_path).lower()
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)
@@ -799,7 +801,7 @@ def parse_vhdl(file_name):
 
         if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
             decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
-            entity_vhdl.generic = format_port(decoded_gen)
+            entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
             
 
         if token_type == 'PortKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
@@ -822,7 +824,7 @@ def parse_vhdl(file_name):
 
         if token_type == 'ConstantKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))
-            entity_vhdl.constant.append(format_port(decoded_por)[0])
+            entity_vhdl.constant.append(format_port(decoded_por, True)[0])
 
         if token_type == 'SubtypeKeyword' : 
             decoded_por = (decode_sig(token_type,current_position,";"))

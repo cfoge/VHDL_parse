@@ -4,3 +4,5 @@ signal current_state, next_state: FSM_States;
 need to speed up, this is slow when processing 1k files +
 
 wrapper script doesnt print all modules in list
+
+doesent identify variabvles 
