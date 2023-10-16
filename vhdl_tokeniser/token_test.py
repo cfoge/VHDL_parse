@@ -480,16 +480,7 @@ def find_width(input_line, type_in):
         size_found = 1
     return size_found
 
-def extract_bit_len(str_in):
-           # Find the number before and after 'downto'
-    if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
-        split_str = str_in.split('downto')
-        msb = calculate_equations(split_str[0])
-        lsb = calculate_equations(split_str[1])
-        bit_len = (int(msb) + 1 - int(lsb))
-        return bit_len
-
-    else:    
+def extract_bit_len_not_numbers(str_in):
         match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
         
         if match:
@@ -501,6 +492,32 @@ def extract_bit_len(str_in):
             return bit_len
         else:
             return None
+
+def extract_bit_len(str_in):
+           # Find the number before and after 'downto'
+    if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
+        a_num = False
+        b_num = False
+        split_str = str_in.split('downto')
+        if validate_list_elements_equations(split_str[0]):
+            msb = calculate_equations(split_str[0])
+            a_num = True
+        else:
+            msb = extract_bit_len_not_numbers(split_str[0])
+        if validate_list_elements_equations(split_str[1]):
+            lsb = calculate_equations(split_str[1])
+            b_num = True
+        else:
+            msb = extract_bit_len_not_numbers(split_str[1])
+        if a_num == True and b_num == True:
+            bit_len = (int(msb) + 1 - int(lsb))
+        else:
+            bit_len = None
+        return bit_len
+
+    else:    
+        return_len = extract_bit_len_not_numbers(str_in)
+        return return_len
         
 def is_port_type_dec(i, entity_vhdl):
     type_found = "null"
@@ -509,6 +526,18 @@ def is_port_type_dec(i, entity_vhdl):
             type_found = types[0]
     return type_found
 
+def validate_list_elements_equations(lst):
+    for element in lst:
+        # Check if the element is a string
+        if not isinstance(element, str):
+            return False
+        
+        # Check if the string represents a valid operation
+        if element not in {'=', '-', '+', '/', '*'} and not element.replace('.', '', 1).isdigit():
+            return False
+
+    # All elements are either strings representing valid operations or numbers
+    return True
     
 def calculate_equations(string):
     # Regular expression to find more complex mathematical equations

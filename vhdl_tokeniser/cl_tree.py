@@ -99,8 +99,8 @@ def cl_depend(root_dir,tld, print_url):
 
     return
 
-root_dir = 'C:/BMD_builds/avc_delay_out/atemavsc1/src/mcs'
-tld = 'C:/BMD_builds/avc_delay_out/atemavsc1/src/mcs/mcs_top.vhd'
+root_dir = 'C:/BMD_builds/atem_avc'
+tld = 'C:/BMD_builds/atem_avc/atemavc1/src/atemavc1.vhd'
 cl_depend(root_dir,tld, False)
 
 # this = parse_vhdl('C:/BMD_builds/avc_delay_out/atemavsc1/src/h264_codec/src/common/hdl/inter_pkg.vhd')
