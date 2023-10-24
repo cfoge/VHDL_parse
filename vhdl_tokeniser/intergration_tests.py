@@ -68,8 +68,8 @@ diff_object = test_file("test1")
 diff_object = test_file("test2")
 diff_object = test_file("test3")
 diff_object = test_file("test4") 
-# diff_object = test_file("test5") 
-# diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
+diff_object = test_file("test5") 
+diff_object = test_file("test6") 
 # diff_object = test_file("test7")
 # diff_object = test_file("test8")
 

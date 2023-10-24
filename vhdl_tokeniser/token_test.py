@@ -310,7 +310,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
                     token_type, token_text = tokens[j]
                     if token_type == 'IdentifierToken' and token_text != 'downto':
                         return token_text
-                    if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';' or token_text == ":":
+                    if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
                         return "end"
                 return "Unnammed"
             if token_type != 'SpaceToken' and token_type != this_token_type:
@@ -844,7 +844,7 @@ def parse_vhdl(file_name):
             entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
         
         if token_type == 'ProcessKeyword':
-                prcess_name = find_name("IdentifierToken", current_position, 6)
+                prcess_name = find_name("IdentifierToken", current_position, 9)
                 if prcess_name == "generate" or prcess_name == "end":
                     prcess_name = 'unnamed'
                 process_dep = make_block(token_type,current_position,")")
