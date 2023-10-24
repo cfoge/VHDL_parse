@@ -564,11 +564,11 @@ def format_port(decoded_gen, generic = False):
                 in_out_inout = ''
                 if generic == False:
                     
-                    if "in" in i:
+                    if " in " in i:
                         in_out_inout = ' in'
-                    elif "out" in i:
+                    elif " out " in i:
                         in_out_inout = ' out'
-                    elif "inout" in i:
+                    elif " inout " in i:
                         in_out_inout = ' inout'
 
 
@@ -658,6 +658,9 @@ def format_port(decoded_gen, generic = False):
                         result.append(
                             [name, port_type, port_width, port_val]
                             )
+        for found_port in result:
+            if found_port[0] == entity_vhdl.data and found_port[1] == 'null':
+                result.pop(result.index(found_port))
         return result
 
 def extract_process_blocks(start):
@@ -842,7 +845,7 @@ def parse_vhdl(file_name):
         
         if token_type == 'ProcessKeyword':
                 prcess_name = find_name("IdentifierToken", current_position, 6)
-                if prcess_name == "generate":
+                if prcess_name == "generate" or prcess_name == "end":
                     prcess_name = 'unnamed'
                 process_dep = make_block(token_type,current_position,")")
                 if process_dep != -1:
