@@ -333,7 +333,7 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
             token_type, token_text = tokens_int[i]
 
             if token_type in end_token.values() and token_type != port_token:
-                return token_list[0:-1]
+                return token_list
             if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
@@ -366,7 +366,7 @@ def decode_ent_port(token_in): #decodes lines with the strcutre of a port such a
             if "to_" in token_text:
                  found_function = 1
             if token_text == ';':
-                return token_list[0:-1]
+                return token_list
             if token_text == ',' and found_function == 0:
                 port_num = port_num + 1
                 token_list.append('')
@@ -466,7 +466,7 @@ def find_type(input_line):
 def find_width(input_line, type_in):
     size_found = "null"
     if type_in == "std_logic_vector":
-        size_found = extract_bit_len(input_line)
+        size_found = extract_bit_len(input_line, "std_logic_vector")
     elif type_in == "std_logic":
         size_found = 1
     elif "bit_vector" in input_line:
@@ -475,12 +475,12 @@ def find_width(input_line, type_in):
         size_found = 1
         # add for more types
     elif type_in == "std_ulogic_vector":
-        size_found = extract_bit_len(input_line)
+        size_found = extract_bit_len(input_line, "std_ulogic_vector")
     elif type_in == "std_ulogic":
         size_found = 1
     return size_found
 
-def extract_bit_len_not_numbers(str_in):
+def extract_bit_len_not_numbers(str_in, type_in):
         match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
         
         if match:
@@ -491,9 +491,13 @@ def extract_bit_len_not_numbers(str_in):
             bit_len = (before_downto + 1 - after_downto)
             return bit_len
         else:
-            return None
+            if type_in in str_in:
+                length = str_in.split(type_in)[1]
+            else:
+                length = str_in
+            return length
 
-def extract_bit_len(str_in):
+def extract_bit_len(str_in, type_in):
            # Find the number before and after 'downto'
     if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
         a_num = False
@@ -503,20 +507,20 @@ def extract_bit_len(str_in):
             msb = calculate_equations(split_str[0])
             a_num = True
         else:
-            msb = extract_bit_len_not_numbers(split_str[0])
+            msb = extract_bit_len_not_numbers(split_str[0], type_in)
         if validate_list_elements_equations(split_str[1]):
             lsb = calculate_equations(split_str[1])
             b_num = True
         else:
-            msb = extract_bit_len_not_numbers(split_str[1])
+            lsb = extract_bit_len_not_numbers(split_str[1], type_in)
         if a_num == True and b_num == True:
             bit_len = (int(msb) + 1 - int(lsb))
         else:
-            bit_len = None
+            bit_len = msb + " downto " + lsb
         return bit_len
 
     else:    
-        return_len = extract_bit_len_not_numbers(str_in)
+        return_len = extract_bit_len_not_numbers(str_in, type_in)
         return return_len
         
 def is_port_type_dec(i, entity_vhdl):

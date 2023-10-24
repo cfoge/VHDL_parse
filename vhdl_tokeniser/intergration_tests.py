@@ -70,7 +70,7 @@ diff_object = test_file("test3")
 diff_object = test_file("test4") 
 diff_object = test_file("test5") 
 diff_object = test_file("test6") 
-# diff_object = test_file("test7")
+diff_object = test_file("test7")
 # diff_object = test_file("test8")
 
 #somthing is up with the tests it is not recognising types of changes
