@@ -497,7 +497,7 @@ def extract_bit_len_not_numbers(str_in, type_in):
                 length = str_in
             return length
 
-def extract_bit_len(str_in, type_in):
+def extract_bit_len(str_in, type_in = "std_logic_vector"):
            # Find the number before and after 'downto'
     if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
         a_num = False
@@ -516,7 +516,7 @@ def extract_bit_len(str_in, type_in):
         if a_num == True and b_num == True:
             bit_len = (int(msb) + 1 - int(lsb))
         else:
-            bit_len = msb + " downto " + lsb
+            bit_len = msb.strip() + " downto " + lsb.strip()
         return bit_len
 
     else:    
@@ -569,11 +569,11 @@ def format_port(decoded_gen, generic = False):
                 if generic == False:
                     
                     if " in " in i:
-                        in_out_inout = ' in'
+                        in_out_inout = 'in'
                     elif " out " in i:
-                        in_out_inout = ' out'
+                        in_out_inout = 'out'
                     elif " inout " in i:
-                        in_out_inout = ' inout'
+                        in_out_inout = 'inout'
 
 
                 if " subtype " in i:
@@ -663,8 +663,11 @@ def format_port(decoded_gen, generic = False):
                             [name, port_type, port_width, port_val]
                             )
         for found_port in result:
-            if found_port[0] == entity_vhdl.data and found_port[1] == 'null':
-                result.pop(result.index(found_port))
+            try:
+                if found_port[0] == entity_vhdl.data and found_port[1] == 'null':
+                    result.pop(result.index(found_port))
+            except:
+                result = result
         return result
 
 def extract_process_blocks(start):

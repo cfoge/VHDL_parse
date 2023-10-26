@@ -85,6 +85,12 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         result = extract_bit_len(input_string)
         self.assertEqual(result, expected_result)
 
+    def test_extract_bit_len_with_valid_input_plus_num(self):
+        input_string = "x-2 downto 0"
+        expected_result = "x-2 downto 0"
+        result = extract_bit_len(input_string)
+        self.assertEqual(result, expected_result)
+
     def test_extract_bit_len_with_invalid_input(self):
         input_string = "no_downto_here"
         expected_result = None
@@ -93,7 +99,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
 
     def test_extract_bit_len_with_invalid_input(self):
         input_string = "x downto y"
-        expected_result = None
+        expected_result = "x downto y"
         result = extract_bit_len(input_string)
         self.assertEqual(result, expected_result)
 
