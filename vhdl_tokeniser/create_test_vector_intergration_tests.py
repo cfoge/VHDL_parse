@@ -12,14 +12,14 @@ def test_file(file_name):
 
 
 # assignement errors may not be triggered?
-# diff_object = test_file("test1")
-# diff_object = test_file("test2")
-# diff_object = test_file("test3")
-# diff_object = test_file("test4") 
-# diff_object = test_file("test5") 
-# diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
-# diff_object = test_file("test7")
-diff_object = test_file("test8")
+diff_object = test_file("test1")
+diff_object = test_file("test2")
+diff_object = test_file("test3")
+diff_object = test_file("test4") 
+diff_object = test_file("test5") 
+diff_object = test_file("test6") # correct but doesnt recognise types, will classify a signal that is a type as null for both type and size
+diff_object = test_file("test7")
+# diff_object = test_file("test8")
 
 #somthing is up with the tests it is not recognising types of changes
 # script doesnt recognise := after signals and maybe ports and constants

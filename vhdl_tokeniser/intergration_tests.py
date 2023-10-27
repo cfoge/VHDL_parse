@@ -53,9 +53,9 @@ def test_file(file_name):
     if len(diff_obj.constant[0])!=0:
          print("test: " + file_name + " Failed! = constant") #works
     if len(diff_obj.assign[0])!=0:
-         print("test: " + file_name + " Failed! = assignments") 
+         print("test: " + file_name + " Failed! = assignments") #??
     if len(diff_obj.process[0])!=0:
-         print("test: " + file_name + " Failed! = process")
+         print("test: " + file_name + " Failed! = process") #??
     if len(diff_obj.signal[0])!=0:
          print("test: " + file_name + " Failed! = signal") #works
     return diff_obj
