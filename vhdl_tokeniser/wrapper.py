@@ -15,11 +15,11 @@ all_generics_2_toplevel = True
 all_ports_2_toplevel = True
 
 
-
+lib_list = []
+generic_list = []
+port_list = []
 for decoded in decoded_list:
-    lib_list = []
-    generic_list = []
-    port_list = []
+
 
     for lib in decoded.lib:
         lib_list.append(lib.lower())
@@ -68,6 +68,7 @@ for decoded in decoded_list:
         f.write(f"{port[0]}{spaces}=> {port[0]} {vb}\n")
         f.write(f");\n")
         f.write(f"\n")
+f.close()
 
 #remove duplicates form the Liberary list
 temp = [idx for idx, val in enumerate(lib_list) if val in lib_list[:idx]]
@@ -88,9 +89,9 @@ for lib in clean_lib_list:
     if "." not in lib:
         header = header + f"LIBRARY {lib}; \n"
     else:
-        header = header + f"USE {lib}; \n"
+        header = header + f"USE {lib}; \n"     
 
-header = header + "\nentity {wrapper_name} is \n"
+header = header + f"\nentity {wrapper_name} is \n"
 
 if all_ports_2_toplevel == True:
     for port in port_list:
@@ -103,12 +104,12 @@ if all_ports_2_toplevel == True:
         header = header + f"{port[0]} : {port[1]} {port[2]}{end_of_port}; \n"
 
 
-header = header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n "
+header = header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n \n"
 
 with open("wraper_out.vhdl",'w') as contents:
       contents.write(header)
 
-save_out = save + footer + "end rtl; \n" # add the file contents and the footer/end of the file back in.
+save_out = save + footer + "\nend rtl;\n" # add the file contents and the footer/end of the file back in.
 
 with open("wraper_out.vhdl",'a') as contents:
       contents.write(save_out)

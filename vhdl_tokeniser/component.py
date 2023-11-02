@@ -5,7 +5,7 @@ def extract_module_content(file_path, verbose=False):
 
             # Find the starting and ending indices of each module
             start_indices = [i for i, line in enumerate(content) if line.startswith("entity")]
-            end_indices = [i for i, line in enumerate(content) if line.startswith("end entity")]
+            end_indices = [i for i, line in enumerate(content) if line.startswith("end")]
 
             # Extract content between "entity" and "end entity"
             for start_index in start_indices:
@@ -38,4 +38,4 @@ def extract_module_content(file_path, verbose=False):
 
 # Replace 'your_file.txt' with the path to your text file
 # Set verbose to True if you want to print comments
-extract_module_content('fan_control.vhd', verbose=False)
+extract_module_content('test1.vhdl', verbose=False)

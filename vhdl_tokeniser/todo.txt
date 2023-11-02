@@ -10,3 +10,6 @@ doesent identify variabvles
 
 widths on ports like this in test 8 return none, shoudl return the string
 input     : in  std_logic_vector(TOPWIDTH*WIDTH-1 downto 0);
+
+
+does cl tree print childeren who are named but dont have vhdl objhects attaxched
