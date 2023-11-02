@@ -1,6 +1,8 @@
 # VHDL_parse 🚀
 Welcome to VHDL_parse, a collection of Python tools crafted to simplify your VHDL workflow without the fuss of heavyweight IDEs like Vivado or Quartus. Dive into efficient VHDL development with these lightweight scripts!
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=LSMYWSM7M7EEA)
 ---
+Open to donations and contributors with VHDL/Python experience. 😀 
 
 ## Purpose
 Designed to seamlessly run in the command line, VHDL_parse empowers you to navigate and manipulate VHDL projects effortlessly. No additional libraries required—just the magic of Python3.
@@ -18,7 +20,7 @@ Future potential:
 - Test bench creation automation
 - Signal tracing/search through multiple files
 
-###what_in.py 📜
+###w hat_in.py 📜
 List VHDL entities, constants, attributes, signals, and processes:
 
 | Arg 1        | Arg 2           |
