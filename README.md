@@ -9,16 +9,16 @@ Designed to seamlessly run in the command line, VHDL_parse empowers you to navig
 
 ## Scripts
 ### parse_vhdl.py 🕵️‍♂️
-Revamped from scratch, parse_vhdl.py now utilizes a sophisticated tokenizer, enhancing compatibility with differently formatted files. This script parses VHDL, creating an object containing ports, signals, components, and more.
+Revamped from scratch, parse_vhdl.py now utilizes a tokenizer and enhancing compatibility with differently formatted files. This script parses VHDL, creating a python object containing ports, signals, components, and more. Then this python object can be used to dimplify VHDL development.
 
 ##### Current features:
-- Display VHDL module hierarchies
-- Trace signal paths across multiple files
+- Display VHDL module hierarchies from directory
 - Auto-generate entity and module instantiations
+- Auto generate VHDL wrappers for multiple entitys
 Future potential:
-- Automated component declaration
 - Test bench creation automation
 - Signal tracing/search through multiple files
+- Diff two vhdl files by port,generics,contants ect.. rather then line by line like a regular diff would
 
 ### what_in.py 📜
 List VHDL entities, constants, attributes, signals, and processes:
