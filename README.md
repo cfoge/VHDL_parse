@@ -15,7 +15,7 @@ Revamped from scratch, parse_vhdl.py now utilizes a tokenizer and enhancing comp
 - Display VHDL module hierarchies from directory
 - Auto-generate entity and module instantiations
 - Auto generate VHDL wrappers for multiple entitys
-Future potential:
+##### Future potential:
 - Test bench creation automation
 - Signal tracing/search through multiple files
 - Diff two vhdl files by port,generics,contants ect.. rather then line by line like a regular diff would
