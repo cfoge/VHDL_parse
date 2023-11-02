@@ -1,4 +1,4 @@
-from parse_vhdl import *
+from token_test import *
 import os
 
 def create_tree(parents, children):
@@ -37,7 +37,8 @@ def cl_depend(root_dir,tld, print_url):
         for child in vhdl_o.children_name:
             for vhdl_objsB in vhdl_file_as_obj:
                 if len(vhdl_objsB.data)>0:
-                    if vhdl_objsB.data[0] == child.mod:
+
+                    if vhdl_objsB.data == child.mod:
                         child.vhdl_obj = (vhdl_objsB)
                         #vhdl_o.children_name.remove(child)
                         break
@@ -46,10 +47,10 @@ def cl_depend(root_dir,tld, print_url):
         url = ''
         if depth == 0:
             spacing =  ""
-            object.modname = object.data[0]
+            object.modname = object.data
             if (print_url == True):
                 url = object.url
-            print (object.data[0] + " " + url)
+            print (object.data + " " + url)
         if depth > 1:
             spacing =  "    " * (depth - 1) + "│   "
         else: 
@@ -91,10 +92,17 @@ def cl_depend(root_dir,tld, print_url):
     hierachy_vis = []
     for vhdl_objs in vhdl_file_as_obj:
         if len(vhdl_objs.data) > 0 :
-            if (target_vhdl.data[0] == vhdl_objs.data[0] ):
+            if (target_vhdl.data == vhdl_objs.data ):
  
                 print_child(vhdl_objs,0,"",print_url)
     print("---------------------------------------------------")
 
     return
 
+root_dir = 'C:/BMD_builds/tvs3d_vert_int/atemtvs3d2/src'
+tld = 'C:/BMD_builds/tvs3d_vert_int/atemtvs3d2/src/atemtvs3d2.vhd'
+cl_depend(root_dir,tld, False)
+
+# this = parse_vhdl('C:/BMD_builds/avc_delay_out/atemavsc1/src/h264_codec/src/common/hdl/inter_pkg.vhd')
+
+print("")
