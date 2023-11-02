@@ -104,7 +104,7 @@ if all_ports_2_toplevel == True:
         header = header + f"{port[0]} : {port[1]} {port[2]}{end_of_port}; \n"
 
 
-header = header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n \n"
+header = header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \nbegin \n"
 
 with open("wraper_out.vhdl",'w') as contents:
       contents.write(header)
