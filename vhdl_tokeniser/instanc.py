@@ -1,7 +1,7 @@
 from token_test import *
 import os
 
-decoded = parse_vhdl('tests/test4.vhdl')
+decoded = parse_vhdl('c:/BMD_builds/tvs3d_issue_multi_build/atemtvs3dcpu/src/atemtvs3dcpu.vhd', True)
 
 #add arg parser
 # add function to allign => based on gen/port lenghth
@@ -52,3 +52,4 @@ if len(decoded.port) > 0:
     f.write(f"\n")
 
 f.close()
+
