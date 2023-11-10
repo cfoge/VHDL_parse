@@ -3,7 +3,7 @@ import os
 
 files_to_tb = "tests/test1.vhdl"
 
-decoded = parse_vhdl(files_to_tb)
+decoded = parse_vhdl(files_to_tb, True)
 tb_name = f"TB_{decoded.data}"
 #add arg parser
 # add function to allign => based on gen/port lenghth

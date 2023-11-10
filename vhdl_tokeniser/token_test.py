@@ -719,19 +719,31 @@ def read_vhdl_file(file_path):
              return ""
     return vhdl_code
 
-def parse_vhdl(file_name):
+def extract_text_until_keywords(file_path):
+    with open(file_path, 'r') as file:
+        extracted_text = ''
+        for line in file:
+            extracted_text += line
+            if all(keyword in line.lower() for keyword in ["architecture", "of", "is"]):
+                break
+    return extracted_text
+
+def parse_vhdl(file_name, just_port = False):
     global entity_vhdl
     file_path = file_name
     # file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
-    vhdl_code = read_vhdl_file(file_path).lower()
+    if just_port == True:
+        vhdl_code = extract_text_until_keywords(file_path)
+    else:
+        vhdl_code = read_vhdl_file(file_path).lower()
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)
 
-
-    proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
-    generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
-    func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
+    if just_port == False:
+        proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
+        generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
+        func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -822,92 +834,92 @@ def parse_vhdl(file_name):
             if global_arch == 0: # detect first arch decleration which is module arch
                 entity_vhdl.arch=(make_block(token_type,current_position,"of"))
                 global_arch = 1
-
-        if token_type == 'SignalKeyword' : 
-            decoded_por = (decode_sig(token_type,current_position,";"))
-            format_sig_tmp = format_port(decoded_por)
-            if len(format_sig_tmp) == 1:
-                entity_vhdl.signal.append(format_sig_tmp[0])
-            else:
-                for i in format_sig_tmp:
-                    entity_vhdl.signal.append(i)
-
-        if token_type == 'ConstantKeyword' : 
-            decoded_por = (decode_sig(token_type,current_position,";"))
-            entity_vhdl.constant.append(format_port(decoded_por, True)[0])
-
-        if token_type == 'SubtypeKeyword' : 
-            decoded_por = (decode_sig(token_type,current_position,";"))
-            entity_vhdl.subtype.append(format_port(decoded_por)[0])
-
-        if token_type == 'TypeKeyword' : 
-            decoded_por = (decode_sig(token_type,current_position,";"))
-            entity_vhdl.type_dec.append(format_port(decoded_por)[0])
-
-        if token_type == 'GenerateKeyword' : 
-            
-            generate_name = find_name("IdentifierToken", current_position, 26)
-            gen_triger_str = decode_block(gen_trigger,';')
-            entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
-        
-        if token_type == 'ProcessKeyword':
-                prcess_name = find_name("IdentifierToken", current_position, 9)
-                if prcess_name == "generate" or prcess_name == "end":
-                    prcess_name = 'unnamed'
-                process_dep = make_block(token_type,current_position,")")
-                if process_dep != -1:
-                     process_dep = process_dep[1:]
-                
-                process_def = [prcess_name, process_dep]
-                # process_contents = extract_process_blocks(current_position)
-                #need to handle contents in process block now like ifs and assignements, cases ect
-                entity_vhdl.process.append([prcess_name, process_dep] )
-
-                #search inside process for contents
-        if token_text == 'assert':
-            assert_tok = make_block("",current_position,";",1, 0, 1) 
-            entity_vhdl.nonSynth.append(assert_tok)
-
-        if token_text == '<=': # detect assignements
-            ignore = 0
-            #find out if the assign is inside of a func, generate or process and if so ignore for now
-            for start, end in func_ranges:
-                if start <= current_position <= end:
-                    ignore = 1
-                    break
-            for start, end in proces_ranges:
-                if start <= current_position <= end:
-                    ignore = 1
-                    break
-            for start, end in generate_ranges:
-                if start <= current_position <= end:
-                    ignore = 1
-                    break
-            if ignore == 0:
-                assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
-                assign_to  = find_name("IdentifierToken", current_position, 20, 0, " ") #using " " as a seperator could make issues in the future
-                entity_vhdl.assign.append([assign_to, assign_from])
-
-        if token_type == 'FunctionKeyword':
-                funct_name =  make_block(token_type,current_position,"(")
-                func_inputs_tmp = extract_tokens_between(tokens, "(", ")",current_position)
-                func_inputs_tmp2 = decode_block(func_inputs_tmp,';')
-                func_inputs = format_port(func_inputs_tmp2)
-
-                return_type_tmp = extract_tokens_between(tokens, "return", "is",current_position)
-                if return_type_tmp != None:
-                    return_type = ("returnType", return_type_tmp[0][1])
+        if just_port == False:
+            if token_type == 'SignalKeyword' : 
+                decoded_por = (decode_sig(token_type,current_position,";"))
+                format_sig_tmp = format_port(decoded_por)
+                if len(format_sig_tmp) == 1:
+                    entity_vhdl.signal.append(format_sig_tmp[0])
                 else:
-                     return_type = ("returnType", "None")
-                entity_vhdl.func.append([funct_name,func_inputs, return_type] )
-        
+                    for i in format_sig_tmp:
+                        entity_vhdl.signal.append(i)
+
+            if token_type == 'ConstantKeyword' : 
+                decoded_por = (decode_sig(token_type,current_position,";"))
+                entity_vhdl.constant.append(format_port(decoded_por, True)[0])
+
+            if token_type == 'SubtypeKeyword' : 
+                decoded_por = (decode_sig(token_type,current_position,";"))
+                entity_vhdl.subtype.append(format_port(decoded_por)[0])
+
+            if token_type == 'TypeKeyword' : 
+                decoded_por = (decode_sig(token_type,current_position,";"))
+                entity_vhdl.type_dec.append(format_port(decoded_por)[0])
+
+            if token_type == 'GenerateKeyword' : 
+                
+                generate_name = find_name("IdentifierToken", current_position, 26)
+                gen_triger_str = decode_block(gen_trigger,';')
+                entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
+            
+            if token_type == 'ProcessKeyword':
+                    prcess_name = find_name("IdentifierToken", current_position, 9)
+                    if prcess_name == "generate" or prcess_name == "end":
+                        prcess_name = 'unnamed'
+                    process_dep = make_block(token_type,current_position,")")
+                    if process_dep != -1:
+                        process_dep = process_dep[1:]
+                    
+                    process_def = [prcess_name, process_dep]
+                    # process_contents = extract_process_blocks(current_position)
+                    #need to handle contents in process block now like ifs and assignements, cases ect
+                    entity_vhdl.process.append([prcess_name, process_dep] )
+
+                    #search inside process for contents
+            if token_text == 'assert':
+                assert_tok = make_block("",current_position,";",1, 0, 1) 
+                entity_vhdl.nonSynth.append(assert_tok)
+
+            if token_text == '<=': # detect assignements
+                ignore = 0
+                #find out if the assign is inside of a func, generate or process and if so ignore for now
+                for start, end in func_ranges:
+                    if start <= current_position <= end:
+                        ignore = 1
+                        break
+                for start, end in proces_ranges:
+                    if start <= current_position <= end:
+                        ignore = 1
+                        break
+                for start, end in generate_ranges:
+                    if start <= current_position <= end:
+                        ignore = 1
+                        break
+                if ignore == 0:
+                    assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
+                    assign_to  = find_name("IdentifierToken", current_position, 20, 0, " ") #using " " as a seperator could make issues in the future
+                    entity_vhdl.assign.append([assign_to, assign_from])
+
+            if token_type == 'FunctionKeyword':
+                    funct_name =  make_block(token_type,current_position,"(")
+                    func_inputs_tmp = extract_tokens_between(tokens, "(", ")",current_position)
+                    func_inputs_tmp2 = decode_block(func_inputs_tmp,';')
+                    func_inputs = format_port(func_inputs_tmp2)
+
+                    return_type_tmp = extract_tokens_between(tokens, "return", "is",current_position)
+                    if return_type_tmp != None:
+                        return_type = ("returnType", return_type_tmp[0][1])
+                    else:
+                        return_type = ("returnType", "None")
+                    entity_vhdl.func.append([funct_name,func_inputs, return_type] )
+            
 
 
-        #     # test = make_block(token_type,current_position,"end", 0, 5)
-        #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
-        #         prcess_name = find_name("IdentifierToken", current_position, 4)
-        #         process_dep = make_block(token_type,current_position,")")
-        #         entity_vhdl.process.append([prcess_name, process_dep])
+            #     # test = make_block(token_type,current_position,"end", 0, 5)
+            #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
+            #         prcess_name = find_name("IdentifierToken", current_position, 4)
+            #         process_dep = make_block(token_type,current_position,")")
+            #         entity_vhdl.process.append([prcess_name, process_dep])
         current_position = current_position + 1
 
     return entity_vhdl

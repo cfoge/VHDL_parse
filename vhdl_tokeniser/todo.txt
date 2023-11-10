@@ -2,8 +2,8 @@ cant handle this:
 signal current_state, next_state: FSM_States;
 
 need to speed up, this is slow when processing 1k files +
-
-wrapper script doesnt print all modules in list
+--- done, need to add test for this feature
+huge speed up!!!!!!!! 200%
 
 doesent identify variabvles 
 

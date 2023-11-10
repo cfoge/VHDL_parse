@@ -5,7 +5,7 @@ files_to_wrap = ["tests/test1.vhdl", "tests/test2.vhdl"]
 wrapper_name = "wrapper_test"
 decoded_list = []
 for files in files_to_wrap:
-    decoded_list.append(parse_vhdl(files))
+    decoded_list.append(parse_vhdl(files), True)
 
 #add arg parser
 # add function to allign => based on gen/port lenghth
