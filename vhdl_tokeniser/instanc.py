@@ -1,7 +1,7 @@
 from token_test import *
 import os
 
-decoded = parse_vhdl('c:/BMD_builds/tvs3d_issue_multi_build/atemtvs3dcpu/src/atemtvs3dcpu.vhd', True)
+decoded = parse_vhdl('xyz', True)
 
 #add arg parser
 # add function to allign => based on gen/port lenghth
