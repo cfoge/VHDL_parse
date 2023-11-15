@@ -8,8 +8,13 @@ Open to donations and contributors with VHDL/Python experience. 😀
 Designed to seamlessly run in the command line, VHDL_parse empowers you to navigate and manipulate VHDL projects effortlessly. No additional libraries required—just the magic of Python3.
 
 ## Scripts
-### parse_vhdl.py 🕵️‍♂️
-Revamped from scratch, parse_vhdl.py now utilizes a tokenizer and enhancing compatibility with differently formatted files. This script parses VHDL, creating a python object containing ports, signals, components, and more. Then this python object can be used to dimplify VHDL development.
+### parse_vhdl.py (in the "vhdl_tokeniser" folder) 🕵️‍♂️
+Revamped from scratch, parse_vhdl.py now utilizes a tokenizer and enhancing compatibility with differently formatted files. This script parses VHDL, creating a python object containing ports, signals, components, and more. Then this python object can be used to simplify VHDL development.
+
+#### Working Python Comand Line Scripts
+- instanc.py = creates a template instantiation from a VHDL file in the terminal or as a .txt file
+- component.py = creates a template component decleration from a VHDL file in the terminal or as a .txt file
+- wrapper.py = create a wrapper that declares an entity, instantiates the VHDL files passed to it annd optionally creates signals with matching port names connected to each instance.
 
 ##### Current features:
 - Display VHDL module hierarchies from directory
