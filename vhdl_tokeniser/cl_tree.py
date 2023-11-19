@@ -1,5 +1,6 @@
 from token_test import *
 import os
+import argparse
 
 def create_tree(parents, children):
     tree = {}
@@ -20,7 +21,7 @@ def cl_depend(root_dir,tld, print_url):
     #print("VHDL Files Found:")
     for root, dirs, files in os.walk(root_dir):
         for file in files: 
-            if file.endswith(".vhd"):
+            if file.endswith(".vhd") or file.endswith(".vhdl"):
                 #print(os.path.join(root, file))
                 vhdl_files.append(os.path.join(root, file))
 
@@ -67,7 +68,6 @@ def cl_depend(root_dir,tld, print_url):
                         # hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
                         print_child(object.children_name[child], (depth + 1),object.data[0], print_url)
 
-
         if isinstance(object,instanc): 
             if (print_url == True) and (object.vhdl_obj != None):
                 url = object.vhdl_obj.url
@@ -89,6 +89,7 @@ def cl_depend(root_dir,tld, print_url):
         return 
 
     print("---------------------------------------------------")
+    print(f"Hierarchy of {target_vhdl.data} is: \n")
     hierachy_vis = []
     for vhdl_objs in vhdl_file_as_obj:
         if len(vhdl_objs.data) > 0 :
@@ -99,10 +100,23 @@ def cl_depend(root_dir,tld, print_url):
 
     return
 
-root_dir = 'C:/BMD_builds/tvs3d_vert_int/atemtvs3d2/src'
-tld = 'C:/BMD_builds/tvs3d_vert_int/atemtvs3d2/src/atemtvs3d2.vhd'
-cl_depend(root_dir,tld, False)
+if __name__ == "__main__":
+    # Add argparse for command-line arguments
+    parser = argparse.ArgumentParser(description='VHDL wrapper generator')
+    parser.add_argument('tld', type=str, help='Input VHDL file (Your top level design)')
+    parser.add_argument('-d', '--directory', type=str, help='root directory for vhdl project')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Print verbose output')
 
-# this = parse_vhdl('C:/BMD_builds/avc_delay_out/atemavsc1/src/h264_codec/src/common/hdl/inter_pkg.vhd')
+
+    # # Check if the correct number of arguments is provided
+    args = parser.parse_args()
+
+
+tld = args.tld
+ROOT_DIR = os.path.dirname(tld)
+root_dir = args.directory if args.directory is not None else ROOT_DIR
+
+cl_depend(root_dir,tld, args.verbose)
+
 
 print("")

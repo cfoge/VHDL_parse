@@ -1,3 +1,7 @@
+## Parse_VHDL 2023 CFOGE
+## instanc.py 
+## A Script to instantiate a VHDL module from its VHDL file 
+
 import argparse
 import sys
 from token_test import *

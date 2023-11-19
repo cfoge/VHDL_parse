@@ -1,3 +1,7 @@
+## Parse_VHDL 2023 CFOGE
+## component.py 
+## A Script to declare the component of a VHDL module from its VHDL file 
+
 import argparse
 
 def extract_module_content(file_path, verbose=False, save_to_file=False):

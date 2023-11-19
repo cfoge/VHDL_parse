@@ -1,3 +1,7 @@
+## Parse_VHDL 2023 CFOGE
+## wrapper.py 
+## A Script to generate a VHDL module from a list VHDL files, where each file is instantiated and may be connected to signals automaticly  
+
 import argparse
 from token_test import parse_vhdl
 import os
