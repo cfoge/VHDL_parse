@@ -73,6 +73,9 @@ diff_object = test_file("test6")
 diff_object = test_file("test7")
 # diff_object = test_file("test8")
 
+diff_object = test_file("AlphaBlend")
+
+
 #somthing is up with the tests it is not recognising types of changes
 # script doesnt recognise := after signals and maybe ports and constants
 print("")

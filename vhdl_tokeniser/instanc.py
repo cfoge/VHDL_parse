@@ -27,7 +27,7 @@ args = parser.parse_args()
 decoded = parse_vhdl(args.file, True)
 
 # Initialize save_to_file based on command-line argument
-save_to_file = args.s
+save_to_file = False #args.s
 
 #add arg parser
 # add function to allign => based on gen/port lenghth

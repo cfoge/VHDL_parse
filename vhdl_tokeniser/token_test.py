@@ -474,8 +474,14 @@ def find_width(input_line, type_in):
     elif "bit" in input_line:
         size_found = 1
         # add for more types
+    elif type_in == "interger":
+        size_found = extract_bit_len(input_line, "interger")
     elif type_in == "std_ulogic_vector":
         size_found = extract_bit_len(input_line, "std_ulogic_vector")
+    elif type_in == "signed":
+        size_found = extract_bit_len(input_line, "signed")
+    elif type_in == "unsigned":
+        size_found = extract_bit_len(input_line, "unsigned")
     elif type_in == "std_ulogic":
         size_found = 1
     return size_found
@@ -499,7 +505,16 @@ def extract_bit_len_not_numbers(str_in, type_in):
 
 def extract_bit_len(str_in, type_in = "std_logic_vector"):
            # Find the number before and after 'downto'
-    if ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
+    if type_in == "interger":
+        if "range" in str_in and "to" in str_in:
+                split_str_tmp = str_in.split('range')
+                split_str = split_str_tmp[1].strip()
+                return split_str_tmp[1]       
+        else:
+            return_len = str_in
+            return return_len
+               
+    elif ('-' in str_in or '/' in str_in or '+' in str_in or '*' in str_in) and 'downto' in str_in:
         a_num = False
         b_num = False
         split_str = str_in.split('downto')
