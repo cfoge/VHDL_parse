@@ -46,7 +46,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype|component)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -79,7 +79,8 @@ keyword_mapping = {
     'work'    : 'WorkKeyword',
     'package' : 'PackageKeyword',
     'subtype' : 'SubtypeKeyword', #needs beter decoding
-    'type'    : 'TypeKeyword'     #needs beter decoding
+    'type'    : 'TypeKeyword'  ,   #needs beter decoding
+    'component' : 'ComponentKeyword'
 }
 
 
@@ -216,6 +217,12 @@ def replace_end_process_tokens(tokens):
                     # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
 
                         tokens[i] = ('EndEntityKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
+                if next_keyword_type == 'ComponentKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ComponentKeyword' with 'EndComponentKeyword'
+
+                        tokens[i] = ('EndComponentKeyword', tokens[i][1])
                         tokens.pop(next_keyword_index)
 
 
@@ -759,6 +766,7 @@ def parse_vhdl(file_name, just_port = False):
         proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
         generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
         func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
+        component_ranges = extract_process_lines(tokens, "ComponentKeyword", "EndComponentKeyword")
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -777,7 +785,7 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
 
 
-        if token_type == 'EntityKeyword' and global_entity == 1:
+        if token_type == 'EntityKeyword' and global_entity == 1: # if we have found the global entity and we come across another entity
                 ent_name = find_name("IdentifierToken", current_position, 6)
                 if ent_name == "generate":
                     ent_name = 'unnamed'
@@ -842,8 +850,18 @@ def parse_vhdl(file_name, just_port = False):
             
 
         if token_type == 'PortKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-            decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
-            entity_vhdl.port = format_port(decoded_por)
+            port_belongs_to_component = False
+            for range in component_ranges:
+                if current_position > range[0] and current_position < range[1]:
+                    port_belongs_to_component = True
+                    break
+            if port_belongs_to_component == False:
+                decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
+                entity_vhdl.port = format_port(decoded_por)
+
+        if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
+            decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'ComponentKeyword'))
+            entity_vhdl.component.append(format_port(decoded_por))
 
         if token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
