@@ -295,18 +295,18 @@ def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=
 
 def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'):
         if dir == 0:
-            end = 0
+            end = current_position - search_limit
             step = -1
+
         else:
-            end = len(tokens)
+            end = current_position + search_limit
             step = 1
         start_pos = current_position
         search_position = current_position
         token_list = []
         start = search_position
         for i in range(start, end, step):
-            if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
-                return "Unnammed"
+
             this_token_type = token_type
             token_type, token_text = tokens[i]
             if token_text == sperator:
@@ -323,7 +323,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
             if token_type != 'SpaceToken' and token_type != this_token_type:
                 token_list.append((token_type, token_text))
 
-        return -1
+        return "Unnammed"
 
 def decode_port(token_type,current_position,end_token,port_token, token_in = 0, splitter = ';'): #decodes lines with the strcutre of a port such as generics/assignements ect
         if token_in != 0:
@@ -860,8 +860,10 @@ def parse_vhdl(file_name, just_port = False):
                 entity_vhdl.port = format_port(decoded_por)
 
         if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
+            compoent_name = find_name("IdentifierToken", current_position, 26, 1, 'is')
+            current_position = current_position + 2
             decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'ComponentKeyword'))
-            entity_vhdl.component.append(format_port(decoded_por))
+            entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
         if token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
