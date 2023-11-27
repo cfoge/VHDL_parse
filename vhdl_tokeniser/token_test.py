@@ -778,12 +778,14 @@ def parse_vhdl(file_name, just_port = False):
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
+    component_list = []
 
     current_position = 0  # Initialize the current position
     search_position = 0 
     global_entity = 0
     global_arch = 0
     global_sig = 0
+    first_begin_found = False
 
 
     for token_type, token_text in tokens:
@@ -793,19 +795,23 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
 
 
-        if token_type == 'EntityKeyword' and global_entity == 1: # if we have found the global entity and we come across another entity
-                ent_name = find_name("IdentifierToken", current_position, 6)
-                if ent_name == "generate":
-                    ent_name = 'unnamed'
-
-                entity = extract_tokens_between(tokens, "entity", ";",current_position)
-                if entity[0][1] == 'work':
-                    mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
-                else: 
-                    mod_name =  entity[0][1]
-                if 'work.' in mod_name:
-                    tmp1 = mod_name.replace("work.", "")
-                    mod_name = tmp1
+        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
+                if token_text in component_list: # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
+                    ent_name = find_name("IdentifierToken", current_position, 6)
+                    entity = extract_tokens_between(tokens, token_text, ";",current_position)
+                    mod_name = token_text
+                else:
+                    ent_name = find_name("IdentifierToken", current_position, 6)
+                    if ent_name == "generate":
+                        ent_name = 'unnamed'
+                    entity = extract_tokens_between(tokens, "entity", ";",current_position)
+                    if entity[0][1] == 'work':
+                        mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
+                    else: 
+                        mod_name =  entity[0][1]
+                    if 'work.' in mod_name:
+                        tmp1 = mod_name.replace("work.", "")
+                        mod_name = tmp1
                 generic = []
                 port = []
                 if any(token_type == 'GenericKeyword' for token_type, _ in entity):
@@ -869,7 +875,8 @@ def parse_vhdl(file_name, just_port = False):
 
         if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
             compoent_name = find_next_ident(current_position)
-            decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name]))
+            component_list.append(compoent_name)
+            decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
             entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
         if token_type == 'ArchitectureKeyword':
@@ -955,6 +962,8 @@ def parse_vhdl(file_name, just_port = False):
                         return_type = ("returnType", "None")
                     entity_vhdl.func.append([funct_name,func_inputs, return_type] )
             
+            if token_text == "begin":
+                first_begin_found = True
 
 
             #     # test = make_block(token_type,current_position,"end", 0, 5)

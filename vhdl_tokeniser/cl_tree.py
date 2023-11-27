@@ -27,7 +27,7 @@ def cl_depend(root_dir,tld, print_url):
 
     vhdl_file_as_obj = []
 
-    # make list of VHDL files as parsed objects
+    # make list of VHDL files as parsed objects --this reads every file maybe there is a better way to recursivly only read the needed files
     for files in vhdl_files:
         vhdl_file_as_obj.append(parse_vhdl(files))
 
