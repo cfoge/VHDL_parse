@@ -253,6 +253,15 @@ def extract_process_lines(tokens, start_keyword, end_keyword):
 # for keyword_type, ranges in keyword_ranges.items():
 #     for start_index, end_index in ranges:
 #         print(f'{keyword_type}: Line {start_index +
+def find_next_ident(current_position):
+    end = len(tokens)
+    start = current_position
+    for i in range(start, end):
+        token_type, token_text = tokens[i]
+        if token_type == 'IdentifierToken':
+            return token_text
+
+    return -1
 
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
@@ -301,7 +310,6 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
         else:
             end = current_position + search_limit
             step = 1
-        start_pos = current_position
         search_position = current_position
         token_list = []
         start = search_position
@@ -309,7 +317,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
 
             this_token_type = token_type
             token_type, token_text = tokens[i]
-            if token_text == sperator:
+            if token_text.strip() == sperator:
                 global gen_trigger
                 gen_trigger = tokens[i:current_position]
                 for j in range(i, current_position-search_limit,-1):
@@ -339,13 +347,13 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
 
             token_type, token_text = tokens_int[i]
 
-            if token_type in end_token.values() and token_type != port_token:
+            if token_type in end_token.values() and token_type not in port_token:
                 return token_list
             if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
 
-            if token_type != 'SpaceToken' and token_type != this_token_type:
+            if token_type != 'SpaceToken' and token_type != this_token_type and (token_text not in port_token):
 
                 if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword' or token_text == "," or token_text == ":":
                         token_list[port_num] = token_list[port_num] + token_text + " "
@@ -860,9 +868,8 @@ def parse_vhdl(file_name, just_port = False):
                 entity_vhdl.port = format_port(decoded_por)
 
         if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
-            compoent_name = find_name("IdentifierToken", current_position, 26, 1, 'is')
-            current_position = current_position + 2
-            decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'ComponentKeyword'))
+            compoent_name = find_next_ident(current_position)
+            decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name]))
             entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
         if token_type == 'ArchitectureKeyword':
