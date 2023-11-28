@@ -140,6 +140,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
                     assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
+                    temp = [find_str]
+                    find_str = temp
                     find_str.append(x[0])
                     break
     if type(find_str) == list:
@@ -201,9 +203,9 @@ for path in path_tree:
     for step in path:
         print( " --> ",end='')
         if len(step)==2:
-            print(step[0] + " = " + step[1] ,end='')
+            print(f"{step[0]} = '{step[1]}' " ,end='')
         else:
-            print(step + " = " + find_str ,end='')
+            print(f"{step} = '{find_str}' " ,end='')
     print("")
 print("")
 print("---------------------------------------------------")
