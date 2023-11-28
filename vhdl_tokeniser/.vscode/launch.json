@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["C:/Users/robertjo/Downloads/ems_buttons/src/digital_side/test_1_build/tb_test_digital_side.vhd", "-d=C:/Users/robertjo/Downloads/ems_buttons/src"],
+            "args": ["C:/Users/robertjo/Downloads/ems_buttons/src/digital_side/test_1_build/tb_test_digital_side.vhd", "-d=C:/Users/robertjo/Downloads/ems_buttons/src", "-v"],
             "justMyCode": true
         }
     ]

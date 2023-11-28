@@ -35,7 +35,7 @@ def print_lists_aligned(list1, list2):
 
     for item1, item2 in zip(list1, list2):
         spacing = max_length - len(str(item1)) + 4
-        print(f"{item1}{' ' * spacing}{item2}")
+        print(f"     {item1}{' ' * spacing}{item2}")
 
 def print_mismatch(name, list1, list2):
     if len(list1) != len(list2):
@@ -52,7 +52,8 @@ def calculate_dif(self, other): # != operator returns the differences as a strin
             diff_obj.data = []
         else:
             diff_obj.data = [self.data , other.data]
-            print(f"Name:    {self.data}             {other.data}")
+            print("Name:")
+            print(f"    {self.data}             {other.data}")
         
         if len(diff(self.generic,other.generic)) != 0:
             diff_obj.generic.append([self.generic,other.generic])   
@@ -84,11 +85,12 @@ def calculate_dif(self, other): # != operator returns the differences as a strin
 
 
 file1 =parse_vhdl("tests/test1.vhdl") #parse_vhdl(sys.argv[1])
-file2 =parse_vhdl("tests/test2.vhdl") #makeparse_vhdl(sys.argv[2])
+file2 =parse_vhdl("tests/test2.vhdl") #parse_vhdl(sys.argv[2])
 
 
 print("---------------------------------------------------")
 # print("Running diff between " + sys.argv[1] + " and " + sys.argv[2])
+print("---------------------------------------------------")
 diff_obj = calculate_dif(file1,file2)
 
 print("---------------------------------------------------")
