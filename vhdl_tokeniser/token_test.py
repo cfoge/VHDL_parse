@@ -263,6 +263,16 @@ def find_next_ident(current_position):
 
     return -1
 
+def find_prev_ident(current_position):
+    end = 0
+    start = current_position
+    for i in range(start, end, -1):
+        token_type, token_text = tokens[i]
+        if token_type == 'IdentifierToken':
+            return token_text
+
+    return -1
+
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
         start_pos = current_position
@@ -945,8 +955,8 @@ def parse_vhdl(file_name, just_port = False):
                         ignore = 1
                         break
                 if ignore == 0:
-                    assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
-                    assign_to  = find_name("IdentifierToken", current_position, 20, 0, " ") #using " " as a seperator could make issues in the future
+                    assign_from = find_prev_ident(current_position)
+                    assign_to  = find_next_ident(current_position)
                     entity_vhdl.assign.append([assign_to, assign_from])
 
             if token_type == 'FunctionKeyword':
