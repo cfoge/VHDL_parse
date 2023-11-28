@@ -955,8 +955,9 @@ def parse_vhdl(file_name, just_port = False):
                         ignore = 1
                         break
                 if ignore == 0:
-                    assign_from = find_prev_ident(current_position)
-                    assign_to  = find_next_ident(current_position)
+                    # assign_from = find_prev_ident(current_position)
+                    assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
+                    assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
                     entity_vhdl.assign.append([assign_to, assign_from])
 
             if token_type == 'FunctionKeyword':
