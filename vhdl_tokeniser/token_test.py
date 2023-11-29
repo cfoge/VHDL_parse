@@ -273,6 +273,22 @@ def find_prev_ident(current_position):
 
     return -1
 
+def find_prev_till(current_position, end_tokens):
+    tokens_list = []
+    end = current_position - 20
+    start = current_position - 1
+    for i in range(start, end, -1):
+        token_type, token_text = tokens[i]
+        if token_text in end_tokens:
+            token_str = ''
+            for token_found in tokens_list:
+                token_str = token_found + token_str
+            return token_str
+        else:
+            if '\n' not in token_text and '--' not in token_text:
+                tokens_list.append(token_text)
+    return -1
+
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
         start_pos = current_position
@@ -330,9 +346,9 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
             if token_text.strip() == sperator:
                 global gen_trigger
                 gen_trigger = tokens[i:current_position]
-                for j in range(i, current_position-search_limit,-1):
+                for j in token_list:
                     this_token_type = token_type
-                    token_type, token_text = tokens[j]
+                    token_type, token_text = j
                     if token_type == 'IdentifierToken' and token_text != 'downto':
                         return token_text
                     if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
@@ -957,8 +973,11 @@ def parse_vhdl(file_name, just_port = False):
                 if ignore == 0:
                     # assign_from = find_prev_ident(current_position)
                     assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
-                    assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
-                    entity_vhdl.assign.append([assign_to, assign_from])
+                    assign_to  = find_prev_till(current_position, [';','begin','\n','\n\n'])
+                    # assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
+                    if assign_to == -1:
+                        assign_to = "error"
+                    entity_vhdl.assign.append([assign_to.strip(), assign_from.strip()])
 
             if token_type == 'FunctionKeyword':
                     funct_name =  make_block(token_type,current_position,"(")

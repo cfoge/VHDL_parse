@@ -117,7 +117,8 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'clk_x'
+# find_str = 'clk_x'
+find_str = 'rst'
 # find_str = 'genlock_sof'
 
 
@@ -134,7 +135,6 @@ nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
 
 def create_path(vhdl_obj_in, find_str, curent_node):
     find_str_sub = ''
-
     for x in vhdl_obj_in.assign: #find asignments in sub modules
         if (find_str in x[0] or find_str in x[1] ):       
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
@@ -153,10 +153,10 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                         # string_out = y[0] + " => " + y[1]
                         if (y[1] == string):
                             find_str_sub = y[0]
-                            if len(x.mod)==0:
-                                new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
+                            if (x.name)=='Unnammed':
+                                new_node = TreeNode(x.mod,y[0],"module", x.mod, find_str_sub)
                             else:
-                                new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+                                new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
                             
                             curent_node.add_child(new_node)
                             if x.vhdl_obj != None:
@@ -169,10 +169,10 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                     # string_out = y[0] + " => " + y[1]
                     if (y[1] == string):
                         find_str_sub = y[0]
-                        if len(x.mod)==0:
-                            new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
+                        if (x.name)=='Unnammed':
+                            new_node = TreeNode(x.mod,y[0],"module", x.mod, find_str_sub)
                         else:
-                            new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+                            new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
                         
                         curent_node.add_child(new_node)
                         if x.vhdl_obj != None:
