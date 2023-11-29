@@ -823,11 +823,13 @@ def parse_vhdl(file_name, just_port = False):
 
         if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
                 if token_text in component_list: # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
-                    ent_name = find_name("IdentifierToken", current_position, 6)
+                    ent_name = find_prev_ident(current_position)
+                    # ent_name = find_name("IdentifierToken", current_position, 6)
                     entity = extract_tokens_between(tokens, token_text, ";",current_position)
                     mod_name = token_text
                 else:
-                    ent_name = find_name("IdentifierToken", current_position, 6)
+                    ent_name = find_prev_ident(current_position)
+                    # ent_name = find_name("IdentifierToken", current_position, 6)
                     if ent_name == "generate":
                         ent_name = 'unnamed'
                     entity = extract_tokens_between(tokens, "entity", ";",current_position)

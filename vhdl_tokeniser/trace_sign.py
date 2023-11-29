@@ -70,13 +70,13 @@ def get_data_slim(node):
     path_list = ""
     if (node.type == "file"):
         path_list = node.filename
-    if (node.type == "port"):
+    elif (node.type == "port"):
         path_list = node.search_term
-    if (node.type == "signal"):
+    elif (node.type == "signal"):
         path_list = node.search_term
-    if (node.type == "component port"):
+    elif (node.type == "component port"):
         path_list = node.search_term
-    if (node.type == "module"):
+    elif (node.type == "module"):
         path_list = [node.if_mod_name , node.assigned_to]
     return path_list
     
