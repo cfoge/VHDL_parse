@@ -46,7 +46,7 @@ token_patterns = [
     (r'^/\*.*?\*/', 'MultiLineCommentToken'),  # Match multi-line comments
     (r'^:|;|\(|\)|,', 'DelimiterToken'),  # Match delimiters like :, ;, (, ), and ,
     # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
-    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype)\b', 'KeywordToken'),  # Match keywords
+    (r'^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype|component)\b', 'KeywordToken'),  # Match keywords
     (r'^[A-Za-z][A-Za-z0-9_]*', 'IdentifierToken'),  # Match identifiers
     (r'^[0-9]+', 'NumberToken'),  # Match numbers
     (r'^.?', 'CharacterToken'),  # Match any other character
@@ -79,7 +79,8 @@ keyword_mapping = {
     'work'    : 'WorkKeyword',
     'package' : 'PackageKeyword',
     'subtype' : 'SubtypeKeyword', #needs beter decoding
-    'type'    : 'TypeKeyword'     #needs beter decoding
+    'type'    : 'TypeKeyword'  ,   #needs beter decoding
+    'component' : 'ComponentKeyword'
 }
 
 
@@ -218,6 +219,12 @@ def replace_end_process_tokens(tokens):
                         tokens[i] = ('EndEntityKeyword', tokens[i][1])
                         tokens.pop(next_keyword_index)
 
+                if next_keyword_type == 'ComponentKeyword':
+                    # Replace tokens between 'EndKeyword' and 'ComponentKeyword' with 'EndComponentKeyword'
+
+                        tokens[i] = ('EndComponentKeyword', tokens[i][1])
+                        tokens.pop(next_keyword_index)
+
 
         i += 1
 
@@ -246,6 +253,41 @@ def extract_process_lines(tokens, start_keyword, end_keyword):
 # for keyword_type, ranges in keyword_ranges.items():
 #     for start_index, end_index in ranges:
 #         print(f'{keyword_type}: Line {start_index +
+def find_next_ident(current_position):
+    end = len(tokens)
+    start = current_position
+    for i in range(start, end):
+        token_type, token_text = tokens[i]
+        if token_type == 'IdentifierToken':
+            return token_text
+
+    return -1
+
+def find_prev_ident(current_position):
+    end = 0
+    start = current_position
+    for i in range(start, end, -1):
+        token_type, token_text = tokens[i]
+        if token_type == 'IdentifierToken':
+            return token_text
+
+    return -1
+
+def find_prev_till(current_position, end_tokens):
+    tokens_list = []
+    end = current_position - 20
+    start = current_position - 1
+    for i in range(start, end, -1):
+        token_type, token_text = tokens[i]
+        if token_text in end_tokens:
+            token_str = ''
+            for token_found in tokens_list:
+                token_str = token_found + token_str
+            return token_str
+        else:
+            if '\n' not in token_text and '--' not in token_text:
+                tokens_list.append(token_text)
+    return -1
 
 
 def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
@@ -288,26 +330,25 @@ def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=
 
 def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'):
         if dir == 0:
-            end = 0
+            end = current_position - search_limit
             step = -1
+
         else:
-            end = len(tokens)
+            end = current_position + search_limit
             step = 1
-        start_pos = current_position
         search_position = current_position
         token_list = []
         start = search_position
         for i in range(start, end, step):
-            if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
-                return "Unnammed"
+
             this_token_type = token_type
             token_type, token_text = tokens[i]
-            if token_text == sperator:
+            if token_text.strip() == sperator:
                 global gen_trigger
                 gen_trigger = tokens[i:current_position]
-                for j in range(i, current_position-search_limit,-1):
+                for j in token_list:
                     this_token_type = token_type
-                    token_type, token_text = tokens[j]
+                    token_type, token_text = j
                     if token_type == 'IdentifierToken' and token_text != 'downto':
                         return token_text
                     if token_type == 'EndKeyword' or token_text == 'port' or token_text == ';':
@@ -316,7 +357,7 @@ def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'
             if token_type != 'SpaceToken' and token_type != this_token_type:
                 token_list.append((token_type, token_text))
 
-        return -1
+        return "Unnammed"
 
 def decode_port(token_type,current_position,end_token,port_token, token_in = 0, splitter = ';'): #decodes lines with the strcutre of a port such as generics/assignements ect
         if token_in != 0:
@@ -332,13 +373,13 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
 
             token_type, token_text = tokens_int[i]
 
-            if token_type in end_token.values() and token_type != port_token:
+            if token_type in end_token.values() and token_type not in port_token:
                 return token_list
             if token_text == splitter:
                 port_num = port_num + 1
                 token_list.append('')
 
-            if token_type != 'SpaceToken' and token_type != this_token_type:
+            if token_type != 'SpaceToken' and token_type != this_token_type and (token_text not in port_token):
 
                 if token_type == 'IdentifierToken' or token_type == 'NumberToken' or token_type == 'CharacterToken' or token_type == 'AssignKeyword' or token_text == "," or token_text == ":":
                         token_list[port_num] = token_list[port_num] + token_text + " "
@@ -759,15 +800,18 @@ def parse_vhdl(file_name, just_port = False):
         proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
         generate_ranges = extract_process_lines(tokens, "GenerateKeyword", "EndGenerateKeyword")
         func_ranges = extract_process_lines(tokens, "FunctionKeyword", "EndFunctionKeyword")
+        component_ranges = extract_process_lines(tokens, "ComponentKeyword", "EndComponentKeyword")
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
+    component_list = []
 
     current_position = 0  # Initialize the current position
     search_position = 0 
     global_entity = 0
     global_arch = 0
     global_sig = 0
+    first_begin_found = False
 
 
     for token_type, token_text in tokens:
@@ -777,19 +821,25 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
 
 
-        if token_type == 'EntityKeyword' and global_entity == 1:
-                ent_name = find_name("IdentifierToken", current_position, 6)
-                if ent_name == "generate":
-                    ent_name = 'unnamed'
-
-                entity = extract_tokens_between(tokens, "entity", ";",current_position)
-                if entity[0][1] == 'work':
-                    mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
-                else: 
-                    mod_name =  entity[0][1]
-                if 'work.' in mod_name:
-                    tmp1 = mod_name.replace("work.", "")
-                    mod_name = tmp1
+        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
+                if token_text in component_list: # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
+                    ent_name = find_prev_ident(current_position)
+                    # ent_name = find_name("IdentifierToken", current_position, 6)
+                    entity = extract_tokens_between(tokens, token_text, ";",current_position)
+                    mod_name = token_text
+                else:
+                    ent_name = find_prev_ident(current_position)
+                    # ent_name = find_name("IdentifierToken", current_position, 6)
+                    if ent_name == "generate":
+                        ent_name = 'unnamed'
+                    entity = extract_tokens_between(tokens, "entity", ";",current_position)
+                    if entity[0][1] == 'work':
+                        mod_name =  entity[0][1] + entity[1][1] + entity[2][1]
+                    else: 
+                        mod_name =  entity[0][1]
+                    if 'work.' in mod_name:
+                        tmp1 = mod_name.replace("work.", "")
+                        mod_name = tmp1
                 generic = []
                 port = []
                 if any(token_type == 'GenericKeyword' for token_type, _ in entity):
@@ -842,8 +892,20 @@ def parse_vhdl(file_name, just_port = False):
             
 
         if token_type == 'PortKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-            decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
-            entity_vhdl.port = format_port(decoded_por)
+            port_belongs_to_component = False
+            for range in component_ranges:
+                if current_position > range[0] and current_position < range[1]:
+                    port_belongs_to_component = True
+                    break
+            if port_belongs_to_component == False:
+                decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
+                entity_vhdl.port = format_port(decoded_por)
+
+        if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
+            compoent_name = find_next_ident(current_position)
+            component_list.append(compoent_name)
+            decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
+            entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
         if token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
@@ -911,9 +973,13 @@ def parse_vhdl(file_name, just_port = False):
                         ignore = 1
                         break
                 if ignore == 0:
+                    # assign_from = find_prev_ident(current_position)
                     assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
-                    assign_to  = find_name("IdentifierToken", current_position, 20, 0, " ") #using " " as a seperator could make issues in the future
-                    entity_vhdl.assign.append([assign_to, assign_from])
+                    assign_to  = find_prev_till(current_position, [';','begin','\n','\n\n'])
+                    # assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
+                    if assign_to == -1:
+                        assign_to = "error"
+                    entity_vhdl.assign.append([assign_to.strip(), assign_from.strip()])
 
             if token_type == 'FunctionKeyword':
                     funct_name =  make_block(token_type,current_position,"(")
@@ -928,6 +994,8 @@ def parse_vhdl(file_name, just_port = False):
                         return_type = ("returnType", "None")
                     entity_vhdl.func.append([funct_name,func_inputs, return_type] )
             
+            if token_text == "begin":
+                first_begin_found = True
 
 
             #     # test = make_block(token_type,current_position,"end", 0, 5)

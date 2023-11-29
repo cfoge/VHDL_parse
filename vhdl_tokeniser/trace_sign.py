@@ -52,32 +52,33 @@ class Tree:
 
 ######################################################################
 
-def get_data(node):
-    path_list = ""
-    if (node.type == "file"):
-        path_list = str("file: " + node.filename)
-    if (node.type == "port"):
-        path_list = str(node.type + ": " + node.search_term)
-    if (node.type == "signal"):
-        path_list = str(node.type + ": " + node.search_term)
-    if (node.type == "component port"):
-        path_list = str(node.type + ": " + node.search_term)
-    if (node.type == "module"):
-        path_list = str(node.type + ": "+ node.if_mod_name + ": "+ node.assigned_to +" <= "+ node.search_term)
-    return path_list
+# def get_data(node):
+#     path_list = ""
+#     if (node.type == "file"):
+#         path_list = str("file: " + node.filename)
+#     if (node.type == "port"):
+#         path_list = str(node.type + ": " + node.search_term)
+#     if (node.type == "signal"):
+#         path_list = str(node.type + ": " + node.search_term)
+#     if (node.type == "component port"):
+#         path_list = str(node.type + ": " + node.search_term)
+#     if (node.type == "module"):
+#         path_list = str(node.type + ": "+ node.if_mod_name + ": "+ node.assigned_to +" <= "+ node.search_term)
+#     return path_list
 
 def get_data_slim(node):
     path_list = ""
     if (node.type == "file"):
         path_list = node.filename
-    if (node.type == "port"):
+    elif (node.type == "port"):
         path_list = node.search_term
-    if (node.type == "signal"):
+    elif (node.type == "signal"):
         path_list = node.search_term
-    if (node.type == "component port"):
+    elif (node.type == "component port"):
         path_list = node.search_term
-    if (node.type == "module"):
-        path_list = [node.if_mod_name , node.assigned_to]
+    elif (node.type == "module"):
+        # path_list = [f"{node.if_mod_name}:{node.filename}" , node.assigned_to]
+        path_list = [node , node.assigned_to]
     return path_list
     
 
@@ -117,9 +118,10 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'clk_x'
+# find_str = 'clk_x'
+find_str = 'rst'
 # find_str = 'genlock_sof'
-
+verbose = False
 
 
 
@@ -134,12 +136,13 @@ nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
 
 def create_path(vhdl_obj_in, find_str, curent_node):
     find_str_sub = ''
-
     for x in vhdl_obj_in.assign: #find asignments in sub modules
         if (find_str in x[0] or find_str in x[1] ):       
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
                     assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
+                    temp = [find_str]
+                    find_str = temp
                     find_str.append(x[0])
                     break
     if type(find_str) == list:
@@ -151,10 +154,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                         # string_out = y[0] + " => " + y[1]
                         if (y[1] == string):
                             find_str_sub = y[0]
-                            if len(x.mod)==0:
-                                new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
-                            else:
-                                new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+                            new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
                             
                             curent_node.add_child(new_node)
                             if x.vhdl_obj != None:
@@ -167,10 +167,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                     # string_out = y[0] + " => " + y[1]
                     if (y[1] == string):
                         find_str_sub = y[0]
-                        if len(x.mod)==0:
-                            new_node = TreeNode(x.name,y[0],"module", x.name, find_str_sub)
-                        else:
-                            new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
+                        new_node = TreeNode(x.mod,y[0],"module", x.name, find_str_sub)
                         
                         curent_node.add_child(new_node)
                         if x.vhdl_obj != None:
@@ -201,9 +198,12 @@ for path in path_tree:
     for step in path:
         print( " --> ",end='')
         if len(step)==2:
-            print(step[0] + " = " + step[1] ,end='')
+            if verbose == False:
+                print(f"{step[0].if_mod_name} = '{step[1]}' " ,end='')
+            else:
+                print(f"{step[0].if_mod_name} : {step[0].filename} = '{step[1]}' " ,end='')
         else:
-            print(step + " = " + find_str ,end='')
+            print(f"{step} = '{find_str}' " ,end='')
     print("")
 print("")
 print("---------------------------------------------------")
@@ -231,8 +231,13 @@ def create_tree(data):
                             existing_edges.add(edge)
                 elif len(item) == 2:  
                     node_label, edge_label = item
+                    node_label_mod_name = node_label.if_mod_name
+                    node_label_fine_name = node_label.filename
                     child_node = f"{node_label}_{edge_label}"
-                    tree.node(child_node, label=f"{node_label}\\n{edge_label}")
+                    if verbose == False:
+                        tree.node(child_node, label=f"{node_label_mod_name}\\n{edge_label}")
+                    else:
+                        tree.node(child_node, label=f"{node_label_mod_name} : {node_label_fine_name}\\n{edge_label}")
                     if parent_node is not None:
                         edge = (parent_node, child_node)
                         if edge not in existing_edges:
