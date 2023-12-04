@@ -83,7 +83,18 @@ def get_data_slim(node):
     
 
 
-root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
+# root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
+root_dir = 'C:/BMD_builds/ava_2019_fresh'
+# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
+# search for arg 2 in each each part of the top level file
+# search for other lines involving this signal
+#search each child for 
+find_str = 'f1i_vclk_p'
+# find_str = 'rst'
+# find_str = 'genlock_sof'
+verbose = False
+
 vhdl_files = []
 #print("VHDL Files Found:")
 # for root, dirs, files in os.walk('C:/Users/robertjo/Documents/other/28_7_23_ems/src'):
@@ -100,8 +111,7 @@ vhdl_file_as_obj = []
 for files in vhdl_files:
     vhdl_file_as_obj.append(parse_vhdl(files))
 
-# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
-target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+
 
 for vhdl_o in vhdl_file_as_obj: # make external function!!!
     for child in vhdl_o.children_name:
@@ -115,13 +125,7 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 
 
 
-# search for arg 2 in each each part of the top level file
-# search for other lines involving this signal
-#search each child for 
-# find_str = 'clk_x'
-find_str = 'rst'
-# find_str = 'genlock_sof'
-verbose = False
+
 
 
 

@@ -2,6 +2,17 @@ from token_test import *
 import os
 import argparse
 
+# ANSI escape codes for colors
+COLORS = [
+    '\033[97m',  # WHITE
+    '\033[92m',  # GREEN
+    '\033[94m',  # BLUE
+    '\033[93m',  # YELLOW
+    '\033[96m',  # CYAN
+    '\033[95m',  # MAGENTA
+    '\033[0m',   # RESET
+]
+
 def create_tree(parents, children):
     tree = {}
     for parent, child in zip(parents, children):
@@ -68,24 +79,28 @@ def cl_depend(root_dir,tld, print_url):
                         # hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
                         print_child(object.children_name[child], (depth + 1),object.data[0], print_url)
 
-        if isinstance(object,instanc): 
+        elif isinstance(object,instanc): 
             if (print_url == True) and (object.vhdl_obj != None):
                 url = object.vhdl_obj.url
             obj_type = "inst"
             temp1 = object.vhdl_obj
             if temp1 != None:
                 object.vhdl_obj.modname = object.name
+                color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
+                color = COLORS[color_index]
                 if object.mod == "":
-                    print(spacing +"├─ " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.name + " " + url)
                 else:
-                    print(spacing +"├─ " + object.mod + " : " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + url)
                 hierachy_vis.append([parent,object.name,depth,object.mod])
                 print_child(object.vhdl_obj, (depth + 1), object.name, print_url)
             else:
+                color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
+                color = COLORS[color_index]
                 if object.mod == "":
-                    print(spacing +"├─ " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.name + " " + url)
                 else:
-                    print(spacing +"├─ " + object.mod + " : " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + url)
         return 
 
     print("---------------------------------------------------")
@@ -106,6 +121,7 @@ if __name__ == "__main__":
     parser.add_argument('tld', type=str, help='Input VHDL file (Your top level design)')
     parser.add_argument('-d', '--directory', type=str, help='root directory for vhdl project')
     parser.add_argument('-v', '--verbose', action='store_true', help='Print verbose output')
+    
 
 
     # # Check if the correct number of arguments is provided

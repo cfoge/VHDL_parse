@@ -19,3 +19,6 @@ can it do generics?
 can it do constants?
 
 how to handle multiple version of the same unnamed module
+
+
+make cl tree print different levels in different terminal colours
