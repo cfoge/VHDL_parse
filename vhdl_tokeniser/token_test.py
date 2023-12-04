@@ -92,17 +92,17 @@ def tokenize_vhdl_code(code):
     in_multi_line_comment = False
 
     while current_position < code_length:
-        if in_multi_line_comment:
-            multi_line_comment_end = code.find('*/', current_position)
-            if multi_line_comment_end != -1:
+        # if in_multi_line_comment:
+        #     multi_line_comment_end = code.find('*/', current_position)
+        #     if multi_line_comment_end != -1:
 
-                tokens.append(('MultiLineCommentToken', code[current_position:multi_line_comment_end]))
-                current_position = multi_line_comment_end + 2
-                in_multi_line_comment = False
-            else:
-                tokens.append(('MultiLineCommentToken', code[current_position:]))
-                break
-        else:
+        #         tokens.append(('MultiLineCommentToken', code[current_position:multi_line_comment_end]))
+        #         current_position = multi_line_comment_end + 2
+        #         in_multi_line_comment = False
+        #     else:
+        #         tokens.append(('MultiLineCommentToken', code[current_position:]))
+        #         break
+        # else:
             for pattern, token_type in token_patterns:
                 match = re.match(pattern, code[current_position:])
                 if match:
@@ -133,6 +133,8 @@ def tokenize_vhdl_code(code):
                         else:
                             tokens.append(('KeywordToken', matched_text))
                         current_position += len(matched_text)
+                    # elif token_type == 'SpaceToken': ##############################skip spaces
+                    #     current_position += len(matched_text)
                     else:
                         tokens.append((token_type, matched_text))
                         current_position += len(matched_text)
@@ -891,15 +893,18 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
             
 
-        if token_type == 'PortKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-            port_belongs_to_component = False
-            for range in component_ranges:
-                if current_position > range[0] and current_position < range[1]:
-                    port_belongs_to_component = True
-                    break
-            if port_belongs_to_component == False:
-                decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
-                entity_vhdl.port = format_port(decoded_por)
+        if token_type == 'PortKeyword': 
+            if len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
+                port_belongs_to_component = False
+                for range in component_ranges:
+                    if current_position > range[0] and current_position < range[1]:
+                        port_belongs_to_component = True
+                        break
+                if port_belongs_to_component == False:
+                    decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
+                    entity_vhdl.port = format_port(decoded_por)
+
+
 
         if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
             compoent_name = find_next_ident(current_position)
@@ -934,7 +939,6 @@ def parse_vhdl(file_name, just_port = False):
                 entity_vhdl.type_dec.append(format_port(decoded_por)[0])
 
             if token_type == 'GenerateKeyword' : 
-                
                 generate_name = find_name("IdentifierToken", current_position, 26)
                 gen_triger_str = decode_block(gen_trigger,';')
                 entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
@@ -996,6 +1000,8 @@ def parse_vhdl(file_name, just_port = False):
             
             if token_text == "begin":
                 first_begin_found = True
+
+            
 
 
             #     # test = make_block(token_type,current_position,"end", 0, 5)

@@ -1,6 +1,9 @@
 cant handle this:
 signal current_state, next_state: FSM_States;
 
+parser cant handle primitives, it doesnt know what those are, so it doesnt recognise them as childeren
+
+
 need to speed up, this is slow when processing 1k files +
 --- done, need to add test for this feature
 huge speed up!!!!!!!! 200%
@@ -21,4 +24,5 @@ can it do constants?
 how to handle multiple version of the same unnamed module
 
 
-make cl tree print different levels in different terminal colours
+make cl tree print different levels in different terminal colours, need way to turn off
+cl tree looks like it is getting double the depth for some reason
