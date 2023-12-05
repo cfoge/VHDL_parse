@@ -38,6 +38,10 @@ class vhdl_obj(object):
         self.url = ''
 
 
+primitives_list = [ # list of built in primitives (xilinx), should have anoption to pass in a list
+    'oddr', 'BUFG', 'xadc_wrapper', 'SRLC32E', 'MMCME2_BASE', 'IBUFDS_GTE2', 'BUFGCE', 'IOBUF', 'IBUFG'
+]
+
 # Define regular expressions for VHDL tokens
 token_patterns = [
     (r'^\s+', 'SpaceToken'),  # Match whitespace characters
@@ -180,7 +184,10 @@ def replace_end_process_tokens(tokens):
                 #     tokens.pop(i+1)
                 # elif next_prev_pop == 0: 
                 tokens.pop(i-1)
-                
+
+        if token_text in primitives_list:  
+            tokens[i] = ('PrimitiveKeyword', token_text) 
+
 
         if token_type == 'EndKeyword':
             # Search for the next keyword token
@@ -231,7 +238,6 @@ def replace_end_process_tokens(tokens):
         i += 1
 
     return tokens
-
 
 def extract_process_lines(tokens, start_keyword, end_keyword):
     process_lines = []
