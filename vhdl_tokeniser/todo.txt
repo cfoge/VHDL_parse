@@ -1,6 +1,8 @@
 cant handle this:
 signal current_state, next_state: FSM_States;
 
+add unit tests for more of the functions, and fill out the tests where apropriate
+
 parser cant handle primitives, it doesnt know what those are, so it doesnt recognise them as childeren
 
 
@@ -17,7 +19,7 @@ input     : in  std_logic_vector(TOPWIDTH*WIDTH-1 downto 0);
 
 trace sig:
 can it do port names?
-can it do signals?
+can it do signals? 
 can it do generics?
 can it do constants?
 
