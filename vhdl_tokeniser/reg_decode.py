@@ -9,8 +9,8 @@ def find_between( s, first, last ):
         return ""
 
 def convert_vhdl_reg_to_comment(input_str, vhdl_obj):
-    lines = input_str.split(';')
-
+    lower = input_str.lower()
+    lines = lower.split(';')
     for line in lines:
         if "regs" in line and "<=" in line:
             packed = []
@@ -48,14 +48,14 @@ def convert_vhdl_reg_to_comment(input_str, vhdl_obj):
                         for signal in vhdl_obj.signal:
                             if signal[0] == pack.strip():
                                 found_sig = True
-                                str_out =  f"{pack.strip()}({int(signal[2])-1+start_bit}:{start_bit}) " + str_out  # extract the width
+                                str_out =  f"{pack.strip()}({int(signal[2])-1+start_bit}:{start_bit})  " + str_out  # extract the width
                                 start_bit = start_bit + signal[2] 
                         if found_sig == False: # if the assignment wasnt a signal check if it was a port
                             for signal in vhdl_obj.port:
                                 if signal[0] == pack.strip():
                                     found_sig = True
                                     try:
-                                        str_out =  f"{pack.strip()}({int(signal[3])-1+start_bit}:{start_bit}) " + str_out  # extract the width
+                                        str_out =  f"{pack.strip()}({int(signal[3])-1+start_bit}:{start_bit})  " + str_out  # extract the width
                                         start_bit = start_bit + signal[3] 
                                     except:
                                         print("decode_error")
