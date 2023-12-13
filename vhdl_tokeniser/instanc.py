@@ -24,7 +24,7 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 
 # Parse VHDL file
-decoded = parse_vhdl(args.file, True)
+decoded = parse_vhdl(args.file, False)
 
 # Initialize save_to_file based on command-line argument
 save_to_file = False #args.s
@@ -54,7 +54,7 @@ print(f"{decoded.data}_i : entity work.{decoded.data}")
 if len(decoded.generic) > 0:
     print("generic map (")
     for gen in decoded.generic:
-        vb = f"--{gen[1]} width = {gen[2]}" if args.v else ""
+        vb = f"--{gen[1]} width = {gen[2]}" if False else ""
         spaces = " " * (genspacing - len(gen[0]))
         print(f"{gen[0]}{spaces}=> {gen[0]}, {vb}")
     print(");")
@@ -63,7 +63,7 @@ if len(decoded.generic) > 0:
 if len(decoded.port) > 0:
     print("port map (")
     for port in decoded.port:
-        vb = f"--{port[1]} width = {port[2]}" if args.v else ""
+        vb = f"--{port[1]} width = {port[2]}" if False else ""
         spaces = " " * (portspacing - len(port[0]))
         print(f"{port[0]}{spaces}=> {port[0]}, {vb}")
     print(");")
@@ -76,22 +76,22 @@ if save_to_file:
         if len(decoded.generic) > 0:
             f.write("generic map (\n")
             for gen in decoded.generic[:-1]:
-                vb = f"--{gen[1]} width = {gen[2]}" if args.v else ""
+                vb = f"--{gen[1]} width = {gen[2]}" if False else ""
                 spaces = " " * (genspacing - len(gen[0]))
                 f.write(f"{gen[0]}{spaces}=> {gen[0]}, {vb}\n")
             gen = decoded.generic[-1]
-            vb = f"--{gen[1]} width = {gen[2]}" if args.v else ""
+            vb = f"--{gen[1]} width = {gen[2]}" if False else ""
             spaces = " " * (genspacing - len(gen[0]))
             f.write(f"{gen[0]}{spaces}=> {gen[0]} {vb}\n")
             f.write(");\n")
         if len(decoded.port) > 0:
             f.write("port map (\n")
             for port in decoded.port[:-1]:
-                vb = f"--{port[1]} width = {port[2]}" if args.v else ""
+                vb = f"--{port[1]} width = {port[2]}" if False else ""
                 spaces = " " * (portspacing - len(port[0]))
                 f.write(f"{port[0]}{spaces}=> {port[0]}, {vb}\n")
             port = decoded.port[-1]
-            vb = f"--{port[1]} width = {port[2]}" if args.v else ""
+            vb = f"--{port[1]} width = {port[2]}" if False else ""
             spaces = " " * (portspacing - len(port[0]))
             f.write(f"{port[0]}{spaces}=> {port[0]} {vb}\n")
             f.write(");\n\n")
