@@ -1,3 +1,6 @@
+fix up instanceation!!!! its broken,
+also makje a thing to create signals at the top od the instancviation, so there are signals for all the connections
+
 cant handle this:
 signal current_state, next_state: FSM_States;
 

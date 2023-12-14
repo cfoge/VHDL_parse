@@ -34,6 +34,7 @@ class vhdl_obj(object):
         self.nonSynth = []
         self.func = []
         self.generate = []
+        self.primitives = []
         self.modname = ''
         self.url = ''
 
@@ -827,6 +828,8 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
         if token_type == 'UseKeyword':
             entity_vhdl.lib.append(make_block(token_type,current_position,";"))
+        if token_type == 'PrimitiveKeyword':
+            entity_vhdl.primitives.append(token_text)
 
 
         if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
