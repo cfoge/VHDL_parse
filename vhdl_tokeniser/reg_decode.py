@@ -9,6 +9,7 @@ def find_between( s, first, last ):
         return ""
 
 def convert_vhdl_reg_to_comment(input_str, vhdl_obj):
+    cpp_header = []
     lower = input_str.lower()
     lines = lower.split(';')
     for line in lines:
@@ -49,19 +50,29 @@ def convert_vhdl_reg_to_comment(input_str, vhdl_obj):
                             if signal[0] == pack.strip():
                                 found_sig = True
                                 str_out =  f"{pack.strip()}({int(signal[2])-1+start_bit}:{start_bit})  " + str_out  # extract the width
+                                cpp_shift = start_bit
                                 start_bit = start_bit + signal[2] 
+                                # cpp_header.append([f"#define {pack}     0x{regnum}", f"#define {pack}_shift     {start_bit}"])
+                                print(f"#define {pack.strip()}     0x{regnum}")
+                                print(f"#define {pack.strip()}_shift     {cpp_shift}")
+                                
                         if found_sig == False: # if the assignment wasnt a signal check if it was a port
                             for signal in vhdl_obj.port:
                                 if signal[0] == pack.strip():
                                     found_sig = True
                                     try:
                                         str_out =  f"{pack.strip()}({int(signal[3])-1+start_bit}:{start_bit})  " + str_out  # extract the width
+                                        cpp_shift = start_bit
                                         start_bit = start_bit + signal[3] 
+                                        # cpp_header.append([f"#define {pack}     0x{regnum}", f"#define {pack}_shift     {start_bit}"])
+                                        print(f"#define {pack.strip()}     0x{regnum}")
+                                        print(f"#define {pack.strip()}_shift     {cpp_shift}")
                                     except:
                                         print("decode_error")
                                     
 
                 print(f"-- 0x{regnum}   R    {str_out}")
+                
 
 
 
