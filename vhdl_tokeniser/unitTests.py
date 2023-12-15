@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, find_next_ident, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -78,6 +78,20 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         expected_tokens = [('IdentifierToken', 'a'), ('EndProcessKeyword', 'end'), ('IdentifierToken', 'b')]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
+###################################################
+    def test_find_next_ident_working(self): # tokens is global need to find a way to test this
+        tokens = [('IdentifierToken', 'a'), ('EndKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_result = 'b'
+        result = find_next_ident(1,tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_next_ident_fail(self): # tokens is global need to find a way to test this
+        tokens = [('IdentifierToken', 'a'), ('EndKeyword', 'end'), ('AssignKeyword', '='), ('CharacterToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_result = -1
+        result = find_next_ident(1,tokens)
+        self.assertEqual(result, expected_result)
+
+######################################################
 
     def test_extract_bit_len_with_valid_input(self):
         input_string = "7 downto 3"

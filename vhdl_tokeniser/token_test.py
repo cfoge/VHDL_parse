@@ -262,21 +262,29 @@ def extract_process_lines(tokens, start_keyword, end_keyword):
 # for keyword_type, ranges in keyword_ranges.items():
 #     for start_index, end_index in ranges:
 #         print(f'{keyword_type}: Line {start_index +
-def find_next_ident(current_position):
-    end = len(tokens)
+def find_next_ident(current_position, token_in = []):
+    if len(token_in) == 0:
+        tokens_to_parse = tokens
+    else:
+        tokens_to_parse = token_in
+    end = len(tokens_to_parse)
     start = current_position
     for i in range(start, end):
-        token_type, token_text = tokens[i]
+        token_type, token_text = tokens_to_parse[i]
         if token_type == 'IdentifierToken':
             return token_text
 
     return -1
 
-def find_prev_ident(current_position):
+def find_prev_ident(current_position , token_in = []):
+    if len(token_in) == 0:
+        tokens_to_parse = tokens
+    else:
+        tokens_to_parse = token_in
     end = 0
     start = current_position
     for i in range(start, end, -1):
-        token_type, token_text = tokens[i]
+        token_type, token_text = tokens_to_parse[i]
         if token_type == 'IdentifierToken':
             return token_text
 
