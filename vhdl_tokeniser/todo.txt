@@ -1,3 +1,12 @@
+add more unit tests for all functions!!!!!!!!!!!!!!!
+important!!!!!!!
+
+make unit tests that test fragments of vhdl!!!!!
+
+wrapper doesnt decode (1 downto 2) or named types
+
+---------
+
 fix up instanceation!!!! its broken,
 also makje a thing to create signals at the top od the instancviation, so there are signals for all the connections
 

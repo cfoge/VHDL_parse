@@ -814,6 +814,7 @@ def parse_vhdl(file_name, just_port = False):
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
     component_list = []
+    primitive_list = []
 
     current_position = 0  # Initialize the current position
     search_position = 0 
@@ -832,7 +833,7 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.primitives.append(token_text)
 
 
-        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
+        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_text in primitive_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
                 if token_text in component_list: # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
                     ent_name = find_prev_ident(current_position)
                     # ent_name = find_name("IdentifierToken", current_position, 6)
@@ -909,7 +910,7 @@ def parse_vhdl(file_name, just_port = False):
                     if current_position > range[0] and current_position < range[1]:
                         port_belongs_to_component = True
                         break
-                if port_belongs_to_component == False:
+                if port_belongs_to_component == False:     
                     decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
                     entity_vhdl.port = format_port(decoded_por)
 

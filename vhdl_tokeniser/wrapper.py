@@ -69,7 +69,10 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
             for port in decoded.port:
                 end_of_port = ""
                 if port[3] != 1:
-                    port_msb = port[3] -1
+                    try:
+                        port_msb = port[3] -1
+                    except:
+                        port_msb = "unknown"
                     end_of_port = end_of_port + f"({port_msb} downto 0)"
                 if port[4] != None:
                     end_of_port = end_of_port + f" := {port[4]}"
