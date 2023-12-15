@@ -71,9 +71,15 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
                 if port[3] != 1:
                     try:
                         port_msb = port[3] -1
+                        end_of_port = end_of_port + f"({port_msb} downto 0)"
                     except:
                         port_msb = "unknown"
-                    end_of_port = end_of_port + f"({port_msb} downto 0)"
+                        if " to " in port[3]:
+                            port_width = port[3].replace("to","downto")
+                        else:
+                            port_width = port[3]
+                        end_of_port = end_of_port + f"({port_width})"
+                    
                 if port[4] != None:
                     end_of_port = end_of_port + f" := {port[4]}"
                 signals = signals + f"signal {port[0]} : {port[2]}{end_of_port}; \n"
