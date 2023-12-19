@@ -290,12 +290,18 @@ def find_prev_ident(current_position , token_in = []):
 
     return -1
 
-def find_prev_till(current_position, end_tokens):
+def find_prev_till(current_position, end_tokens, token_in = []):
+    if len(token_in) == 0:
+        tokens_to_parse = tokens
+    else:
+        tokens_to_parse = token_in
     tokens_list = []
     end = current_position - 20
+    if end < 0:
+        end = 0
     start = current_position - 1
     for i in range(start, end, -1):
-        token_type, token_text = tokens[i]
+        token_type, token_text = tokens_to_parse[i]
         if token_text in end_tokens:
             token_str = ''
             for token_found in tokens_list:
@@ -905,11 +911,12 @@ def parse_vhdl(file_name, just_port = False):
                 global_entity = 1
                 entity_vhdl.type = "package"
 
-
-        if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-            decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
-            entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
-            
+        try:
+            if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
+                decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
+                entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
+        except:
+            print()  
 
         if token_type == 'PortKeyword': 
             if len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
@@ -959,7 +966,10 @@ def parse_vhdl(file_name, just_port = False):
             if token_type == 'GenerateKeyword' : 
                 generate_name = find_name("IdentifierToken", current_position, 26)
                 gen_triger_str = decode_block(gen_trigger,';')
-                entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
+                try:
+                    entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
+                except:
+                    print('')
             
             if token_type == 'ProcessKeyword':
                     prcess_name = find_name("IdentifierToken", current_position, 9)

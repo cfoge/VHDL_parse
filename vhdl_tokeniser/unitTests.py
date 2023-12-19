@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, find_next_ident, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, find_next_ident, find_prev_ident, find_prev_till, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -78,11 +78,18 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         expected_tokens = [('IdentifierToken', 'a'), ('EndProcessKeyword', 'end'), ('IdentifierToken', 'b')]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
+
 ###################################################
     def test_find_next_ident_working(self): # tokens is global need to find a way to test this
         tokens = [('IdentifierToken', 'a'), ('EndKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
         expected_result = 'b'
         result = find_next_ident(1,tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_next_ident_working_2(self): # tokens is global need to find a way to test this
+        tokens = [('IdentifierToken', 'identA'), ('EndKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_result = 'identA'
+        result = find_next_ident(0,tokens)
         self.assertEqual(result, expected_result)
 
     def test_find_next_ident_fail(self): # tokens is global need to find a way to test this
@@ -91,7 +98,76 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         result = find_next_ident(1,tokens)
         self.assertEqual(result, expected_result)
 
+###################################################### CANT DETECT IDENTIFYER TOKEN IN LOCATION 0
+    def test_find_prev_ident_working(self): # tokens is global need to find a way to test this
+        tokens = [('IdentifierToken', 'a'), ('EndKeyword', 'end'), ('IdentifierToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_result = 'b'
+        result = find_prev_ident(3,tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_prev_ident_working_2(self): # tokens is global need to find a way to test this
+        tokens = [('IdentifierToken', 'A'), ('IdentifierToken', 'K'), ('EndKeyword', 'end'), ('ProcessKeyword', 'process')]
+        expected_result = 'K'
+        result = find_prev_ident(1,tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_prev_ident_fail(self): # tokens is global need to find a way to test this
+        tokens = [('EndKeyword', 'end'), ('AssignKeyword', '='), ('CharacterToken', 'b'), ('ProcessKeyword', 'process')]
+        expected_result = -1
+        result = find_prev_ident(2,tokens)
+        self.assertEqual(result, expected_result)
+
+###################################################### find_prev_till()
+    def test_find_prev_till_single(self): # tokens is global need to find a way to test this
+        tokens =  [('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', ' '),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', ';')]
+        expected_result = ' is end entity'
+        result = find_prev_till(10, 'example', tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_prev_till_multi(self): # tokens is global need to find a way to test this
+        tokens =  [('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', ' '),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', ';')]
+        expected_result = ' is end entity'
+        result = find_prev_till(10, [';','begin','example','\n\n'], tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_find_prev_till_multi_fail(self): # tokens is global need to find a way to test this
+        tokens =  [('EndKeyword', 'end'),('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', ';')]
+        expected_result = -1
+        result = find_prev_till(5, [';','begin','\n\n'], tokens)
+        self.assertEqual(result, expected_result)
+
 ######################################################
+        
+
 
     def test_extract_bit_len_with_valid_input(self):
         input_string = "7 downto 3"
