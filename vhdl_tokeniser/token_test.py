@@ -313,21 +313,25 @@ def find_prev_till(current_position, end_tokens, token_in = []):
     return -1
 
 
-def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0):
+def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0, token_in = []):
+        if len(token_in) == 0:
+            tokens_to_parse = tokens
+        else:
+            tokens_to_parse = token_in
         start_pos = current_position
         search_position = current_position
         token_list = []
         if sirch_dir == 1:
             start = search_position
-            end = len(tokens)
+            end = len(tokens_to_parse)
         else:
             start = search_position
-            end = len(tokens) - search_position
+            end = len(tokens_to_parse) - search_position
         for i in range(start, end):
             if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
                 return -1
             this_token_type = token_type
-            token_type, token_text = tokens[i]
+            token_type, token_text = tokens_to_parse[i]
             if token_text == end_token:
                 if len(token_list)==1:
                     return token_list[0][1]
