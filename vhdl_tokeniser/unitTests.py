@@ -1,7 +1,7 @@
 import unittest
 
 # Import the function to be tested
-from token_test import tokenize_vhdl_code , replace_end_process_tokens, find_next_ident, find_prev_ident, find_prev_till, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
+from token_test import tokenize_vhdl_code , replace_end_process_tokens, find_next_ident, find_prev_ident, find_prev_till, make_block, extract_bit_len, find_type, find_width, extract_tokens_between, decode_block, extract_process_lines, format_port
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
@@ -165,9 +165,68 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         result = find_prev_till(5, [';','begin','\n\n'], tokens)
         self.assertEqual(result, expected_result)
 
-######################################################
-        
+###################################################### make_block() extracts untill text is found, ignores spaces
+    def test_make_block_forward(self):
+        tokens =  [('EndKeyword', 'end'),('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', ';')]
+        expected_result = 'endentityexampleisendentity'
+        result = make_block('EntityKeyword',0,";",1,0,0, tokens)
+        self.assertEqual(result, expected_result)
 
+    def test_make_block_forward_fail(self):
+        tokens =  [('EndKeyword', 'end'),('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', 'x')]
+        expected_result = -1
+        result = make_block('EntityKeyword',0,";",1,0,0, tokens)
+        self.assertEqual(result, expected_result)
+
+    def test_make_block_rev(self):
+        tokens =  [('EndKeyword', 'end'),('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', 'x')]
+        expected_result = -1
+        result = make_block('EntityKeyword',10,"is",0,0,0, tokens)
+        self.assertEqual(result, expected_result)  
+
+    def test_make_block_rev_fail(self):
+        tokens =  [('EndKeyword', 'end'),('EntityKeyword', 'entity'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'example'),
+            ('SpaceToken', ' '),
+            ('IdentifierToken', 'is'),
+            ('SpaceToken', '\n'),
+            ('EndKeyword', 'end'),
+            ('SpaceToken', ' '),
+            ('EntityKeyword', 'entity'),
+            ('DelimiterToken', 'x')]
+        expected_result = -1
+        result = make_block('EntityKeyword',10,";",0,0,0, tokens)
+        self.assertEqual(result, expected_result)       
+
+######################################################
 
     def test_extract_bit_len_with_valid_input(self):
         input_string = "7 downto 3"

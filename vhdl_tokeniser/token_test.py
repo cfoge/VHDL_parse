@@ -1,4 +1,5 @@
 import re
+from bisect import bisect_left
 
 class instanc(object):
     def __init__(self, mod, name, line_num):
@@ -40,7 +41,7 @@ class vhdl_obj(object):
 
 
 primitives_list = [ # list of built in primitives (xilinx), should have anoption to pass in a list
-    'oddr', 'BUFG', 'xadc_wrapper', 'SRLC32E', 'MMCME2_BASE', 'IBUFDS_GTE2', 'BUFGCE', 'IOBUF', 'IBUFG'
+    'oddr', 'bufg', 'xadc_wrapper', 'srlc32e', 'mmcme2_base', 'ibufds_gte2', 'bufgce', 'iobuf', 'ibufg', 'bufgmux_ctrl'
 ]
 
 # Define regular expressions for VHDL tokens
@@ -155,42 +156,34 @@ def replace_end_process_tokens(tokens):
     i = 0
     while i < len(tokens):
         token_type, token_text = tokens[i]
-        next_prev_pop = 2
+
         if token_text == '=':
-             try:
-                token_type_next, token_text_next = tokens[i+1]
-                next_prev_pop = 1
-             except:
-                  token_text_next = None
-             try:
-                token_type_prev, token_text_prev = tokens[i-1]
-                next_prev_pop = 0
-             except:
-                  token_text_prev = None
-             
-             if token_text_next == '>':
+            try:
+                token_type_next, token_text_next = tokens[i + 1]
+            except IndexError:
+                token_text_next = None
+
+            try:
+                token_type_prev, token_text_prev = tokens[i - 1]
+            except IndexError:
+                token_text_prev = None
+
+            if token_text_next == '>':
                 tokens[i] = ('AssignKeyword', '=>')
-                tokens.pop(i+1)
-                # elif next_prev_pop == 0: 
-                #     tokens.pop(i-1)
-             if token_text_prev == ':':
+                tokens.pop(i + 1)
+
+            elif token_text_prev == ':':
                 tokens[i] = ('AssignKeyword', ':=')
-                # if next_prev_pop == 1:
-                #     tokens.pop(i+1)
-                # elif next_prev_pop == 0: 
-                tokens.pop(i-1)
-             if token_text_prev == '<':
+                tokens.pop(i - 1)
+
+            elif token_text_prev == '<':
                 tokens[i] = ('AssignKeyword', '<=')
-                # if next_prev_pop == 1:
-                #     tokens.pop(i+1)
-                # elif next_prev_pop == 0: 
-                tokens.pop(i-1)
+                tokens.pop(i - 1)
 
-        if token_text in primitives_list:  
-            tokens[i] = ('PrimitiveKeyword', token_text) 
+        elif token_text in primitives_list:
+            tokens[i] = ('PrimitiveKeyword', token_text)
 
-
-        if token_type == 'EndKeyword':
+        elif token_type == 'EndKeyword':
             # Search for the next keyword token
             next_keyword_index = i + 1
             while next_keyword_index < len(tokens) and not tokens[next_keyword_index][0].endswith('Keyword'):
@@ -199,46 +192,24 @@ def replace_end_process_tokens(tokens):
             if next_keyword_index < len(tokens):
                 next_keyword_type = tokens[next_keyword_index][0]
 
-                if next_keyword_type == 'ProcessKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndProcessKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'IfKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndIfKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'FunctionKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndFunctionKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'GenerateKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndGenerateKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'EntityKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ProcessKeyword' with 'EndProcessKeyword'
-
-                        tokens[i] = ('EndEntityKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
-                if next_keyword_type == 'ComponentKeyword':
-                    # Replace tokens between 'EndKeyword' and 'ComponentKeyword' with 'EndComponentKeyword'
-
-                        tokens[i] = ('EndComponentKeyword', tokens[i][1])
-                        tokens.pop(next_keyword_index)
-
+                if next_keyword_type in ('ProcessKeyword', 'IfKeyword', 'FunctionKeyword',
+                                         'GenerateKeyword', 'EntityKeyword', 'ComponentKeyword'):
+                    # Replace tokens between 'EndKeyword' and next keyword with corresponding 'End...Keyword'
+                    end_keyword_mapping = {
+                        'ProcessKeyword': 'EndProcessKeyword',
+                        'IfKeyword': 'EndIfKeyword',
+                        'FunctionKeyword': 'EndFunctionKeyword',
+                        'GenerateKeyword': 'EndGenerateKeyword',
+                        'EntityKeyword': 'EndEntityKeyword',
+                        'ComponentKeyword': 'EndComponentKeyword'
+                    }
+                    tokens[i] = (end_keyword_mapping[next_keyword_type], tokens[i][1])
+                    tokens.pop(next_keyword_index)
 
         i += 1
 
     return tokens
+
 
 def extract_process_lines(tokens, start_keyword, end_keyword):
     process_lines = []
@@ -312,48 +283,32 @@ def find_prev_till(current_position, end_tokens, token_in = []):
                 tokens_list.append(token_text)
     return -1
 
+def make_block(token_type, current_position, end_token, search_dir=1, search_limit=0, add_space=0, token_in=None):
+    tokens_to_parse = token_in if token_in else tokens
+    start_pos = current_position
+    token_list = []
 
-def make_block(token_type,current_position,end_token, sirch_dir=1, search_limit=0, add_space = 0, token_in = []):
-        if len(token_in) == 0:
-            tokens_to_parse = tokens
+    start, end, step = (current_position, len(tokens_to_parse), 1) if search_dir == 1 else (current_position, 0, -1)
+
+    for i in range(start, end, step):
+        if abs(start_pos - current_position) > search_limit and search_limit != 0:
+            return -1
+
+        this_token_type, token_text = tokens_to_parse[i]
+
+        if token_text == end_token:
+            return token_list[0][1] if len(token_list) == 1 else ''.join(token_text for _, token_text in token_list)
+
+        if token_type not in ('SpaceToken', this_token_type):
+            token_list.append((this_token_type, token_text))
+
+        if search_dir == 1:
+            current_position += 1
         else:
-            tokens_to_parse = token_in
-        start_pos = current_position
-        search_position = current_position
-        token_list = []
-        if sirch_dir == 1:
-            start = search_position
-            end = len(tokens_to_parse)
-        else:
-            start = search_position
-            end = len(tokens_to_parse) - search_position
-        for i in range(start, end):
-            if(abs(start_pos - current_position)> search_limit) and search_limit != 0:
-                return -1
-            this_token_type = token_type
-            token_type, token_text = tokens_to_parse[i]
-            if token_text == end_token:
-                if len(token_list)==1:
-                    return token_list[0][1]
-                else:
-                    out_str = ''
-                    for token_type, token_text in token_list:
-                        if add_space == 1:
-                            out_str = out_str + " " + token_text
-                        else:
-                            out_str = out_str + token_text
-                    return out_str
+            current_position -= 1
 
-            if token_type != 'SpaceToken' and token_type != this_token_type:
-                token_list.append((token_type, token_text))
-            # Check if the token is a delimiter token (adjust the condition as needed)
+    return -1
 
-            # Update the current position for future searches
-        if sirch_dir == 1:
-            current_position = current_position + 1
-        else: 
-            current_position = current_position - 1
-        return -1
 
 def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'):
         if dir == 0:
@@ -497,62 +452,50 @@ def decode_sig(token_type,current_position,end_token): #decodes lines with the s
         return -1
 
 def find_type(input_line):
-    type_found = "null"
-    input_line = input_line.lower()
-    if "array" in input_line:
-        array_type = find_type(input_line.replace("array",''))
-        type_found = "array: " + array_type  
-    elif "std_logic_vector" in input_line:
-        type_found = "std_logic_vector"
-    elif "std_logic" in input_line:
-        type_found = "std_logic"
-    elif "bit_vector" in input_line:
-        type_found = "bit_vector"
-    elif "bit" in input_line:
-        type_found = "bit"
-    elif "boolean" in input_line:
-        type_found = "boolean"
-    elif "integer" in input_line:
-        type_found = "interger"
-    elif "unsigned" in input_line:
-        type_found = "unsigned"
-    elif "signed" in input_line:
-        type_found = "signed"
-    # add more types
-    elif "std_ulogic_vector" in input_line:
-        type_found = "std_ulogic_vector"
-    elif "std_ulogic" in input_line:
-        type_found = "std_ulogic"
-    elif "positive" in input_line:
-        type_found = "positive"
-    elif "natural" in input_line:
-        type_found = "natural"
-    elif "real" in input_line:
-        type_found = "real"
-    return type_found
+    type_mapping = {
+        "array": "array",
+        "std_logic_vector": "std_logic_vector",
+        "std_logic": "std_logic",
+        "bit_vector": "bit_vector",
+        "bit": "bit",
+        "boolean": "boolean",
+        "integer": "integer",
+        "unsigned": "unsigned",
+        "signed": "signed",
+        "std_ulogic_vector": "std_ulogic_vector",
+        "std_ulogic": "std_ulogic",
+        "positive": "positive",
+        "natural": "natural",
+        "real": "real"
+        # Add more types as needed
+    }
+
+    input_line = input_line
+    
+    for keyword, type_found in type_mapping.items():
+        if keyword in input_line:
+            return type_found
+
+    return "null"
 
 def find_width(input_line, type_in):
-    size_found = "null"
-    if type_in == "std_logic_vector":
-        size_found = extract_bit_len(input_line, "std_logic_vector")
-    elif type_in == "std_logic":
-        size_found = 1
-    elif "bit_vector" in input_line:
-        size_found = "bit_vector"
-    elif "bit" in input_line:
-        size_found = 1
-        # add for more types
-    elif type_in == "interger":
-        size_found = extract_bit_len(input_line, "interger")
-    elif type_in == "std_ulogic_vector":
-        size_found = extract_bit_len(input_line, "std_ulogic_vector")
-    elif type_in == "signed":
-        size_found = extract_bit_len(input_line, "signed")
-    elif type_in == "unsigned":
-        size_found = extract_bit_len(input_line, "unsigned")
-    elif type_in == "std_ulogic":
-        size_found = 1
-    return size_found
+    width_functions = {
+        "std_logic_vector": extract_bit_len,
+        "std_logic": lambda line, type_str: 1,
+        "bit_vector": lambda line, type_str: "bit_vector",
+        "bit": lambda line, type_str: 1,
+        "interger": extract_bit_len,
+        "std_ulogic_vector": extract_bit_len,
+        "signed": extract_bit_len,
+        "unsigned": extract_bit_len,
+        "std_ulogic": lambda line, type_str: 1
+        # Add more types as needed
+    }
+
+    if type_in in width_functions:
+        return width_functions[type_in](input_line, type_in)
+    else:
+        return "null"
 
 def extract_bit_len_not_numbers(str_in, type_in):
         match = re.search(r'(\d+)\s+downto\s+(\d+)', str_in)
@@ -644,114 +587,72 @@ def calculate_equations(string):
         results = string
     return results
 
-def format_port(decoded_gen, generic = False):
-        result = [] 
-        for i in decoded_gen:
-                type_found = False
-                in_out_inout = ''
-                if generic == False:
-                    
-                    if " in " in i:
-                        in_out_inout = 'in'
-                    elif " out " in i:
-                        in_out_inout = 'out'
-                    elif " inout " in i:
-                        in_out_inout = 'inout'
+def format_port(decoded_gen, generic=False):
+    result = []
+
+    for i in decoded_gen:
+        in_out_inout = ''
+        type_found = False
+
+        if not generic:
+            if " in " in i:
+                in_out_inout = 'in'
+            elif " out " in i:
+                in_out_inout = 'out'
+            elif " inout " in i:
+                in_out_inout = 'inout'
+
+        if " subtype " in i:
+            i = i.replace("subtype", "").strip()
+        if " type " in i:
+            i = i.replace("type", "").strip()
+            type_found = True
+            type_val = i.split(" of ")
+            if ";" in type_val[1]:
+                type_val[1] = type_val[1].replace(";", "")
+
+        if "," in i and ":" in i:
+            sig_names, sig_dec = i.split(": ")
+            i = sig_dec
+            split = i.split(" ")
+            name = [n.strip() for n in sig_names.split(",") if n.strip()]
+            port_type = find_type(i) if not type_found else type_val[1].strip()
+            port_width = find_width(i, port_type)
+            port_val = extract_port_val(i)
+
+            for sig_name in name:
+                result.append([sig_name, in_out_inout, port_type, port_width, port_val])
+
+        else:
+            split = i.split(" ")
+            name = split[0]
+            if name:
+                port_type = find_type(i) if not type_found else type_val[1].strip()
+                port_width = find_width(i, port_type)
+                port_val = extract_port_val(i)
+
+                result.append([name, in_out_inout, port_type, port_width, port_val])
+
+    result = [found_port for found_port in result if found_port[0] != entity_vhdl.data or found_port[1] != 'null']
+
+    return result
 
 
-                if " subtype " in i:
-                    i = i.replace("subtype" , "")
-                    i = i.strip()
-                if " type " in i:
-                    i = i.replace("type" , "")
-                    i = i.strip()
-                    type_found = True
-                    type_val = i.split(" of ")
-                    if ";" in type_val[1]:
-                        type_val[1] = type_val[1].replace(";", "")
-
-                if "," in i and ":" in i :
-                    split_sig = i.split(": ")
-                    sig_names = split_sig[0]
-                    sig_dec = split_sig[1]
-                    i = sig_dec
-                    split = i.split(" ")
-                    name = sig_names.split(",")
-                    if name[0] == "":
-                        continue
-                    port_type = find_type(i)
-                    if port_type == "null":
-                        port_type = is_port_type_dec(i, entity_vhdl)
-                    port_width = find_width(i, port_type)
-                    port_val = None
-                    if type_found == True:
-                        port_val = type_val[1].strip()
-                    if "=" in i:
-                        equal_sign_index = i.find('=')
-                        if equal_sign_index != -1:
-                            # Extract the text after '=' with no spaces
-                            port_temp = i[equal_sign_index + 1:].replace(' ', '')
-                            port_temp = port_temp.replace("'", '')
-                                # Check if the result is a number and convert it if it is
-                            try:
-                                if port_type in ["real", "natural"]:
-                                    port_val = float(port_temp) 
-                                else:
-                                    port_val = int(port_temp)  # Convert to float (or int if it's an integer)
-                            except ValueError:
-                                port_val = port_temp
-                    for sig_name in name:
-                        if in_out_inout != "":
-                            result.append(
-                                [sig_name.strip(),in_out_inout, port_type, port_width, port_val]
-                                )
-                        else:
-                            result.append(
-                                [sig_name.strip(), port_type, port_width, port_val]
-                                )
-
-                else:
-## dont repeat this break it oput into a func
-                    split = i.split(" ")
-                    name = split[0]
-                    if name == "":
-                        continue
-                    port_type = find_type(i)
-                    if port_type == "null":
-                        port_type = is_port_type_dec(i, entity_vhdl)
-                    port_width = find_width(i, port_type)
-                    port_val = None
-                    if type_found == True:
-                        port_val = type_val[1].strip()
-                    if "=" in i:
-                        equal_sign_index = i.find('=')
-                        if equal_sign_index != -1:
-                            # Extract the text after '=' with no spaces
-                            port_temp = i[equal_sign_index + 1:].replace(' ', '')
-                            port_temp = port_temp.replace("'", '')
-                                # Check if the result is a number and convert it if it is
-                            try:
-                                if port_type in ["real", "natural"]:
-                                    port_val = float(port_temp) 
-                                else:
-                                    port_val = int(port_temp)  # Convert to float (or int if it's an integer)
-                            except ValueError:
-                                port_val = port_temp
-                    if in_out_inout != "":
-                        result.append(
-                            [name,in_out_inout, port_type, port_width, port_val]
-                            )
-                    else:
-                        result.append(
-                            [name, port_type, port_width, port_val]
-                            )
-        for found_port in result:
+def extract_port_val(i):
+    port_val = None
+    if "=" in i:
+        equal_sign_index = i.find('=')
+        if equal_sign_index != -1:
+            # Extract the text after '=' with no spaces
+            port_temp = i[equal_sign_index + 1:].replace(' ', '').replace("'", '')
             try:
-                if found_port[0] == entity_vhdl.data and found_port[1] == 'null':
-                    result.pop(result.index(found_port))
-            except:
-                result = result
-        return result
+                if find_type(i) in ["real", "natural"]:
+                    port_val = float(port_temp)
+                else:
+                    port_val = int(port_temp)
+            except ValueError:
+                port_val = port_temp
+    return port_val
 
 def extract_process_blocks(start):
     blocks = []
@@ -811,6 +712,10 @@ def extract_text_until_keywords(file_path):
                 break
     return extracted_text
 
+def is_in_ranges(ranges, current_position):
+    index = bisect_left(ranges, (current_position,))
+    return index % 2 == 1
+
 def parse_vhdl(file_name, just_port = False):
     global entity_vhdl
     file_path = file_name
@@ -832,13 +737,10 @@ def parse_vhdl(file_name, just_port = False):
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
     component_list = []
-    primitive_list = []
 
     current_position = 0  # Initialize the current position
-    search_position = 0 
     global_entity = 0
     global_arch = 0
-    global_sig = 0
     first_begin_found = False
 
 
@@ -851,8 +753,8 @@ def parse_vhdl(file_name, just_port = False):
             entity_vhdl.primitives.append(token_text)
 
 
-        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_text in primitive_list and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
-                if token_text in component_list: # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
+        if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_type == 'PrimitiveKeyword' and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
+                if (token_text in component_list) or token_type == 'PrimitiveKeyword': # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
                     ent_name = find_prev_ident(current_position)
                     # ent_name = find_name("IdentifierToken", current_position, 6)
                     entity = extract_tokens_between(tokens, token_text, ";",current_position)
@@ -996,18 +898,10 @@ def parse_vhdl(file_name, just_port = False):
             if token_text == '<=': # detect assignements
                 ignore = 0
                 #find out if the assign is inside of a func, generate or process and if so ignore for now
-                for start, end in func_ranges:
-                    if start <= current_position <= end:
+                if is_in_ranges(func_ranges, current_position) or \
+                    is_in_ranges(proces_ranges, current_position) or \
+                    is_in_ranges(generate_ranges, current_position):
                         ignore = 1
-                        break
-                for start, end in proces_ranges:
-                    if start <= current_position <= end:
-                        ignore = 1
-                        break
-                for start, end in generate_ranges:
-                    if start <= current_position <= end:
-                        ignore = 1
-                        break
                 if ignore == 0:
                     # assign_from = find_prev_ident(current_position)
                     assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
@@ -1030,7 +924,7 @@ def parse_vhdl(file_name, just_port = False):
                         return_type = ("returnType", "None")
                     entity_vhdl.func.append([funct_name,func_inputs, return_type] )
             
-            if token_text == "begin":
+            if token_text == "begin" and first_begin_found == False:
                 first_begin_found = True
 
             

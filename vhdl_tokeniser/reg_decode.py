@@ -27,7 +27,14 @@ def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out = False):
                     if '"' in reg or "'" in reg:
                         if "x" in reg:
                             zeros = find_between(reg, '"','"')
-                            packed.append(int(len(zeros))*4)
+                            constant = False
+                            for dig in zeros:
+                                if dig != "0":
+                                     constant = True
+                            if constant == False:
+                                packed.append(int(len(zeros))*4)
+                            else:
+                                packed.append(zeros)
                         else:
                             zeros = find_between(reg, '"','"')
                             packed.append(int(len(zeros)))
