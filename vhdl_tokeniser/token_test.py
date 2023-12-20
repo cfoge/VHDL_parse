@@ -587,7 +587,9 @@ def calculate_equations(string):
         results = string
     return results
 
-def format_port(decoded_gen, generic=False):
+def format_port(decoded_gen, generic=False, obj_in = None):
+    if obj_in == None:
+        obj_in = entity_vhdl
     result = []
 
     for i in decoded_gen:
@@ -633,7 +635,7 @@ def format_port(decoded_gen, generic=False):
 
                 result.append([name, in_out_inout, port_type, port_width, port_val])
 
-    result = [found_port for found_port in result if found_port[0] != entity_vhdl.data or found_port[1] != 'null']
+    result = [found_port for found_port in result if found_port[0] != obj_in.data or found_port[1] != 'null']
 
     return result
 
@@ -801,7 +803,7 @@ def parse_vhdl(file_name, just_port = False):
 
                 entity_vhdl.children_name.append(mod)
 
-        elif token_type == 'EntityKeyword':
+        if token_type == 'EntityKeyword':
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
@@ -810,7 +812,7 @@ def parse_vhdl(file_name, just_port = False):
                     entity_vhdl.data = "None"
                 global_entity = 1
         
-        elif token_type == 'PackageKeyword':
+        if token_type == 'PackageKeyword':
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
@@ -840,13 +842,13 @@ def parse_vhdl(file_name, just_port = False):
 
 
 
-        elif token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
+        if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
             compoent_name = find_next_ident(current_position)
             component_list.append(compoent_name)
             decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
             entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
-        elif token_type == 'ArchitectureKeyword':
+        if token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
                 entity_vhdl.arch=(make_block(token_type,current_position,"of"))
                 global_arch = 1
