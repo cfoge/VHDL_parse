@@ -743,14 +743,17 @@ def parse_vhdl(file_name, just_port = False):
     global_arch = 0
     first_begin_found = False
 
+    token_actions = {
+    'LibraryKeyword': 'lib',
+    'UseKeyword': 'lib',
+    'PrimitiveKeyword': 'primitives',
+    # Add more token types as needed
+}
 
     for token_type, token_text in tokens:
-        if token_type == 'LibraryKeyword':
-            entity_vhdl.lib.append(make_block(token_type,current_position,";"))
-        if token_type == 'UseKeyword':
-            entity_vhdl.lib.append(make_block(token_type,current_position,";"))
-        if token_type == 'PrimitiveKeyword':
-            entity_vhdl.primitives.append(token_text)
+        if token_type in token_actions:
+            entity_vhdl_list = getattr(entity_vhdl, token_actions[token_type])
+            entity_vhdl_list.append(make_block(token_type, current_position, ";"))
 
 
         if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_type == 'PrimitiveKeyword' and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
@@ -798,7 +801,7 @@ def parse_vhdl(file_name, just_port = False):
 
                 entity_vhdl.children_name.append(mod)
 
-        if token_type == 'EntityKeyword':
+        elif token_type == 'EntityKeyword':
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
@@ -807,7 +810,7 @@ def parse_vhdl(file_name, just_port = False):
                     entity_vhdl.data = "None"
                 global_entity = 1
         
-        if token_type == 'PackageKeyword':
+        elif token_type == 'PackageKeyword':
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
@@ -837,13 +840,13 @@ def parse_vhdl(file_name, just_port = False):
 
 
 
-        if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
+        elif token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
             compoent_name = find_next_ident(current_position)
             component_list.append(compoent_name)
             decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
             entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
-        if token_type == 'ArchitectureKeyword':
+        elif token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
                 entity_vhdl.arch=(make_block(token_type,current_position,"of"))
                 global_arch = 1
@@ -857,19 +860,19 @@ def parse_vhdl(file_name, just_port = False):
                     for i in format_sig_tmp:
                         entity_vhdl.signal.append(i)
 
-            if token_type == 'ConstantKeyword' : 
+            elif token_type == 'ConstantKeyword' : 
                 decoded_por = (decode_sig(token_type,current_position,";"))
                 entity_vhdl.constant.append(format_port(decoded_por, True)[0])
 
-            if token_type == 'SubtypeKeyword' : 
+            elif token_type == 'SubtypeKeyword' : 
                 decoded_por = (decode_sig(token_type,current_position,";"))
                 entity_vhdl.subtype.append(format_port(decoded_por)[0])
 
-            if token_type == 'TypeKeyword' : 
+            elif token_type == 'TypeKeyword' : 
                 decoded_por = (decode_sig(token_type,current_position,";"))
                 entity_vhdl.type_dec.append(format_port(decoded_por)[0])
 
-            if token_type == 'GenerateKeyword' : 
+            elif token_type == 'GenerateKeyword' : 
                 generate_name = find_name("IdentifierToken", current_position, 26)
                 gen_triger_str = decode_block(gen_trigger,';')
                 try:
@@ -877,7 +880,7 @@ def parse_vhdl(file_name, just_port = False):
                 except:
                     print('')
             
-            if token_type == 'ProcessKeyword':
+            elif token_type == 'ProcessKeyword':
                     prcess_name = find_name("IdentifierToken", current_position, 9)
                     if prcess_name == "generate" or prcess_name == "end":
                         prcess_name = 'unnamed'
@@ -895,7 +898,7 @@ def parse_vhdl(file_name, just_port = False):
                 assert_tok = make_block("",current_position,";",1, 0, 1) 
                 entity_vhdl.nonSynth.append(assert_tok)
 
-            if token_text == '<=': # detect assignements
+            elif token_text == '<=': # detect assignements
                 ignore = 0
                 #find out if the assign is inside of a func, generate or process and if so ignore for now
                 if is_in_ranges(func_ranges, current_position) or \
@@ -911,7 +914,7 @@ def parse_vhdl(file_name, just_port = False):
                         assign_to = "error"
                     entity_vhdl.assign.append([assign_to.strip(), assign_from.strip()])
 
-            if token_type == 'FunctionKeyword':
+            elif token_type == 'FunctionKeyword':
                     funct_name =  make_block(token_type,current_position,"(")
                     func_inputs_tmp = extract_tokens_between(tokens, "(", ")",current_position)
                     func_inputs_tmp2 = decode_block(func_inputs_tmp,';')
@@ -924,7 +927,7 @@ def parse_vhdl(file_name, just_port = False):
                         return_type = ("returnType", "None")
                     entity_vhdl.func.append([funct_name,func_inputs, return_type] )
             
-            if token_text == "begin" and first_begin_found == False:
+            elif token_text == "begin" and first_begin_found == False:
                 first_begin_found = True
 
             
