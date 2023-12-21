@@ -1,3 +1,16 @@
+most important fixes!!!!!
+
+- rtl and data have spaces before/after
+- 
+ISSUES IN THING LIKE:
+- make individual higher level unit tests, like somthing to 
+decode a port, 
+find assignaments
+decode generarte
+primitive detection
+array decoding
+
+
 add more unit tests for all functions!!!!!!!!!!!!!!!
 important!!!!!!!
 

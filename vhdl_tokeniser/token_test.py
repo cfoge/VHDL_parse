@@ -748,7 +748,7 @@ def parse_vhdl(file_name, just_port = False):
     token_actions = {
     'LibraryKeyword': 'lib',
     'UseKeyword': 'lib',
-    'PrimitiveKeyword': 'primitives',
+    # 'PrimitiveKeyword': 'primitives',
     # Add more token types as needed
 }
 
@@ -889,7 +889,8 @@ def parse_vhdl(file_name, just_port = False):
                     process_dep = make_block(token_type,current_position,")")
                     if process_dep != -1:
                         process_dep = process_dep[1:]
-                    
+                    if process_dep[0] == "(":
+                        process_dep = process_dep[1:]
                     process_def = [prcess_name, process_dep]
                     # process_contents = extract_process_blocks(current_position)
                     #need to handle contents in process block now like ifs and assignements, cases ect
