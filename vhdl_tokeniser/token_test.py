@@ -1,4 +1,5 @@
 import re
+import os
 from bisect import bisect_left
 
 class instanc(object):
@@ -41,7 +42,8 @@ class vhdl_obj(object):
 
 
 primitives_list = [ # list of built in primitives (xilinx), should have anoption to pass in a list
-    'oddr', 'bufg', 'xadc_wrapper', 'srlc32e', 'mmcme2_base', 'ibufds_gte2', 'bufgce', 'iobuf', 'ibufg', 'bufgmux_ctrl'
+    'AND2B1L', 'AUTOBUF', 'BIBUF', 'BSCANE2', 'BUF', 'BUFCE_LEAF', 'BUFCE_ROW', 'BUFG', 'BUFGCE', 'BUFGCE_DIV', 'BUFGCTRL', 'BUFGP', 'BUFG_GT', 'BUFG_GT_SYNC', 'BUFG_PS', 'BUFH', 'BUFHCE', 'BUFIO', 'BUFMR', 'BUFMRCE', 'BUFR', 'CAPTUREE2', 'CARRY4', 'CARRY8', 'CFGLUT5', 'DCIRESET', 'DCM_ADV', 'DCM_SP', 'DIFFINBUF', 'DNA_PORT', 'DNA_PORTE2', 'DPHY_DIFFINBUF', 'DSP48E1', 'DSP48E2', 'DSP_ALU', 'DSP_A_B_DATA', 'DSP_C_DATA', 'DSP_MULTIPLIER', 'DSP_M_DATA', 'DSP_OUTPUT', 'DSP_PREADD', 'DSP_PREADD_DATA', 'EFUSE_USR', 'FDCE', 'FDPE', 'FDRE', 'FDSE', 'FIFO18E1', 'FIFO18E2', 'FIFO36E1', 'FIFO36E2', 'FRAME_ECCE2', 'FRAME_ECCE3', 'FRAME_ECCE4', 'GLBL_VHD', 'GND', 'HARD_SYNC', 'HPIO_VREF', 'IBUF', 'IBUFCTRL', 'IBUFDS', 'IBUFDSE3', 'IBUFDS_DIFF_OUT', 'IBUFDS_DIFF_OUT_IBUFDISABLE', 'IBUFDS_DIFF_OUT_INTERMDISABLE', 'IBUFDS_DPHY', 'IBUFDS_GTE2', 'IBUFDS_GTE3', 'IBUFDS_GTE4', 'IBUFDS_IBUFDISABLE', 'IBUFDS_IBUFDISABLE_INT', 'IBUFDS_INTERMDISABLE', 'IBUFDS_INTERMDISABLE_INT', 'IBUFE3', 'IBUF_ANALOG', 'IBUF_IBUFDISABLE', 'IBUF_INTERMDISABLE', 'ICAPE2', 'ICAPE3', 'IDDR', 'IDDRE1', 'IDDR_2CLK', 'IDELAYCTRL', 'IDELAYE2', 'IDELAYE2_FINEDELAY', 'IDELAYE3', 'INBUF', 'INV', 'IOBUF', 'IOBUFDS', 'IOBUFDSE3', 'IOBUFDS_DCIEN', 'IOBUFDS_DIFF_OUT', 'IOBUFDS_DIFF_OUT_DCIEN', 'IOBUFDS_DIFF_OUT_INTERMDISABLE', 'IOBUFDS_INTERMDISABLE', 'IOBUFE3', 'IOBUF_ANALOG', 'IOBUF_DCIEN', 
+'IOBUF_INTERMDISABLE', 'ISERDES', 'ISERDESE1', 'ISERDES_NODELAY', 'JTAG_SIME2', 'KEEPER', 'LDCE', 'LDPE', 'LUT1', 'LUT2', 'LUT3', 'LUT4', 'LUT5', 'LUT6', 'LUT6_2', 'MASTER_JTAG', 'MMCME2_ADV', 'MMCME2_BASE', 'MMCME3_ADV', 'MMCME3_BASE', 'MMCME4_ADV', 'MMCME4_BASE', 'MUXCY', 'MUXF7', 'MUXF8', 'MUXF9', 'OBUF', 'OBUFDS', 'OBUFDS_DPHY', 'OBUFDS_DPHY_COMP', 'OBUFDS_GTE3', 'OBUFDS_GTE3_ADV', 'OBUFDS_GTE4', 'OBUFDS_GTE4_ADV', 'OBUFT', 'OBUFTDS', 'OBUFTDS_DCIEN', 'OBUFT_DCIEN', 'ODDR', 'ODDRE1', 'ODELAYE2', 'ODELAYE2_FINEDELAY', 'ODELAYE3', 'OR2L', 'OSERDES', 'OSERDESE1', 'PHASER_REF', 'PLLE2_ADV', 'PLLE2_BASE', 'PLLE3_ADV', 'PLLE3_BASE', 'PLLE4_ADV', 'PLLE4_BASE', 'PS7', 'PULLDOWN', 'PULLUP', 'RAM128X1D', 'RAM128X1S', 'RAM256X1D', 'RAM256X1S', 'RAM32M', 'RAM32M16', 'RAM32X16DR8', 'RAM32X1D', 'RAM32X1S', 'RAM512X1S', 'RAM64M', 'RAM64M8', 'RAM64X1D', 'RAM64X1S', 'RAM64X8SW', 'RAMB18E1', 'RAMB18E2', 'RAMB36E1', 'RAMB36E2', 'RAMD32', 'RAMD64E', 'RAMS32', 'RAMS64E', 'RAMS64E1', 'RIU_OR', 'SIM_CONFIGE2', 'SIM_CONFIGE3', 'SRL16E', 'SRLC16E', 'SRLC32E', 'STARTUPE2', 'STARTUPE3', 'SYSMONE1', 'SYSMONE4', 'URAM288', 'URAM288_BASE', 'USR_ACCESSE2', 'VCC', 'VCU', 'vhdl_analyze_order', 'XADC', 'XORCY', 'ZHOLD_DELAY'
 ]
 
 # Define regular expressions for VHDL tokens
@@ -695,6 +697,16 @@ def extract_tokens_between(tokens, start_token_text, end_token_text, current_ind
         if token_text == end_token_text:
             found_start = False
             return extracted_tokens
+        
+
+def get_filenames_without_extension(directory_path): # used to get primitives from unisim folder of vivado
+    file_list = []
+    for filename in os.listdir(directory_path):
+        if os.path.isfile(os.path.join(directory_path, filename)):
+            name, extension = os.path.splitext(filename)
+            file_list.append(name)
+    return file_list
+
 
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
