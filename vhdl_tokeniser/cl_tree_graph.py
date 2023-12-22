@@ -1,6 +1,7 @@
 from token_test import *
 import os
 import argparse
+import plotly.graph_objects as go
 
 # ANSI escape codes for colors
 COLORS = [
@@ -64,7 +65,7 @@ def cl_depend(root_dir,tld, print_url):
                 url = object.url
             print (object.data + " " + url)
         if depth > 1:
-            spacing =  "    " * (depth - 1) + "   " #             spacing =  "    " * (depth - 1) + "│   "
+            spacing =  "    " * (depth - 1) + "   "
         else: 
             spacing = "    "
         if isinstance(object,vhdl_obj): 
@@ -77,7 +78,7 @@ def cl_depend(root_dir,tld, print_url):
 
                     for child in range(len(child_var)):
                         # hierachy_vis.append([object.modname,child_var[child].name,depth,child_var[child].mod])
-                        print_child(object.children_name[child], (depth + 1),object.data[0], print_url)
+                        print_child(object.children_name[child], (depth + 1),object.data, print_url)
 
         elif isinstance(object,instanc): 
             if (print_url == True) and (object.vhdl_obj != None):
@@ -111,7 +112,24 @@ def cl_depend(root_dir,tld, print_url):
             if (target_vhdl.data == vhdl_objs.data ):
  
                 print_child(vhdl_objs,0,"",print_url)
+    print(COLORS[-1])
     print("---------------------------------------------------")
+
+    # Create Plotly tree map
+    fig = go.Figure(go.Treemap(
+        labels=[lab for _, _, _, lab in hierachy_vis],
+        parents=[parent for parent, _, _, _ in hierachy_vis],
+        customdata=[mod for _, _, _, mod in hierachy_vis],
+        # hoverinfo="label+customdata",
+        marker=dict(
+            colors=[COLORS[depth % (len(COLORS) - 1)] for _, _, depth, _ in hierachy_vis],
+            line=dict(width=1, color='black')
+        )
+    ))
+
+    fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+    fig.show()
+
 
     return
 

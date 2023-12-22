@@ -1,6 +1,12 @@
 most important fixes!!!!!
 
-- rtl and data have spaces before/after
+make file decoding recursive based on 
+
+make tests for:
+CL tree
+wrapper
+instanceation
+ect....
 - 
 ISSUES IN THING LIKE:
 - make individual higher level unit tests, like somthing to 

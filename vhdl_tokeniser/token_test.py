@@ -807,7 +807,7 @@ def parse_vhdl(file_name, just_port = False):
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
-                    entity_vhdl.data = ent_name_found
+                    entity_vhdl.data = ent_name_found.strip()
                 else: 
                     entity_vhdl.data = "None"
                 global_entity = 1
@@ -816,7 +816,7 @@ def parse_vhdl(file_name, just_port = False):
             if global_entity == 0: # detect first entity decleration which is module
                 ent_name_found =   make_block(token_type,current_position,"is")
                 if isinstance(ent_name_found,str):
-                    entity_vhdl.data = ent_name_found
+                    entity_vhdl.data = ent_name_found.strip()
                 else: 
                     entity_vhdl.data = "None"
                 global_entity = 1
@@ -850,7 +850,7 @@ def parse_vhdl(file_name, just_port = False):
 
         if token_type == 'ArchitectureKeyword':
             if global_arch == 0: # detect first arch decleration which is module arch
-                entity_vhdl.arch=(make_block(token_type,current_position,"of"))
+                entity_vhdl.arch=(make_block(token_type,current_position,"of").strip())
                 global_arch = 1
         if just_port == False:
             if token_type == 'SignalKeyword' : 
@@ -881,7 +881,6 @@ def parse_vhdl(file_name, just_port = False):
                     entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
                 except:
                     print('')
-            
             elif token_type == 'ProcessKeyword':
                     prcess_name = find_name("IdentifierToken", current_position, 9)
                     if prcess_name == "generate" or prcess_name == "end":
