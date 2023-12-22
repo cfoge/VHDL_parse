@@ -119,10 +119,10 @@ def cl_depend(root_dir,tld, print_url):
     fig = go.Figure(go.Treemap(
         labels=[lab for _, _, _, lab in hierachy_vis],
         parents=[parent for parent, _, _, _ in hierachy_vis],
-        customdata=[mod for _, _, _, mod in hierachy_vis],
-        # hoverinfo="label+customdata",
+        customdata=[mod for _, _, mod, _ in hierachy_vis],
+        # hoverinfo=customdata,
         marker=dict(
-            colors=[COLORS[depth % (len(COLORS) - 1)] for _, _, depth, _ in hierachy_vis],
+            # colors=[COLORS[depth % (len(COLORS) - 1)] for _, _, depth, _ in hierachy_vis],
             line=dict(width=1, color='black')
         )
     ))
