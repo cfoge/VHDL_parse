@@ -13,12 +13,12 @@ class instanc(object):
 
 class vhdl_obj(object):
     def __init__(self):
-        self.type = []
-        self.data = []
+        self.type = "VHDL_FILE"
+        self.data = None
         self.line_num = []
         self.lib = []
         self.work = []
-        self.arch = []
+        self.arch = None
         self.generic = []
         self.port = []
         self.children_name = []
@@ -777,7 +777,7 @@ def parse_vhdl(file_name, just_port = False):
     for token_type, token_text in tokens:
         if token_type in token_actions:
             entity_vhdl_list = getattr(entity_vhdl, token_actions[token_type])
-            entity_vhdl_list.append(make_block(token_type, current_position, ";"))
+            entity_vhdl_list.append(make_block(token_type, current_position, ";").strip())
 
 
         if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_type == 'PrimitiveKeyword' and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
