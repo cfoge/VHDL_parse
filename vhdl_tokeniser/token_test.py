@@ -730,6 +730,9 @@ def is_in_ranges(ranges, current_position):
     index = bisect_left(ranges, (current_position,))
     return index % 2 == 1
 
+#########################################################################
+#### MAIN FUNCTION FOR PARSE VHDL
+#########################################################################
 def parse_vhdl(file_name, just_port = False):
     global entity_vhdl
     file_path = file_name
@@ -737,7 +740,14 @@ def parse_vhdl(file_name, just_port = False):
     if just_port == True:
         vhdl_code = extract_text_until_keywords(file_path)
     else:
-        vhdl_code = read_vhdl_file(file_path).lower()
+        try:
+            vhdl_code = read_vhdl_file(file_path).lower()
+        except:
+            print(f"Error: Failed to read file = {file_name}")
+            return "Error: Failed to read file"
+    if file_name[-3:] != "vhd" and file_name[-4:] != "vhdl" :
+        print(f"Error: file not of type .vhd or .vhdl = {file_name}")
+        return "Error: file not of type .vhd or .vhdl"
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)
