@@ -92,7 +92,7 @@ target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digi
 #search each child for 
 # find_str = 'f1i_vclk_p'
 # find_str = 'rst'
-find_str = 'clk_x'
+find_str = 'RBG_out'
 # find_str = 'genlock_sof'
 verbose = False
 
@@ -142,7 +142,8 @@ nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
 
 def create_path(vhdl_obj_in, find_str, curent_node):
     find_str_sub = ''
-    for x in vhdl_obj_in.assign: #find asignments in sub modules
+    # this part looks for ways that the signals name may have changed via being assigned to another signal
+    for x in vhdl_obj_in.assign: #find asignments in assignment not in functions, processes ect..
         if (find_str in x[0] or find_str in x[1] ):       
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
@@ -151,6 +152,16 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                     find_str = temp
                     find_str.append(x[0])
                     break
+    for y in vhdl_obj_in.process: #find asignments in processes
+        for x in y[2]:
+            if (find_str in x[0] or find_str in x[1] ):       
+                    if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                        
+                        assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
+                        temp = [find_str]
+                        find_str = temp
+                        find_str.append(x[0])
+                        break
     if type(find_str) == list:
         for string in find_str:  
         # string = find_str

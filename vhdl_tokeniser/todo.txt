@@ -13,7 +13,14 @@ SIGNAL TRACE:
 can follow a port or signal if there is an assign not inside a process
 --process decoding started, at the moment it just finds all the assignments in a process and assigns them 
 to the process, either find a way of tagging assignments in the trace
-as belonging to a process IF or case statement 
+as belonging to a process IF or case statement
+
+!!!!!*** check this works, find a process with a clean assigment in it
+
+at the momnet signal trace is handles pure assignments
+so   "a <= b"
+need to add ranged assignment a <= b(4 downto 0)
+need to add concatinated assignement a <= b & c & d
 
 
 ------------------------
