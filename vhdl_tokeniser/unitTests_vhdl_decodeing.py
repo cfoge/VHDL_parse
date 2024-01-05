@@ -38,6 +38,18 @@ class TestParseVHDLDecoding(unittest.TestCase):
         returned_result = parse_vhdl(self.file_name).port
         self.assertEqual(returned_result, expected_result)
 
+    def test_signal_return_length_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[5]  
+        returned_result = len(parse_vhdl(self.file_name).signal)
+        self.assertEqual(returned_result, expected_result)
+    
+    def test_signal_return_content_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[6]  
+        returned_result = parse_vhdl(self.file_name).signal
+        self.assertEqual(returned_result, expected_result)
+
 def custom_test_suite(file_name, expected_result):
     suite = unittest.TestSuite()
     suite.addTest(TestParseVHDLDecoding('test_data_return_correct', file_name=file_name, expected_result=expected_result))
@@ -45,6 +57,10 @@ def custom_test_suite(file_name, expected_result):
     suite.addTest(TestParseVHDLDecoding('test_lib_return_content_correct', file_name=file_name, expected_result=expected_result))
     suite.addTest(TestParseVHDLDecoding('test_port_return_length_correct', file_name=file_name, expected_result=expected_result))
     suite.addTest(TestParseVHDLDecoding('test_port_return_content_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_signal_return_length_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_signal_return_content_correct', file_name=file_name, expected_result=expected_result))
+
+
 
     return suite
 
@@ -53,8 +69,8 @@ if __name__ == '__main__':
     file_name_main = 'tests/test1.vhdl'
     expected_result_main = ["full_adder_structural_vhdl",
                             2, ['ieee', 'ieee.std_logic_1164.all'], 
-                            5, [['x1', 'in', 'std_logic', 1, None],['x2', 'in', 'std_logic', 1, None],['cin', 'in', 'std_logic', 1, None],['s', 'out', 'std_logic', 1, None],['cout', 'out', 'std_logic', 1, None]]
-                            
+                            5, [['x1', 'in', 'std_logic', 1, None],['x2', 'in', 'std_logic', 1, None],['cin', 'in', 'std_logic', 1, None],['s', 'out', 'std_logic', 1, None],['cout', 'out', 'std_logic', 1, None]],
+                            3, [['a1', '', 'std_logic', 1, None],['a2', '', 'std_logic', 1, None],['a3', '', 'std_logic', 1, None]]
                             ]
 
     # Create a custom test suite and run it
