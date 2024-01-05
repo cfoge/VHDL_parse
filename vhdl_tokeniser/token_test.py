@@ -91,6 +91,14 @@ keyword_mapping = {
     'component' : 'ComponentKeyword'
 }
 
+end_keywords_mapping = [
+                        'EndProcessKeyword'  ,
+                        'EndIfKeyword'       ,
+                         'EndFunctionKeyword',
+                         'EndGenerateKeyword',
+                        'EndEntityKeyword'   ,
+                        'EndComponentKeyword'
+]
 
 # Define a function to tokenize VHDL code
 def tokenize_vhdl_code(code):
@@ -357,7 +365,7 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
 
             token_type, token_text = tokens_int[i]
 
-            if token_type in end_token.values() and token_type not in port_token:
+            if token_type in end_token and token_type not in port_token:
                 return token_list
             if token_text == splitter:
                 port_num = port_num + 1
@@ -770,8 +778,6 @@ def parse_vhdl(file_name, just_port = False):
     token_actions = {
     'LibraryKeyword': 'lib',
     'UseKeyword': 'lib',
-    # 'PrimitiveKeyword': 'primitives',
-    # Add more token types as needed
 }
 
     for token_type, token_text in tokens:
@@ -852,14 +858,15 @@ def parse_vhdl(file_name, just_port = False):
             print()  
 
         if token_type == 'PortKeyword': 
-            if len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
+            find_map = make_block(token_type,current_position,"(")
+            if len(find_map) == 0 or find_map == " ": # there is no 'map' following the generic keyword
                 port_belongs_to_component = False
                 for range in component_ranges:
                     if current_position > range[0] and current_position < range[1]:
                         port_belongs_to_component = True
                         break
                 if port_belongs_to_component == False:     
-                    decoded_por = (decode_port(token_type,current_position,keyword_mapping, 'PortKeyword'))
+                    decoded_por = (decode_port(token_type,current_position,end_keywords_mapping, 'PortKeyword'))
                     entity_vhdl.port = format_port(decoded_por)
 
 
