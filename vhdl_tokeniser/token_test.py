@@ -97,7 +97,8 @@ end_keywords_mapping = [
                          'EndFunctionKeyword',
                          'EndGenerateKeyword',
                         'EndEntityKeyword'   ,
-                        'EndComponentKeyword'
+                        'EndComponentKeyword',
+                        'EndKeyword'
 ]
 
 # Define a function to tokenize VHDL code
@@ -365,7 +366,7 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
 
             token_type, token_text = tokens_int[i]
 
-            if token_type in end_token and token_type not in port_token:
+            if (token_type in end_token and token_type not in port_token):
                 return token_list
             if token_text == splitter:
                 port_num = port_num + 1

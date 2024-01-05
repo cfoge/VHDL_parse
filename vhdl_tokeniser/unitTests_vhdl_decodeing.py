@@ -1,0 +1,62 @@
+import unittest
+from token_test import parse_vhdl
+
+class TestParseVHDLDecoding(unittest.TestCase):
+
+    def __init__(self, methodName='runTest', file_name='', expected_result=None):
+        super().__init__(methodName)
+        self.file_name = file_name
+        self.expected_result = expected_result
+
+    def test_data_return_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[0]  
+        returned_result = parse_vhdl(self.file_name).data
+        self.assertEqual(returned_result, expected_result)
+
+    def test_lib_return_length_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[1]  
+        returned_result = len(parse_vhdl(self.file_name).lib)
+        self.assertEqual(returned_result, expected_result)
+    
+    def test_lib_return_content_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[2]  
+        returned_result = parse_vhdl(self.file_name).lib
+        self.assertEqual(returned_result, expected_result)
+
+    def test_port_return_length_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[3]  
+        returned_result = len(parse_vhdl(self.file_name).port)
+        self.assertEqual(returned_result, expected_result)
+    
+    def test_port_return_content_correct(self):
+        # Override the file name and expected result for this specific test
+        expected_result = self.expected_result[4]  
+        returned_result = parse_vhdl(self.file_name).port
+        self.assertEqual(returned_result, expected_result)
+
+def custom_test_suite(file_name, expected_result):
+    suite = unittest.TestSuite()
+    suite.addTest(TestParseVHDLDecoding('test_data_return_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_lib_return_length_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_lib_return_content_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_port_return_length_correct', file_name=file_name, expected_result=expected_result))
+    suite.addTest(TestParseVHDLDecoding('test_port_return_content_correct', file_name=file_name, expected_result=expected_result))
+
+    return suite
+
+if __name__ == '__main__':
+    # Pass variables from the main function
+    file_name_main = 'tests/test1.vhdl'
+    expected_result_main = ["full_adder_structural_vhdl",
+                            2, ['ieee', 'ieee.std_logic_1164.all'], 
+                            5, [['x1', 'in', 'std_logic', 1, None],['x2', 'in', 'std_logic', 1, None],['cin', 'in', 'std_logic', 1, None],['s', 'out', 'std_logic', 1, None],['cout', 'out', 'std_logic', 1, None]]
+                            
+                            ]
+
+    # Create a custom test suite and run it
+    suite = custom_test_suite(file_name_main, expected_result_main)
+    unittest.TextTestRunner(verbosity=2).run(suite)

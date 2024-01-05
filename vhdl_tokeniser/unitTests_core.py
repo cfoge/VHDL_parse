@@ -3,6 +3,7 @@ import unittest
 # Import the function to be tested
 from token_test import *
 
+# THese unit tests check that the correct type is returned and that no errors are encountered from different file types
 class Test_Parse_VHDL_interface(unittest.TestCase):
     def test_no_input(self):
         file_name = ''
