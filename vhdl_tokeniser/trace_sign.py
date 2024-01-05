@@ -83,15 +83,16 @@ def get_data_slim(node):
     
 
 
-# root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
-root_dir = 'C:/BMD_builds/ava_2019_fresh'
-# target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
-target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
+root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
+# root_dir = 'C:/BMD_builds/ava_2019_fresh'
+target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+# target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-find_str = 'f1i_vclk_p'
+# find_str = 'f1i_vclk_p'
 # find_str = 'rst'
+find_str = 'clk_x'
 # find_str = 'genlock_sof'
 verbose = False
 
@@ -116,11 +117,12 @@ for files in vhdl_files:
 for vhdl_o in vhdl_file_as_obj: # make external function!!!
     for child in vhdl_o.children_name:
         for vhdl_objsB in vhdl_file_as_obj:
-            if len(vhdl_objsB.data)>0:
-                if vhdl_objsB.data == child.mod:
-                    child.vhdl_obj = (vhdl_objsB)
-                    #vhdl_o.children_name.remove(child)
-                    break
+            if vhdl_objsB.data != None: # data is none if the file is just constants or functions or somthing like that
+                if len(vhdl_objsB.data)>0:
+                    if vhdl_objsB.data == child.mod:
+                        child.vhdl_obj = (vhdl_objsB)
+                        #vhdl_o.children_name.remove(child)
+                        break
 
 
 

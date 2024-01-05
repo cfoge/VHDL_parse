@@ -1,26 +1,22 @@
 most important fixes!!!!!
 
-make file decoding recursive based on 
+make file decoding recursive based on what modules are found, rather then everything
 
-make tests for:
-CL tree
-wrapper
-instanceation
-ect....
-- 
+- GLOBAL TODO
 ISSUES IN THING LIKE:
-- make individual higher level unit tests, like somthing to 
-decode a port, 
-find assignaments
-decode generarte
-primitive detection
-array decoding
+-- UNIT TESTS FOR EACH PART OF THE DECODED VHDL FILE
 
 
-add more unit tests for all functions!!!!!!!!!!!!!!!
-important!!!!!!!
+LOCAL TODO:
 
-make unit tests that test fragments of vhdl!!!!!
+SIGNAL TRACE:
+can follow a port or signal if there is an assign not inside a process
+--process decoding started, at the moment it just finds all the assignments in a process and assigns them 
+to the process, either find a way of tagging assignments in the trace
+as belonging to a process IF or case statement 
+
+
+------------------------
 
 wrapper doesnt decode (1 downto 2) or named types
 

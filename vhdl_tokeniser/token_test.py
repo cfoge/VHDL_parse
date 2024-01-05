@@ -319,7 +319,15 @@ def make_block(token_type, current_position, end_token, search_dir=1, search_lim
             current_position -= 1
 
     return -1
-
+def find_index_by_keyword(token_input, keyword):
+    indexes = []
+    position = 0
+    for tokens in token_input:
+        this_token_type, token_text = tokens
+        if this_token_type in keyword:
+            indexes.append(position)
+        position = position + 1
+    return indexes
 
 def find_name(token_type,current_position, search_limit, dir = 0, sperator = ':'):
         if dir == 0:
@@ -440,6 +448,8 @@ def decode_block(block,endLine): #decodes lines with the strcutre of a port such
         if token_list[-1] == '':
             token_list.remove('')                  
         return token_list
+
+
 
 def decode_sig(token_type,current_position,end_token): #decodes lines with the strcutre of a port such as generics/assignements ect
         search_position = current_position
@@ -602,7 +612,8 @@ def format_port(decoded_gen, generic=False, obj_in = None):
     if obj_in == None:
         obj_in = entity_vhdl
     result = []
-
+    if decoded_gen == -1: 
+        return ""
     for i in decoded_gen:
         in_out_inout = ''
         type_found = False
@@ -625,7 +636,12 @@ def format_port(decoded_gen, generic=False, obj_in = None):
                 type_val[1] = type_val[1].replace(";", "")
 
         if "," in i and ":" in i:
-            sig_names, sig_dec = i.split(": ")
+            check_number_of_splits = i.split(": ") # this is just a workaround to avoid an issue
+            if len(check_number_of_splits) == 2:
+                sig_names, sig_dec = i.split(": ")
+            else:
+                sig_names = "unknown"
+                sig_dec = "unknown"
             i = sig_dec
             split = i.split(" ")
             name = [n.strip() for n in sig_names.split(",") if n.strip()]
@@ -668,7 +684,6 @@ def extract_port_val(i):
     return port_val
 
 def extract_process_blocks(start):
-    blocks = []
     block = []
     i = start
 
@@ -677,14 +692,15 @@ def extract_process_blocks(start):
     if token_type == 'ProcessKeyword':
         block = []
         while i < len(tokens) and not (token_type == 'EndProcessKeyword'):
+            # if token_type not in keyword_mapping.values():
             block.append((token_type, token_text))
             i += 1
             if i < len(tokens):
                 token_type, token_text = tokens[i]
 
-        if i < len(tokens):
-            # Skip the "end" keyword
-            i += 1
+        # if i < len(tokens):
+        #     # Skip the "end" keyword
+        #     i += 1
 
     return block
 
@@ -853,7 +869,7 @@ def parse_vhdl(file_name, just_port = False):
 
         try:
             if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
-                decoded_gen = (decode_port(token_type,current_position,keyword_mapping, 'GenericKeyword'))
+                decoded_gen = (decode_port(token_type,current_position,end_keywords_mapping, 'GenericKeyword'))
                 entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
         except:
             print()  
@@ -875,7 +891,7 @@ def parse_vhdl(file_name, just_port = False):
         if token_type == 'ComponentKeyword': # there is no 'map' following the generic keyword
             compoent_name = find_next_ident(current_position)
             component_list.append(compoent_name)
-            decoded_por = (decode_port(token_type,current_position,keyword_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
+            decoded_por = (decode_port(token_type,current_position,end_keywords_mapping, ['PortKeyword','ComponentKeyword',compoent_name, "is"]))
             entity_vhdl.component.append([compoent_name, format_port(decoded_por)])
 
         if token_type == 'ArchitectureKeyword':
@@ -918,12 +934,19 @@ def parse_vhdl(file_name, just_port = False):
                     process_dep = make_block(token_type,current_position,")")
                     if process_dep != -1:
                         process_dep = process_dep[1:]
-                    if process_dep[0] == "(":
-                        process_dep = process_dep[1:]
-                    process_def = [prcess_name, process_dep]
-                    # process_contents = extract_process_blocks(current_position)
+                        if process_dep[0] == "(":
+                            process_dep = process_dep[1:]
+                    process_contents = extract_process_blocks(current_position)
+                    assignments = find_index_by_keyword(process_contents,"AssignKeyword")
+                    process_assignments = []
+                    for found_ass_loc in assignments:
+                        assign = tokens[current_position + found_ass_loc]
+                        assign_from = make_block("<=",current_position + found_ass_loc + 1,";",1, 0, 1) 
+                        assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','then','\n','\n\n'])
+                        if assign_to != -1 and assign_from != -1: #it will skip stuff it cant decode
+                            process_assignments.append([assign_to.strip(),assign_from.strip()])
                     #need to handle contents in process block now like ifs and assignements, cases ect
-                    entity_vhdl.process.append([prcess_name, process_dep] )
+                    entity_vhdl.process.append([prcess_name, process_dep, process_assignments] )
 
                     #search inside process for contents
             if token_text == 'assert':
