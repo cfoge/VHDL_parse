@@ -72,7 +72,18 @@ if __name__ == '__main__':
                             5, [['x1', 'in', 'std_logic', 1, None],['x2', 'in', 'std_logic', 1, None],['cin', 'in', 'std_logic', 1, None],['s', 'out', 'std_logic', 1, None],['cout', 'out', 'std_logic', 1, None]],
                             3, [['a1', '', 'std_logic', 1, None],['a2', '', 'std_logic', 1, None],['a3', '', 'std_logic', 1, None]]
                             ]
+    file_name_main2 = 'tests/test7.vhdl'
+    expected_result_main2 = ["pia8255", 
+                            4, ['ieee', 'ieee.std_logic_1164.all','ieee.std_logic_unsigned.all','ieee.numeric_std.all'], 
+                            19, [],
+                            47, []
+                            ]
 
     # Create a custom test suite and run it
     suite = custom_test_suite(file_name_main, expected_result_main)
+    print(f"Testing with {file_name_main}")
     unittest.TextTestRunner(verbosity=2).run(suite)
+    suite2 = custom_test_suite(file_name_main2, expected_result_main2)
+    print(f"Testing with {file_name_main2}")
+
+    unittest.TextTestRunner(verbosity=2).run(suite2)
