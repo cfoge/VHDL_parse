@@ -942,8 +942,9 @@ def parse_vhdl(file_name, just_port = False):
                     for found_ass_loc in assignments:
                         assign = tokens[current_position + found_ass_loc]
                         assign_from = make_block("<=",current_position + found_ass_loc + 1,";",1, 0, 1) 
-                        assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','then','\n','\n\n'])
+                        assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','then','if','else','\n','\n\n'])
                         if assign_to != -1 and assign_from != -1: #it will skip stuff it cant decode
+
                             process_assignments.append([assign_to.strip(),assign_from.strip()])
                     #need to handle contents in process block now like ifs and assignements, cases ect
                     entity_vhdl.process.append([prcess_name, process_dep, process_assignments] )
