@@ -917,8 +917,18 @@ def parse_vhdl(file_name, just_port = False):
                 entity_vhdl.subtype.append(format_port(decoded_por)[0])
 
             elif token_type == 'TypeKeyword' : 
-                decoded_por = (decode_sig(token_type,current_position,";"))
-                entity_vhdl.type_dec.append(format_port(decoded_por)[0])
+                decoded_por = (decode_sig(token_type,current_position,";"))[0]
+                split_type = decoded_por
+                if " is " in decoded_por:
+                    split_type = (decoded_por.split(" is "))
+                if len(split_type) ==2:
+                    if "," in split_type[1]:
+                        multiple_types = (split_type[1].split(","))
+                        entity_vhdl.type_dec.append((split_type[0],multiple_types))
+                    else:
+                        entity_vhdl.type_dec.append((split_type[0],split_type[1]))
+                else:
+                    entity_vhdl.type_dec.append((decoded_por))
 
             elif token_type == 'GenerateKeyword' : 
                 generate_name = find_name("IdentifierToken", current_position, 26)

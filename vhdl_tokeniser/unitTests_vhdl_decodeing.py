@@ -276,7 +276,7 @@ if __name__ == '__main__':
                             0, [], #constant
                             2, [] , #signal 
                             0, [], #subtype
-                            0, [], #typedec
+                            1, [], #typedec
                             0, [], #nonsynth
                             0, [], #func
                             0, [], #generate
