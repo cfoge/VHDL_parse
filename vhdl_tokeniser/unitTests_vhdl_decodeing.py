@@ -252,7 +252,7 @@ if __name__ == '__main__':
                             5,  [['clock', 'in', 'std_logic', 1, None], ['a', 'in', 'std_logic_vector', 8, None], ['b', 'in', 'std_logic_vector', 8, None], ['iab', 'in', 'std_logic', 1, None], ['output', 'out', 'std_logic', 1, None]], #port
                             None, [], #sig
                             #assign is worng is missing  Output <= Result;
-                            8, [['ab(0)', '(not a(0)) xnor (not b(0))'],  ['ab(1)', '(not a(1)) xnor (not b(1))'],  ['ab(2)', '(not a(2)) xnor (not b(2))'],  ['ab(3)', '(not a(3)) xnor (not b(3))'],  ['ab(4)', '(not a(4)) xnor (not b(4))'],  ['ab(5)', '(not a(5)) xnor (not b(5))'],  ['ab(6)', '(not a(6)) xnor (not b(6))'],  ['ab(7)', '(not a(7)) xnor (not b(7))']], #assign
+                            8, [['ab(0)', '(not a(0)) xnor (not b(0))'],  ['ab(1)', '(not a(1)) xnor (not b(1))'],  ['ab(2)', '(not a(2)) xnor (not b(2))'],  ['ab(3)', '(not a(3)) xnor (not b(3))'],  ['ab(4)', '(not a(4)) xnor (not b(4))'],  ['ab(5)', '(not a(5)) xnor (not b(5))'],  ['ab(6)', '(not a(6)) xnor (not b(6))'],  ['ab(7)', '(not a(7)) xnor (not b(7))'], ['output','result']], #assign
                             10, "behavioral",
                             0, [], #constant
                             2, [['ab', '', 'std_logic_vector', 8, None], ['result', '', 'std_logic', 1, None]] , #signal 
@@ -264,6 +264,28 @@ if __name__ == '__main__':
                             0, [] , #generic
                             1, [['Unnammed', 'clock', [['result', "'0'"], ['result', "'1'"]]]] #process
                             ]
+    
+    file_name_main3 = 'tests/test3.vhdl'
+    expected_result_main3 = ["traffic_light_controller",
+                            3, ['ieee', 'ieee.std_logic_1164.all','ieee.std_logic_unsigned.all'], #lib  
+                            5,  [['sensor', 'in', 'std_logic', 1, None], ['clk', 'in', 'std_logic', 1, None], ['rst_n', 'in', 'std_logic', 1, None], ['light_highway', 'out', 'std_logic_vector', 3, None], ['light_farm', 'out', 'std_logic_vector', 3, None]], #port
+                            12,  [['counter_1s', '', 'std_logic_vector', 28, 'x"0000000"'],  ['delay_count', '', 'std_logic_vector', 4, 'x"0"'],  ['delay_10s', '', 'std_logic', 1, 0],  ['delay_3s_f', '', 'std_logic', 1, 0],  ['delay_3s_h', '', 'std_logic', 1, 0],  ['red_light_enable', '', 'std_logic', 1, 0],  ['yellow_light1_enable', '', 'std_logic', 1, 0],  ['yellow_light2_enable', '', 'std_logic', 1, 0],  ['clk_1s_enable', '', 'std_logic', 1, None],  ['current_state', '', 'null', 'null', None],  ['next_state', '', 'null', 'null', None]], #sig
+                            ####
+                            11, [['ab(0)', '(not a(0)) xnor (not b(0))'],  ['ab(1)', '(not a(1)) xnor (not b(1))'],  ['ab(2)', '(not a(2)) xnor (not b(2))'],  ['ab(3)', '(not a(3)) xnor (not b(3))'],  ['ab(4)', '(not a(4)) xnor (not b(4))'],  ['ab(5)', '(not a(5)) xnor (not b(5))'],  ['ab(6)', '(not a(6)) xnor (not b(6))'],  ['ab(7)', '(not a(7)) xnor (not b(7))']], #assign
+                            13, "traffic_light",
+                            0, [], #constant
+                            2, [] , #signal 
+                            0, [], #subtype
+                            0, [], #typedec
+                            0, [], #nonsynth
+                            0, [], #func
+                            0, [], #generate
+                            0, [] , #generic
+                            4, [] #process
+                            ]
+    
+
+
     
 
 
@@ -278,6 +300,11 @@ if __name__ == '__main__':
     suite = custom_test_suite_full(file_name_main, expected_result_main)
     print(f"Testing with {file_name_main}")
     unittest.TextTestRunner(verbosity=2).run(suite)
+    ####
     suite2 = custom_test_suite_full(file_name_main2, expected_result_main2)
     print(f"Testing with {file_name_main2}")
     unittest.TextTestRunner(verbosity=2).run(suite2)
+    ####
+    suite3 = custom_test_suite_full(file_name_main3, expected_result_main3)
+    print(f"Testing with {file_name_main3}")
+    unittest.TextTestRunner(verbosity=2).run(suite3)
