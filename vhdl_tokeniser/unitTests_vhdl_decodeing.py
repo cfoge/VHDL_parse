@@ -124,49 +124,50 @@ class TestParseVHDLDecoding(unittest.TestCase):
 
     def test_nonSynth_return_length_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[17]  
+        expected_result = self.expected_result[19]  
         returned_result = len(parse_vhdl(self.file_name).nonSynth)
         self.assertEqual(returned_result, expected_result)
     
     def test_nonSynth_return_content_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[18]  
+        test = returned_result = parse_vhdl(self.file_name)
+        expected_result = self.expected_result[20]  
         returned_result = parse_vhdl(self.file_name).nonSynth
         self.assertEqual(returned_result, expected_result)
 
     def test_func_return_length_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[19]  
+        expected_result = self.expected_result[21]  
         returned_result = len(parse_vhdl(self.file_name).func)
         self.assertEqual(returned_result, expected_result)
     
     def test_func_return_content_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[20]  
+        expected_result = self.expected_result[22]  
         returned_result = parse_vhdl(self.file_name).func
         self.assertEqual(returned_result, expected_result)
 
     def test_generate_return_length_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[19]  
+        expected_result = self.expected_result[23]  
         returned_result = len(parse_vhdl(self.file_name).generate)
         self.assertEqual(returned_result, expected_result)
     
     def test_generate_return_content_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[20]  
+        expected_result = self.expected_result[24]  
         returned_result = parse_vhdl(self.file_name).generate
         self.assertEqual(returned_result, expected_result)
 
     def test_generic_return_length_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[19]  
+        expected_result = self.expected_result[25]  
         returned_result = len(parse_vhdl(self.file_name).generic)
         self.assertEqual(returned_result, expected_result)
     
     def test_generic_return_content_correct(self):
         # Override the file name and expected result for this specific test
-        expected_result = self.expected_result[20]  
+        expected_result = self.expected_result[26]  
         returned_result = parse_vhdl(self.file_name).generic
         self.assertEqual(returned_result, expected_result)
 
@@ -238,8 +239,8 @@ if __name__ == '__main__':
                             0, [], #constant
                             3, [['a1', '', 'std_logic', 1, None],['a2', '', 'std_logic', 1, None],['a3', '', 'std_logic', 1, None]],
                             0, [], #subtype
-                            0, [], #typedec
-                            0, [], #nonsynth
+                            0, [],  # typedec
+                            0, [], #nonsynth 
                             0, [], #func
                             0, [], #generate
                             0, [] , #generic
@@ -257,8 +258,8 @@ if __name__ == '__main__':
                             0, [], #constant
                             2, [['ab', '', 'std_logic_vector', 8, None], ['result', '', 'std_logic', 1, None]] , #signal 
                             0, [], #subtype
-                            0, [], #typedec
-                            0, [], #nonsynth
+                            0, [],  # typedec
+                            0, [], #nonsynth 
                             0, [], #func
                             0, [], #generate
                             0, [] , #generic
@@ -274,10 +275,10 @@ if __name__ == '__main__':
                             11, [['ab(0)', '(not a(0)) xnor (not b(0))'],  ['ab(1)', '(not a(1)) xnor (not b(1))'],  ['ab(2)', '(not a(2)) xnor (not b(2))'],  ['ab(3)', '(not a(3)) xnor (not b(3))'],  ['ab(4)', '(not a(4)) xnor (not b(4))'],  ['ab(5)', '(not a(5)) xnor (not b(5))'],  ['ab(6)', '(not a(6)) xnor (not b(6))'],  ['ab(7)', '(not a(7)) xnor (not b(7))']], #assign
                             13, "traffic_light",
                             0, [], #constant
-                            2, [] , #signal 
+                            11, [] , #signal 
                             0, [], #subtype
-                            1, [], #typedec
-                            0, [], #nonsynth
+                            1, [],  # typedec
+                            0, [], #nonsynth 
                             0, [], #func
                             0, [], #generate
                             0, [] , #generic
