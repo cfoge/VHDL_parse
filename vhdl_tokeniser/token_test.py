@@ -1,6 +1,5 @@
 import re
 import os
-from bisect import bisect_left
 
 class instanc(object):
     def __init__(self, mod, name, line_num):
@@ -752,8 +751,12 @@ def extract_text_until_keywords(file_path):
     return extracted_text
 
 def is_in_ranges(ranges, current_position):
-    index = bisect_left(ranges, (current_position,))
-    return index % 2 == 1
+    for range in ranges:
+        if (current_position >= range[0]) and (current_position <= range[1]):
+            return 1
+        else:
+            return 0
+
 
 #########################################################################
 #### MAIN FUNCTION FOR PARSE VHDL
