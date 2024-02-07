@@ -187,7 +187,7 @@ def replace_end_process_tokens(tokens):
                 tokens.pop(i - 1)
 
             elif token_text_prev == '<':
-                tokens[i] = ('AssignKeyword', '<=')
+                tokens[i] = ('AssignKeyword_to', '<=')
                 tokens.pop(i - 1)
 
         elif token_text in primitives_list:
@@ -283,7 +283,8 @@ def find_prev_till(current_position, end_tokens, token_in = []):
     start = current_position - 1
     for i in range(start, end, -1):
         token_type, token_text = tokens_to_parse[i]
-        if token_text in end_tokens:
+        text_no_white_spaces = token_text.replace(" ", "")
+        if text_no_white_spaces in end_tokens:
             token_str = ''
             for token_found in tokens_list:
                 token_str = token_found + token_str
@@ -305,9 +306,14 @@ def make_block(token_type, current_position, end_token, search_dir=1, search_lim
             return -1
 
         this_token_type, token_text = tokens_to_parse[i]
+        if type(end_token) is list:
+            for end_tok in end_token:
+                if token_text.replace(" ","") == end_tok:
+                    return token_list[0][1] if len(token_list) == 1 else ''.join(token_text for _, token_text in token_list)
 
-        if token_text == end_token:
-            return token_list[0][1] if len(token_list) == 1 else ''.join(token_text for _, token_text in token_list)
+        else:
+            if token_text.replace(" ","") == end_token:
+                return token_list[0][1] if len(token_list) == 1 else ''.join(token_text for _, token_text in token_list)
 
         if token_type not in ('SpaceToken', this_token_type):
             token_list.append((this_token_type, token_text))
@@ -950,15 +956,16 @@ def parse_vhdl(file_name, just_port = False):
                         if process_dep[0] == "(":
                             process_dep = process_dep[1:]
                     process_contents = extract_process_blocks(current_position)
-                    assignments = find_index_by_keyword(process_contents,"AssignKeyword")
+                    assignments = find_index_by_keyword(process_contents,"AssignKeyword_to")
                     process_assignments = []
                     for found_ass_loc in assignments:
                         assign = tokens[current_position + found_ass_loc]
-                        assign_from = make_block("<=",current_position + found_ass_loc + 1,";",1, 0, 1) 
-                        assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','then','if','else','\n','\n\n'])
-                        if assign_to != -1 and assign_from != -1: #it will skip stuff it cant decode
-
-                            process_assignments.append([assign_to.strip(),assign_from.strip()])
+                        assign_from = make_block("<=",current_position + found_ass_loc + 1,[";",'when','\n'],1, 0, 1) 
+                        assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','when','then','if','else','\n','\n\n',"--","=>"])
+                        if assign_to != -1 and assign_from != -1 :
+                            if (("--" in assign_from) or ("--" in assign_to) )==0: #it will skip stuff it cant decode
+                                
+                                process_assignments.append([assign_to.strip(),assign_from.strip()])
                     #need to handle contents in process block now like ifs and assignements, cases ect
                     entity_vhdl.process.append([prcess_name, process_dep, process_assignments] )
 
@@ -976,8 +983,8 @@ def parse_vhdl(file_name, just_port = False):
                         ignore = 1
                 if ignore == 0:
                     # assign_from = find_prev_ident(current_position)
-                    assign_from = make_block("<=",current_position+1,";",1, 0, 1) 
-                    assign_to  = find_prev_till(current_position, [';','begin','\n','\n\n'])
+                    assign_from = make_block("<=",current_position+1,[";","\n",'when'],1, 0, 1) 
+                    assign_to  = find_prev_till(current_position, [';','begin','when','\n','\n\n','then','else',"--","=>"])
                     # assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
                     if assign_to == -1:
                         assign_to = "error"

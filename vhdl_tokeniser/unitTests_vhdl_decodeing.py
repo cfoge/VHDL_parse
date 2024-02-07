@@ -180,6 +180,7 @@ class TestParseVHDLDecoding(unittest.TestCase):
     def test_process_return_content_correct(self):
         # Override the file name and expected result for this specific test
         expected_result = self.expected_result[28]  
+        vhdl_out = parse_vhdl(self.file_name)
         returned_result = parse_vhdl(self.file_name).process
         self.assertEqual(returned_result, expected_result)
 
@@ -281,7 +282,7 @@ if __name__ == '__main__':
                             0, [], #func
                             0, [], #generate
                             0, [] , #generic
-                            4, [] #process
+                            4, [] #process !!!!!! still has issues in the assign decoding look for "OTHWERS"
                             ]
     
 
