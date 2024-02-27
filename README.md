@@ -60,5 +60,5 @@ check_xdc.py output input.vhd
 (optional 3rd argument "q" generates Quartus output)
 
 
-#### Explore the efficiency, simplicity, and joy of VHDL development with VHDL_parse. Your VHDL projects just got a whole lot more enjoyable! 🎉
+#### I hope these scripts make your FPGA work a bit smoother! 🎉
 
