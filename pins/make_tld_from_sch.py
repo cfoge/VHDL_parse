@@ -59,7 +59,8 @@ def rearrange_and_group_strings(strings):
 
 filename = "test"#sys.argv[1]
 netlist_filename = 'fpga\syn\BMDPCB1120A_NETLIST.txt' #sys.argv[2] 
-chip_id = 'u12' #sys.argv[3] 
+chip_id = 'u12' #sys.argv[3]  #this si the symbol in the scematic for the FPGA ic
+prefix = "pl" # this is the prefix that sits in front of your pin names if that is how your scematic is layed out
 
 #add method for saying what the prefix for pins should be
 
@@ -82,6 +83,8 @@ for line in netlist:
             pin_list.append(f'{signal_name.lower()} : in std_logic;')
         elif "plio_" in line.lower():    
             pin_list.append(f'{signal_name.lower()} : inout std_logic;')
+        elif prefix.lower() in line.lower(): 
+            pin_list.append(f'{signal_name.lower()} : <in/out/inout> std_logic;')
     #to help find when a resistor is in the way of the pin
     if((not("$") in line) and not(chip_id.lower() in line.lower())) and ('pl' in line.lower()) and "r" in line.lower():
         signal_name = extract_text_between_single_quotes(line)
