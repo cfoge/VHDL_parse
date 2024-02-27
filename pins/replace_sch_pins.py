@@ -38,7 +38,8 @@ def get_string_in_braces(line):
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python script.py <file1_path> <file2_path> <marker>")
+        print("This script puts pin locations from pin locations in the contraints file made by make_xdc.py with locations from get_sch_loc.py")
+        print("Usage: python replace_sch_pins.py <contraints.xdc> matched_pins_with_sch.xdc XXX")
         sys.exit(1)
 
     file1_path = sys.argv[1]
