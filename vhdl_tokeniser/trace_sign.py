@@ -91,8 +91,8 @@ target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digi
 # search for other lines involving this signal
 #search each child for 
 # find_str = 'f1i_vclk_p'
-# find_str = 'rst'
-find_str = 'RBG_out'
+find_str = 'rst'
+# find_str = 'clk_25'
 # find_str = 'genlock_sof'
 verbose = False
 
@@ -252,9 +252,9 @@ def create_tree(data):
                     node_label_fine_name = node_label.filename
                     child_node = f"{node_label}_{edge_label}"
                     if verbose == False:
-                        tree.node(child_node, label=f"{node_label_mod_name}\\n{edge_label}")
+                        tree.node(child_node, label=f"{node_label_mod_name}\\n'{edge_label}'")
                     else:
-                        tree.node(child_node, label=f"{node_label_mod_name} : {node_label_fine_name}\\n{edge_label}")
+                        tree.node(child_node, label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'")
                     if parent_node is not None:
                         edge = (parent_node, child_node)
                         if edge not in existing_edges:
