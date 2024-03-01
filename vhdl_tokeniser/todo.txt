@@ -5,9 +5,17 @@ make file decoding recursive based on what modules are found, rather then everyt
 - GLOBAL TODO
 ISSUES IN THING LIKE:
 -- UNIT TESTS FOR EACH PART OF THE DECODED VHDL FILE
+-- add pins code!!!!! make xdc, make sch ect....
 
+future features::
+- project files to aurtomate alot of functiosn and speed up file discovery
+- only anilise files as needed
+- make way of searching for unused signals ect and remove them (optinal)
+- make print outs be clickible links
 
 LOCAL TODO:
+
+check all my tools in tools folder actualy work
 
 SIGNAL TRACE:
 can follow a port or signal if there is an assign not inside a process
@@ -40,9 +48,9 @@ add unit tests for more of the functions, and fill out the tests where apropriat
 parser cant handle primitives, it doesnt know what those are, so it doesnt recognise them as childeren
 
 
-need to speed up, this is slow when processing 1k files +
---- done, need to add test for this feature
-huge speed up!!!!!!!! 200%
+            ----done need to speed up, this is slow when processing 1k files +
+            --- done, need to add test for this feature
+            huge speed up!!!!!!!! 200%
 
 doesent identify variabvles 
 interger doesnt calculate range
@@ -60,5 +68,5 @@ can it do constants?
 how to handle multiple version of the same unnamed module
 
 
-make cl tree print different levels in different terminal colours, need way to turn off
-cl tree looks like it is getting double the depth for some reason
+done---->make cl tree print different levels in different terminal colours, need way to turn off
+fixed ---->cl tree looks like it is getting double the depth for some reason

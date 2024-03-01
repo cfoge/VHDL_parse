@@ -4,7 +4,7 @@ import glob
 import argparse
 from pfind import search_files
 ## make version for constant, signal, variable  ,subtype , package, library (also search use)
-search_type = 'type'
+search_type = 'architecture'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=f"Search for a {search_type} by name within VHDL file directory.")

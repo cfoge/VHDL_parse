@@ -1,46 +1,60 @@
 import os
 import sys
-import glob
+import argparse
 
-def search_files(search_term, type, directory='.'):
+# ANSI escape codes for colors
+COLORS = [
+    '\033[97m',  # WHITE
+    '\033[92m',  # GREEN
+    '\033[94m',  # BLUE
+    '\033[93m',  # YELLOW
+    '\033[96m',  # CYAN
+    '\033[95m',  # MAGENTA
+    '\033[0m',   # RESET
+]
+
+def search_files(search_term, type_to_search, directory='.'):
     """
-    Search for .vhd or .vhdl files containing the given search term and file type on the same line
-    in the specified directory.
+    Search for .vhd or .vhdl files containing the given search term and type on the same line
+    in the specified directory and its subdirectories.
 
     Args:
     - search_term: The term to search for within files.
-    - type: The type of thing to search for, eg "type", constant,library,package ect .
+    - type_to_search: The type of thing to search for, e.g., "type", constant, library, package, etc.
     - directory: The directory to search within (default is the current directory).
     """
     file_list = []
-    os.chdir(directory)
-    for file_name in glob.glob('*.vhd') + glob.glob('*.vhdl'):
-        if os.path.isfile(file_name):
-            with open(file_name, 'r') as file:
-                for line in file:
-                    if search_term in line and type in line:
-                        file_list.append(file_name)
-                        break
+    number_files_checked = 0
+    for root, _, files in os.walk(directory):
+        for file_name in files:
+            if file_name.endswith('.vhd') or file_name.endswith('.vhdl'):
+                file_path = os.path.join(root, file_name)
+                with open(file_path, 'r') as file:
+                    number_files_checked += 1
+                    for line_number, line in enumerate(file, 1):
+                        if search_term in line and type_to_search in line:
+                            print(f"{COLORS[1]}{file_path} {COLORS[0]} : line {line_number}: {line.strip()}\033[0m")
+                            file_list.append(file_path)
+                            break
+    print(f"Info: {number_files_checked} files checked.")
     return file_list
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print(f"Usage: python pfind.py <search_term> {type} [directory]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Search for a term within VHDL files.")
+    parser.add_argument("search_term", type=str, help="Term to search for within files.")
+    parser.add_argument("type_to_search", type=str, help="Type of thing to search for.")
+    parser.add_argument("-d", "--directory", type=str, help="Directory to search within.", default='.')
+    args = parser.parse_args()
 
-    search_term = sys.argv[1]
-    type = sys.argv[2]
-    directory = sys.argv[3] if len(sys.argv) > 3 else '.'
+    search_term = args.search_term
+    type_to_search = args.type_to_search
+    directory = args.directory
 
     if not os.path.isdir(directory):
         print(f"Error: Directory '{directory}' does not exist.")
         sys.exit(1)
 
-    found_files = search_files(search_term, type, directory)
+    found_files = search_files(search_term, type_to_search, directory)
 
-    if found_files:
-        print(f"Files containing both search term and {type} on the same line:")
-        for file_name in found_files:
-            print(file_name)
-    else:
-        print(f"No files found containing both search term and {type}  on the same line.")
+    if not found_files:
+        print(f"{COLORS[0]}No files found containing both search term and '{type_to_search}' on the same line.\033[0m")
