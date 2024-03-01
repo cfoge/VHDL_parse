@@ -11,7 +11,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     search_term = sys.argv[1]
-    directory = sys.argv[2] if len(sys.argv) > 2 else '.'
+    directory = sys.argv[2] 
 
     if not os.path.isdir(directory):
         print(f"Error: Directory '{directory}' does not exist.")
@@ -25,3 +25,4 @@ if __name__ == "__main__":
             print(file_name)
     else:
         print("No files found containing both search term and 'type' on the same line.")
+        print(f"Directory = '{directory}'")

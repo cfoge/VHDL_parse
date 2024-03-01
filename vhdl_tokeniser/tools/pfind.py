@@ -18,6 +18,7 @@ def search_files(search_term, type, directory='.'):
         if os.path.isfile(file_name):
             with open(file_name, 'r') as file:
                 for line in file:
+                    print(".")
                     if search_term in line and type in line:
                         file_list.append(file_name)
                         break

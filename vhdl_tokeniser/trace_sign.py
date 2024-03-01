@@ -244,7 +244,7 @@ def create_tree(data):
                     if parent_node is not None:
                         edge = (parent_node, child_node)
                         if edge not in existing_edges:
-                            tree.edge(parent_node, child_node)
+                            tree.edge(parent_node, child_node )
                             existing_edges.add(edge)
                 elif len(item) == 2:  
                     node_label, edge_label = item
@@ -252,9 +252,9 @@ def create_tree(data):
                     node_label_fine_name = node_label.filename
                     child_node = f"{node_label}_{edge_label}"
                     if verbose == False:
-                        tree.node(child_node, label=f"{node_label_mod_name}\\n'{edge_label}'")
+                        tree.node(child_node,shape='box', label=f"{node_label_mod_name}\\n'{edge_label}'")
                     else:
-                        tree.node(child_node, label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'")
+                        tree.node(child_node,shape='box', label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'")
                     if parent_node is not None:
                         edge = (parent_node, child_node)
                         if edge not in existing_edges:
