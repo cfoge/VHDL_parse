@@ -89,18 +89,18 @@ def cl_depend(root_dir,tld, print_url):
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
                 if object.mod == "":
-                    print(color + spacing +"├─ " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.name + " " + COLORS[6] + url)
                 else:
-                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + COLORS[6] + url)
                 hierachy_vis.append([parent,object.name,depth,object.mod])
                 print_child(object.vhdl_obj, (depth + 1), object.name, print_url)
             else:
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
                 if object.mod == "":
-                    print(color + spacing +"├─ " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.name + " " + COLORS[6] + url)
                 else:
-                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + url)
+                    print(color + spacing +"├─ " + object.mod + " : " + object.name + " " + COLORS[6] + url)
         return 
 
     print("---------------------------------------------------")
