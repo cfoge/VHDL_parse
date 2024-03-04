@@ -111,7 +111,7 @@ def cl_depend(root_dir,tld, print_url):
             if (target_vhdl.data == vhdl_objs.data ):
  
                 print_child(vhdl_objs,0,"",print_url)
-    print("---------------------------------------------------")
+    print("\033[0m---------------------------------------------------")
 
     return
 

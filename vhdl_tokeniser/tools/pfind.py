@@ -24,6 +24,7 @@ def search_files(search_term, type_to_search, directory='.'):
     - directory: The directory to search within (default is the current directory).
     """
     file_list = []
+    error_list = []
     number_files_checked = 0
     for root, _, files in os.walk(directory):
         for file_name in files:
@@ -31,11 +32,16 @@ def search_files(search_term, type_to_search, directory='.'):
                 file_path = os.path.join(root, file_name)
                 with open(file_path, 'r') as file:
                     number_files_checked += 1
-                    for line_number, line in enumerate(file, 1):
-                        if search_term in line and type_to_search in line:
-                            print(f"{COLORS[1]}{file_path} {COLORS[0]} : line {line_number}: {line.strip()}\033[0m")
-                            file_list.append(file_path)
-                            break
+                    try:
+                        for line_number, line in enumerate(file, 1):
+                        
+                            if search_term in line and type_to_search in line:
+                                print(f"{COLORS[1]}{file_path} {COLORS[0]} : line {line_number}: {line.strip()}\033[0m")
+                                file_list.append(file_path)
+                                break
+                    except: 
+                            # error_list.append() # add exception catcher
+                        x = 1
     print(f"Info: {number_files_checked} files checked.")
     return file_list
 
