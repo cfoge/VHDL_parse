@@ -13,7 +13,7 @@ COLORS = [
     '\033[0m',   # RESET
 ]
 
-def search_files(search_term, type_to_search, directory='.'):
+def search_files(search_term, type_to_search, directory='.',verbose=False):
     """
     Search for .vhd or .vhdl files containing the given search term and type on the same line
     in the specified directory and its subdirectories.
@@ -26,6 +26,8 @@ def search_files(search_term, type_to_search, directory='.'):
     file_list = []
     error_list = []
     number_files_checked = 0
+    verbose_line_num = 4
+
     for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith('.vhd') or file_name.endswith('.vhdl'):
@@ -36,7 +38,14 @@ def search_files(search_term, type_to_search, directory='.'):
                         for line_number, line in enumerate(file, 1):
                         
                             if search_term in line and type_to_search in line:
-                                print(f"{COLORS[1]}{file_path} {COLORS[0]} : line {line_number}: {line.strip()}\033[0m")
+                                if verbose == True: # this is a terrible way to do this, is it worth doing it better?
+                                    print(f"{COLORS[1]}{file_path} {COLORS[0]} : \n   {line_number}: {line.strip()}\033[0m")
+
+                                    for line_number_new, line_new in enumerate(file, line_number):
+                                        if (line_number_new > line_number) and (line_number_new < (line_number + verbose_line_num)):
+                                            print(f"   {line_number_new+1}: {line_new.strip()}")
+                                else:
+                                    print(f"{COLORS[1]}{file_path} {COLORS[0]} : line {line_number}: {line.strip()}\033[0m")
                                 file_list.append(file_path)
                                 break
                     except: 
