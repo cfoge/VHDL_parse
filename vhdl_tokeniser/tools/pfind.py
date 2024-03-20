@@ -26,7 +26,7 @@ def search_files(search_term, type_to_search, directory='.',verbose=False):
     file_list = []
     error_list = []
     number_files_checked = 0
-    verbose_line_num = 4
+    verbose_line_num = 8
 
     for root, _, files in os.walk(directory):
         for file_name in files:
