@@ -91,7 +91,7 @@ target_vhdl = parse_vhdl('C:/BMD_builds/audio_a_release/oceanus/src/datapath_wra
 # search for other lines involving this signal
 #search each child for 
 # find_str = 'f1i_vclk_p'
-find_str = 'sdi_tx_level_ctrl'
+find_str = 'voip_rx_video_bus_array_i'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
 verbose = True
@@ -137,6 +137,7 @@ search_list_modules = []
 assignments = []
 assign_log = []
 possible_assignments = []
+full_assign_list = []
 nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
 
 ###################################
@@ -150,6 +151,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
                     assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to,
+                    full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
                     temp = [find_str]
                     find_str = temp
                     find_str.append(x[0])
@@ -165,6 +167,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                                 temp = [find_str]
                                 find_str = temp
                                 find_str.append(x[0])
+                                full_assign_list.append(f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} ")
                                 break
                             elif (find_str in x[1]):
                                 possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
@@ -175,6 +178,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                                 temp = [find_str]
                                 find_str = temp
                                 find_str.append(x[0])
+                                full_assign_list.append(f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} ")
+
                                 break
                             elif (find_str in x[1]):
                                 possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
@@ -189,6 +194,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                                 temp = [find_str]
                                 find_str = temp
                                 find_str.append(x[0])
+                                full_assign_list.append(f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} ")
+
                                 break
                             elif (find_str in x[1]):
                                 possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
@@ -199,6 +206,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                                 temp = [find_str]
                                 find_str = temp
                                 find_str.append(x[0])
+                                full_assign_list.append(f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} ")
+
                                 break
                             elif (find_str in x[1]):
                                 possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
@@ -268,7 +277,8 @@ print("---------------------------------------------------")
 
 
 if verbose == True: ##print the full line for each assignment for context
-    print(possible_assignments)
+    print(full_assign_list)
+    # what to do with possible assignements
 
 def create_tree(data):
     tree = graphviz.Digraph(format='png')
