@@ -5,9 +5,12 @@ make file decoding recursive based on what modules are found, rather then everyt
 - GLOBAL TODO
 ISSUES IN THING LIKE:
 -- UNIT TESTS FOR EACH PART OF THE DECODED VHDL FILE
--- add pins code!!!!! make xdc, make sch ect....
+-- wrap up pin code into a CHECK FPGA and MAKE FPGA script
+-- find the best method for saving data from processes like tree-cl to reuse later in other functions
 
 future features::
+-build into tree-cl a method to pass a file name and have it highlighted, thios vould be wraped into the find comands to show only the path of the hieracy to what you are interested in
+--
 - project files to aurtomate alot of functiosn and speed up file discovery
 - only anilise files as needed
 - make way of searching for unused signals ect and remove them (optinal)

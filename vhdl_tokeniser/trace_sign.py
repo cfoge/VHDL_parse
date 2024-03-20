@@ -83,18 +83,18 @@ def get_data_slim(node):
     
 
 
-root_dir = 'C:/Users/robertjo/Documents/other/28_7_23_ems/src'
+root_dir = 'C:/BMD_builds/sdi_audio_test/oceanus'
 # root_dir = 'C:/BMD_builds/ava_2019_fresh'
-target_vhdl = parse_vhdl('C:/Users/robertjo/Documents/other/28_7_23_ems/src/digital_side/test_1_build/test_digital_side.vhd')
+target_vhdl = parse_vhdl('C:/BMD_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd')
 # target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
 # find_str = 'f1i_vclk_p'
-find_str = 'rst'
+find_str = 'voip_rx_video_bus_array_i'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
-verbose = False
+verbose = True
 
 vhdl_files = []
 #print("VHDL Files Found:")
@@ -135,6 +135,9 @@ for vhdl_o in vhdl_file_as_obj: # make external function!!!
 nodes = []
 search_list_modules = []
 assignments = []
+assign_log = []
+possible_assignments = []
+full_assign_list = []
 nodes.append(TreeNode(target_vhdl.data,find_str,"file", "", ""))
 
 ###################################
@@ -147,21 +150,68 @@ def create_path(vhdl_obj_in, find_str, curent_node):
         if (find_str in x[0] or find_str in x[1] ):       
                 if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
                     
-                    assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
+                    assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to,
+                    full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
                     temp = [find_str]
                     find_str = temp
                     find_str.append(x[0])
                     break
-    for y in vhdl_obj_in.process: #find asignments in processes
-        for x in y[2]:
-            if (find_str in x[0] or find_str in x[1] ):       
-                    if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-                        
-                        assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to, line number
-                        temp = [find_str]
-                        find_str = temp
-                        find_str.append(x[0])
-                        break
+                elif (find_str in x[1]):
+                    possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                    break
+    for y in vhdl_obj_in.process: #find asignments in processes 
+            for x in y[2]:
+                if type(find_str) != list:
+                    if (find_str in x[0] or find_str in x[1] ):       
+                            if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                                temp = [find_str]
+                                find_str = temp
+                                find_str.append(x[0])
+                                full_assign_list.append(f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} ")
+                                break
+                            elif (find_str in x[1]):
+                                possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                break           
+                    else:
+                        for string in find_str: 
+                            if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                                temp = [find_str]
+                                find_str = temp
+                                find_str.append(x[0])
+                                full_assign_list.append(f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} ")
+
+                                break
+                            elif (find_str in x[1]):
+                                possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                break  
+
+    # search generate statements for direct assignments
+    for y in vhdl_obj_in.generate: #find asignments in generate statements 
+            for x in y[2]:
+                if type(find_str) != list:
+                    if (find_str in x[0] or find_str in x[1] ):       
+                            if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                                temp = [find_str]
+                                find_str = temp
+                                find_str.append(x[0])
+                                full_assign_list.append(f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} ")
+
+                                break
+                            elif (find_str in x[1]):
+                                possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                break  
+                    else:
+                        for string in find_str: 
+                            if (x[1] == find_str):   # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                                temp = [find_str]
+                                find_str = temp
+                                find_str.append(x[0])
+                                full_assign_list.append(f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} ")
+
+                                break
+                            elif (find_str in x[1]):
+                                possible_assignments.append([vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                break  
     if type(find_str) == list:
         for string in find_str:  
         # string = find_str
@@ -203,8 +253,8 @@ for entity in vhdl_file_as_obj:
 path_unsorted = create_path(treetop,find_str,nodes[0])
 
 # aditional assignments:
-# for ass in assignments:
-#     assigned_path_unsorted = create_path(treetop,ass[1],nodes[0])
+for ass in assignments:
+   assigned_path_unsorted = create_path(treetop,ass[1],nodes[0])
 
 path_tree = nodes[0].paths()
 
@@ -225,6 +275,10 @@ for path in path_tree:
 print("")
 print("---------------------------------------------------")
 
+
+if verbose == True: ##print the full line for each assignment for context
+    print(full_assign_list)
+    # what to do with possible assignements
 
 def create_tree(data):
     tree = graphviz.Digraph(format='png')

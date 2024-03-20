@@ -942,8 +942,20 @@ def parse_vhdl(file_name, just_port = False):
             elif token_type == 'GenerateKeyword' : 
                 generate_name = find_name("IdentifierToken", current_position, 26)
                 gen_triger_str = decode_block(gen_trigger,';')
+                gen_contents = extract_process_blocks(current_position)
+                assignments = find_index_by_keyword(gen_contents,"AssignKeyword_to")
+                gen_assignments = []
+                for found_ass_loc in assignments:
+                    assign = tokens[current_position + found_ass_loc]
+                    assign_from = make_block("<=",current_position + found_ass_loc + 1,[";",'when','\n'],1, 0, 1) 
+                    assign_to  = find_prev_till(current_position + found_ass_loc, [';','begin','when','then','if','else','\n','\n\n',"--","=>"])
+                    if assign_to != -1 and assign_from != -1 :
+                        if (("--" in assign_from) or ("--" in assign_to) )==0: #it will skip stuff it cant decode
+                            
+                            gen_assignments.append([assign_to.strip(),assign_from.strip()])
                 try:
-                    entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip()])
+                    entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip(),gen_assignments])
+                    
                 except:
                     print('')
             elif token_type == 'ProcessKeyword':
