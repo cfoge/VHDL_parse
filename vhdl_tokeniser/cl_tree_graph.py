@@ -47,14 +47,18 @@ def cl_depend(root_dir,tld, print_url):
 
     # search list and and attach dependent objects as childeren
     for vhdl_o in vhdl_file_as_obj:
-        for child in vhdl_o.children_name:
-            for vhdl_objsB in vhdl_file_as_obj:
-                if len(vhdl_objsB.data)>0:
+        try:
+            for child in vhdl_o.children_name:
+                for vhdl_objsB in vhdl_file_as_obj:
+                        if len(vhdl_objsB.data)>0:
 
-                    if vhdl_objsB.data == child.mod:
-                        child.vhdl_obj = (vhdl_objsB)
-                        #vhdl_o.children_name.remove(child)
-                        break
+                            if vhdl_objsB.data == child.mod:
+                                child.vhdl_obj = (vhdl_objsB)
+                                #vhdl_o.children_name.remove(child)
+                                break
+        except Exception as e:
+            error_log.append(["file_path_error",e])
+
 
     def print_child(object,depth,parent, print_url):
         url = ''
@@ -108,10 +112,13 @@ def cl_depend(root_dir,tld, print_url):
     print(f"Hierarchy of {target_vhdl.data} is: \n")
     hierachy_vis = []
     for vhdl_objs in vhdl_file_as_obj:
-        if len(vhdl_objs.data) > 0 :
-            if (target_vhdl.data == vhdl_objs.data ):
- 
-                print_child(vhdl_objs,0,"",print_url)
+        try:
+            if len(vhdl_objs.data) > 0 :
+                if (target_vhdl.data == vhdl_objs.data ):
+    
+                    print_child(vhdl_objs,0,"",print_url)
+        except Exception as e:
+            error_log.append(["print Hierarchy error",e])
     print(COLORS[-1])
     print("---------------------------------------------------")
 
