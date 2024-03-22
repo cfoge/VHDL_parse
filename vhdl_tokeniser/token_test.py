@@ -749,11 +749,15 @@ def get_filenames_without_extension(directory_path): # used to get primitives fr
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
     with open(file_path, 'r') as file:
+        vhdl_code_i = ''
         try:
-            vhdl_code = file.read()
+            vhdl_code_i = file.read()
         except Exception as e:
             error_log.append(["read_vhdl_file error", file_path_error,e])
-    return vhdl_code
+        if len(vhdl_code_i) == 0:
+            # print(f"Error reading file {file_path_error} returned file length is 0")
+            error_log.append(["Error reading file length is 0", file_path_error])
+    return vhdl_code_i
 
 def extract_text_until_keywords(file_path):
     with open(file_path, 'r') as file:
@@ -778,22 +782,23 @@ def is_in_ranges(ranges, current_position):
 error_log = []
 def parse_vhdl(file_name, just_port = False):
     global entity_vhdl
-    
+    vhdl_code = ''
     file_path = file_name
     global file_path_error
     file_path_error = file_path
-    # file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
-    if just_port == True:
-        vhdl_code = extract_text_until_keywords(file_path)
-    else:
-        try:
-            vhdl_code = read_vhdl_file(file_path).lower()
-        except:
-            print(f"Error: Failed to read file = {file_name}")
-            return "Error: Failed to read file"
     if file_name[-3:] != "vhd" and file_name[-4:] != "vhdl" :
         print(f"Error: file not of type .vhd or .vhdl = {file_name}")
         return "Error: file not of type .vhd or .vhdl"
+
+    # if just_port == True:
+    #     vhdl_code = extract_text_until_keywords(file_path)
+    # else:
+    try:
+        vhdl_code = read_vhdl_file(file_path).lower()
+    except Exception as e:
+        # print(f"Error: Failed to read file = {file_name}, {e}")
+        return "Error: Failed to read file"
+
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)

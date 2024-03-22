@@ -38,11 +38,17 @@ def cl_depend(root_dir,tld, print_url):
                 vhdl_files.append(os.path.join(root, file))
 
     vhdl_file_as_obj = []
+    print(f"{len(vhdl_files)} vhdl files found")
+    
 
     # make list of VHDL files as parsed objects --this reads every file maybe there is a better way to recursivly only read the needed files
     for files in vhdl_files:
-        vhdl_file_as_obj.append(parse_vhdl(files))
-
+        parsed_obj = parse_vhdl(files)
+        if type(parsed_obj.data) != None:
+            vhdl_file_as_obj.append(parsed_obj)
+        else:
+            print(f"error parsing VHDL file '{parsed_obj.url}'")
+    print(f"{len(vhdl_file_as_obj)} vhdl files parsed")
     target_vhdl = parse_vhdl(tld)
 
     # search list and and attach dependent objects as childeren
@@ -113,14 +119,17 @@ def cl_depend(root_dir,tld, print_url):
     hierachy_vis = []
     for vhdl_objs in vhdl_file_as_obj:
         try:
-            if len(vhdl_objs.data) > 0 :
-                if (target_vhdl.data == vhdl_objs.data ):
-    
-                    print_child(vhdl_objs,0,"",print_url)
+            if vhdl_objs.data != None:
+                if len(vhdl_objs.data) > 0:
+                    if (target_vhdl.data == vhdl_objs.data ):
+        
+                        print_child(vhdl_objs,0,"",print_url)
         except Exception as e:
             error_log.append(["print Hierarchy error",e])
     print(COLORS[-1])
     print("---------------------------------------------------")
+    # for error in error_log:
+    #     print(error)
 
     # Create Plotly tree map
     fig = go.Figure(go.Treemap(
@@ -156,6 +165,9 @@ if __name__ == "__main__":
 tld = args.tld
 ROOT_DIR = os.path.dirname(tld)
 root_dir = args.directory if args.directory is not None else ROOT_DIR
+
+print("---------------------------------------------")
+print(f"Running Show VHDL Hieracy of TLD '{tld}'")
 
 cl_depend(root_dir,tld, args.verbose)
 
