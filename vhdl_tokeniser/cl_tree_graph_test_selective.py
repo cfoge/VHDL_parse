@@ -2,6 +2,7 @@ from token_test import *
 import os
 import argparse
 import plotly.graph_objects as go
+import time # remove later
 
 # ANSI escape codes for colors
 COLORS = [
@@ -65,17 +66,22 @@ def cl_depend(root_dir,tld, print_url):
     # print(f"{len(vhdl_file_as_obj)} vhdl files parsed")
 # Read each VHDL file, extract text between 'entity' and 'is', and store it with file path
     entity_texts_with_path = []
+    unreadible_files = 0
     for file_path in vhdl_files:
-        with open(file_path, 'r') as f:
-            file_text = f.read()
-            # Extract text between 'entity' and 'is'
-            start_index = file_text.find('entity') + len('entity')
-            end_index = file_text.find('is', start_index)
-            if start_index != -1 and end_index != -1:
-                entity_text = file_text[start_index:end_index].strip()
-                # Exclude if the text contains "\n" unless it's at the very end
-                if '\n' not in entity_text[:-1]:
-                    entity_texts_with_path.append([entity_text, file_path])
+        try:
+            with open(file_path, 'r') as f:
+                file_text = f.read()
+                # Extract text between 'entity' and 'is'
+                start_index = file_text.find('entity') + len('entity')
+                end_index = file_text.find('is', start_index)
+                if start_index != -1 and end_index != -1:
+                    entity_text = file_text[start_index:end_index].strip()
+                    # Exclude if the text contains "\n" unless it's at the very end
+                    if '\n' not in entity_text[:-1]:
+                        entity_texts_with_path.append([entity_text, file_path])
+        except:
+            unreadible_files = unreadible_files + 1
+    print(f"{unreadible_files} vhdl files unreadable")
 
     target_vhdl = parse_vhdl(tld)
 
@@ -204,10 +210,11 @@ def cl_depend(root_dir,tld, print_url):
 
     print(COLORS[-1])
     print("---------------------------------------------------")
-
+    #################################
+    toc = time.perf_counter()
+    print(f"Downloaded the tutorial in {toc - tic:0.4f} seconds")
     # for error in error_log:
     #     print(error)
-
     # Create Plotly tree map
     fig = go.Figure(go.Treemap(
         labels=[lab for _, _, _, lab in hierachy_vis],
@@ -227,6 +234,7 @@ def cl_depend(root_dir,tld, print_url):
     return
 
 if __name__ == "__main__":
+    tic = time.perf_counter() # start timer
     # Add argparse for command-line arguments
     parser = argparse.ArgumentParser(description='VHDL wrapper generator')
     parser.add_argument('tld', type=str, help='Input VHDL file (Your top level design)')

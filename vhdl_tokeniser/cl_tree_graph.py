@@ -2,6 +2,8 @@ from token_test import *
 import os
 import argparse
 import plotly.graph_objects as go
+import time # remove later
+
 
 # ANSI escape codes for colors
 COLORS = [
@@ -128,6 +130,8 @@ def cl_depend(root_dir,tld, print_url):
             error_log.append(["print Hierarchy error",e])
     print(COLORS[-1])
     print("---------------------------------------------------")
+    toc = time.perf_counter()
+    print(f"Downloaded the tutorial in {toc - tic:0.4f} seconds")
     # for error in error_log:
     #     print(error)
 
@@ -150,6 +154,7 @@ def cl_depend(root_dir,tld, print_url):
     return
 
 if __name__ == "__main__":
+    tic = time.perf_counter() # start timer
     # Add argparse for command-line arguments
     parser = argparse.ArgumentParser(description='VHDL wrapper generator')
     parser.add_argument('tld', type=str, help='Input VHDL file (Your top level design)')
