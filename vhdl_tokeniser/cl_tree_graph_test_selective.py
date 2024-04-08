@@ -166,9 +166,10 @@ def cl_depend(root_dir,tld, print_url):
     # print("---------------------------------------------------")
     print("---------------------------------------------------")
     print(f"Hierarchy of {target_vhdl.data} is: \n")
-    
+    global hierachy_vis
+    hierachy_vis = []
 
-    def print_child_with_name(vhdl_obj_in, indent_level, indent_str, print_url):
+    def print_child_with_name(vhdl_obj_in, indent_level, indent_str, print_url, hierachy_vis):
         # try:
             if isinstance(vhdl_obj_in,instanc): 
                 vhdl_obj = vhdl_obj_in.vhdl_obj
@@ -196,15 +197,15 @@ def cl_depend(root_dir,tld, print_url):
                     # hierachy_vis.append([parent,vhdl_obj.name,vhdl_obj,object.mod])
             for child in vhdl_obj.children_name:
                 if child.vhdl_obj is not None:
-                    print_child_with_name(child, indent_level + 1, indent_str + "  ", print_url)
+                    print_child_with_name(child, indent_level + 1, indent_str + "  ", print_url, hierachy_vis)
         # except Exception as e:
         #     print('error')
         #     error_log.append(["print Hierarchy error", e])
-
+            return hierachy_vis
     
     try:
         if target_vhdl.data is not None and len(target_vhdl.data) > 0:
-                print_child_with_name(target_vhdl, 0, "", False)
+                print_child_with_name(target_vhdl, 0, "", False,hierachy_vis)
     except Exception as e:
         error_log.append(["print Hierarchy error", e])
 
