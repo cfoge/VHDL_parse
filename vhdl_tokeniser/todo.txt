@@ -26,6 +26,9 @@ can follow a port or signal if there is an assign not inside a process
 to the process, either find a way of tagging assignments in the trace
 as belonging to a process IF or case statement
 
+trace signal need a way to handle a re assignement that doesnt lead intop another instance!!!! at the moment it just ignores it
+which is fine for the graph of modules, but is needed for the paths list in the CLI
+
 !!!!!*** check this works, find a process with a clean assigment in it
 
 at the momnet signal trace is handles pure assignments

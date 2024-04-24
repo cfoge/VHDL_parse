@@ -435,6 +435,7 @@ def decode_ent_port(token_in): #decodes lines with the strcutre of a port such a
         return -1
 
 def decode_block(block,endLine): #decodes lines with the strcutre of a port such as generics/assignements ect
+    try:
         token_list = ['']
         block_num = 0
         for i in range(len(block)):
@@ -453,7 +454,8 @@ def decode_block(block,endLine): #decodes lines with the strcutre of a port such
         if token_list[-1] == '':
             token_list.remove('')                  
         return token_list
-
+    except Exception as e:
+        error_log.append(["decode_block error", file_path_error,e])
 
 
 def decode_sig(token_type,current_position,end_token): #decodes lines with the strcutre of a port such as generics/assignements ect
@@ -608,68 +610,74 @@ def calculate_equations(string):
             # results.append((equation, result))
             results =  result
         except (ZeroDivisionError, SyntaxError, TypeError) as e:
+            
             results.append((equation, f"Error: {e}"))
     if results == []:
         results = string
     return results
 
 def format_port(decoded_gen, generic=False, obj_in = None):
-    if obj_in == None:
-        obj_in = entity_vhdl
-    result = []
-    if decoded_gen == -1: 
-        return ""
-    for i in decoded_gen:
-        in_out_inout = ''
-        type_found = False
+    try:
+        if obj_in == None:
+            obj_in = entity_vhdl
+        result = []
+        if decoded_gen == -1: 
+            return ""
+        for i in decoded_gen:
+            in_out_inout = ''
+            type_found = False
 
-        if not generic:
-            if " in " in i:
-                in_out_inout = 'in'
-            elif " out " in i:
-                in_out_inout = 'out'
-            elif " inout " in i:
-                in_out_inout = 'inout'
+            if not generic:
+                if " in " in i:
+                    in_out_inout = 'in'
+                elif " out " in i:
+                    in_out_inout = 'out'
+                elif " inout " in i:
+                    in_out_inout = 'inout'
 
-        if " subtype " in i:
-            i = i.replace("subtype", "").strip()
-        if " type " in i:
-            i = i.replace("type", "").strip()
-            type_found = True
-            type_val = i.split(" of ")
-            if ";" in type_val[1]:
-                type_val[1] = type_val[1].replace(";", "")
+            if " subtype " in i:
+                i = i.replace("subtype", "").strip()
+            if " type " in i:
+                i = i.replace("type", "").strip()
+                type_found = True
+                type_val = i.split(" of ")
+                if ";" in type_val[1]:
+                    type_val[1] = type_val[1].replace(";", "")
 
-        if "," in i and ":" in i:
-            check_number_of_splits = i.split(": ") # this is just a workaround to avoid an issue
-            if len(check_number_of_splits) == 2:
-                sig_names, sig_dec = i.split(": ")
-            else:
-                sig_names = "unknown"
-                sig_dec = "unknown"
-            i = sig_dec
-            split = i.split(" ")
-            name = [n.strip() for n in sig_names.split(",") if n.strip()]
-            port_type = find_type(i) if not type_found else type_val[1].strip()
-            port_width = find_width(i, port_type)
-            port_val = extract_port_val(i)
-
-            for sig_name in name:
-                result.append([sig_name, in_out_inout, port_type, port_width, port_val])
-
-        else:
-            split = i.split(" ")
-            name = split[0]
-            if name:
+            if "," in i and ":" in i:
+                check_number_of_splits = i.split(": ") # this is just a workaround to avoid an issue
+                if len(check_number_of_splits) == 2:
+                    sig_names, sig_dec = i.split(": ")
+                else:
+                    sig_names = "unknown"
+                    sig_dec = "unknown"
+                i = sig_dec
+                split = i.split(" ")
+                name = [n.strip() for n in sig_names.split(",") if n.strip()]
                 port_type = find_type(i) if not type_found else type_val[1].strip()
                 port_width = find_width(i, port_type)
                 port_val = extract_port_val(i)
 
-                result.append([name, in_out_inout, port_type, port_width, port_val])
+                for sig_name in name:
+                    result.append([sig_name, in_out_inout, port_type, port_width, port_val])
 
-    result = [found_port for found_port in result if found_port[0] != obj_in.data or found_port[1] != 'null']
+            else:
+                split = i.split(" ")
+                name = split[0]
+                if name:
+                    port_type = find_type(i) if not type_found else type_val[1].strip()
+                    port_width = find_width(i, port_type)
+                    port_val = extract_port_val(i)
 
-    return result
+                    result.append([name, in_out_inout, port_type, port_width, port_val])
+
+        result = [found_port for found_port in result if found_port[0] != obj_in.data or found_port[1] != 'null']
+
+        return result
+    
+    except Exception as e:
+        error_log.append(["format_port error", file_path_error,e])
+    
 
 
 def extract_port_val(i):
@@ -741,11 +749,15 @@ def get_filenames_without_extension(directory_path): # used to get primitives fr
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
     with open(file_path, 'r') as file:
+        vhdl_code_i = ''
         try:
-            vhdl_code = file.read()
-        except:
-             return ""
-    return vhdl_code
+            vhdl_code_i = file.read()
+        except Exception as e:
+            error_log.append(["read_vhdl_file error", file_path_error,e])
+        if len(vhdl_code_i) == 0:
+            # print(f"Error reading file {file_path_error} returned file length is 0")
+            error_log.append(["Error reading file length is 0", file_path_error])
+    return vhdl_code_i
 
 def extract_text_until_keywords(file_path):
     with open(file_path, 'r') as file:
@@ -767,21 +779,26 @@ def is_in_ranges(ranges, current_position):
 #########################################################################
 #### MAIN FUNCTION FOR PARSE VHDL
 #########################################################################
+error_log = []
 def parse_vhdl(file_name, just_port = False):
     global entity_vhdl
+    vhdl_code = ''
     file_path = file_name
-    # file_path = "fan_control.vhd"  # Replace with the path to your VHDL file
-    if just_port == True:
-        vhdl_code = extract_text_until_keywords(file_path)
-    else:
-        try:
-            vhdl_code = read_vhdl_file(file_path).lower()
-        except:
-            print(f"Error: Failed to read file = {file_name}")
-            return "Error: Failed to read file"
+    global file_path_error
+    file_path_error = file_path
     if file_name[-3:] != "vhd" and file_name[-4:] != "vhdl" :
         print(f"Error: file not of type .vhd or .vhdl = {file_name}")
         return "Error: file not of type .vhd or .vhdl"
+
+    # if just_port == True:
+    #     vhdl_code = extract_text_until_keywords(file_path)
+    # else:
+    try:
+        vhdl_code = read_vhdl_file(file_path).lower()
+    except Exception as e:
+        # print(f"Error: Failed to read file = {file_name}, {e}")
+        return "Error: Failed to read file"
+
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)
@@ -809,7 +826,10 @@ def parse_vhdl(file_name, just_port = False):
     for token_type, token_text in tokens:
         if token_type in token_actions:
             entity_vhdl_list = getattr(entity_vhdl, token_actions[token_type])
-            entity_vhdl_list.append(make_block(token_type, current_position, ";").strip())
+            try:
+                entity_vhdl_list.append(make_block(token_type, current_position, ";").strip())
+            except Exception as e:
+                error_log.append(["entity_vhdl_list error", file_path_error,e])
 
 
         if ((token_type == 'EntityKeyword') or (token_text in component_list and first_begin_found == True) or (token_type == 'PrimitiveKeyword' and first_begin_found == True)) and global_entity == 1: # if we have found the global entity and we come across another entity
@@ -880,8 +900,8 @@ def parse_vhdl(file_name, just_port = False):
             if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
                 decoded_gen = (decode_port(token_type,current_position,end_keywords_mapping, 'GenericKeyword'))
                 entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
-        except:
-            print()  
+        except Exception as e:
+                error_log.append(["GenericKeyword error", file_path_error,e])
 
         if token_type == 'PortKeyword': 
             find_map = make_block(token_type,current_position,"(")
@@ -956,8 +976,8 @@ def parse_vhdl(file_name, just_port = False):
                 try:
                     entity_vhdl.generate.append([generate_name,gen_triger_str[0].strip(),gen_assignments])
                     
-                except:
-                    print('')
+                except Exception as e:
+                    error_log.append(["GenerateKeyword error", file_path_error,e])
             elif token_type == 'ProcessKeyword':
                     prcess_name = find_name("IdentifierToken", current_position, 9)
                     if prcess_name == "generate" or prcess_name == "end":
