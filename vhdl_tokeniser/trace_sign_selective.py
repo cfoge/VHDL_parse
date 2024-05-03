@@ -4,6 +4,8 @@
 import os
 from token_test import *
 import graphviz
+import time
+
 
 ########################### search node
 class TreeNode(object):
@@ -86,6 +88,7 @@ def get_data_slim(node):
 def attach_dependent_objects(parent_vhdl_obj, entity_texts_with_path): # this function creates a vhdl object hieracy of only instanciated vhdl entitys
     try:
         for child in parent_vhdl_obj.children_name:
+            tic = time.perf_counter()
             for vhdl_found_entities in entity_texts_with_path:
                 if len(vhdl_found_entities[0]) > 0:
                     if vhdl_found_entities[0] == child.mod:
@@ -93,18 +96,21 @@ def attach_dependent_objects(parent_vhdl_obj, entity_texts_with_path): # this fu
                         child.vhdl_obj = new_child
                         attach_dependent_objects(new_child, entity_texts_with_path)  # Recursive call
                         break
+            toc = time.perf_counter()
+            print(f"checked all files in {toc - tic:0.4f} seconds")
+            
     except Exception as e:
         error_log.append(["file_path_error", e])
 
-root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
-# root_dir = 'C:/BMD_builds/ava_2019_fresh'
-target_vhdl_in = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga/src/digital_side/test_1_build/test_digital_side.vhd'
-# target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
+# root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
+root_dir = '//switcher-build2/users/robertj/crcconday'
+# target_vhdl_in = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga/src/digital_side/test_1_build/test_digital_side.vhd'
+target_vhdl_in = '//switcher-build2/users/robertj/crcconday/fpga/src/audio_monitor_12g_g3.vhd'
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 #search each child for 
-# find_str = 'f1i_vclk_p'
-find_str = 'sys_clk'
+find_str = 'sdi_rx_bus_en'
+# find_str = 'sys_clk'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
 verbose = True
@@ -120,6 +126,44 @@ for root, dirs, files in os.walk(root_dir):
 vhdl_file_as_obj = []
 print(f"{len(vhdl_files)} vhdl files found")
 # check for duplicate file names!!!! print waring!!!! this may cause issues
+
+###### FIND AND REMOVE DUPLICTES
+# Dictionary to store encountered filenames and their corresponding paths
+filename_to_path = {}
+
+# List to store duplicate filenames
+duplicate_filenames = []
+
+# Iterate over entity_texts_with_path
+for file_path in vhdl_files:
+    # Extract the filename from the file path
+    filename = os.path.basename(file_path)
+    # Check if the filename is already in the dictionary
+    if filename in filename_to_path:
+        # If it is, add it to the list of duplicate filenames
+        duplicate_filenames.append(filename)
+    else:
+        # Otherwise, add it to the dictionary with its path
+        filename_to_path[filename] = file_path
+
+# Remove duplicates from entity_texts_with_path
+entity_texts_with_path_unique = []
+for file_path in vhdl_files:
+    filename = os.path.basename(file_path)
+    if filename in duplicate_filenames:
+        # Skip duplicates
+        continue
+    # Add non-duplicates to the unique list
+    entity_texts_with_path_unique.append(file_path)
+
+    # Update entity_texts_with_path to contain only unique filenames
+vhdl_files = entity_texts_with_path_unique
+
+# Print the number of duplicate files found
+print(f"{len(duplicate_filenames)} duplicate files found")
+if (len(duplicate_filenames)) > 0 :
+    print("Duplicate files with the same name can create issues when searching through VHDL hierachys, so duplicates have been removed")
+
 
 # Read each VHDL file, extract text between 'entity' and 'is', and store it with file path
 entity_texts_with_path = []
@@ -139,6 +183,9 @@ for file_path in vhdl_files:
     except:
         unreadible_files = unreadible_files + 1
 print(f"{unreadible_files} vhdl files unreadable")
+
+
+
 
 
 target_vhdl = parse_vhdl(target_vhdl_in)
@@ -174,7 +221,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                     find_str.append(x[0])
                     break
                 elif (find_str in x[1]):
-                    possible_assignments.append(['Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                    #this detects if the source of the assignment had the keyword in it, need to be more specific
+                    # possible_assignments.append(['?Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
                     break
     for y in vhdl_obj_in.process: #find asignments in processes 
             for x in y[2]:
@@ -187,7 +235,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                                 full_assign_list.append(f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} ")
                                 break
                             else:
-                                possible_assignments.append([f'Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                #this acidently finds the keyword in the rocess trigger
+                                # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
                                 break           
                 else:
                         for string in find_str: 
@@ -199,7 +248,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
                                 break
                             else:
-                                possible_assignments.append([f'Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                                #this acidently finds the keyword in the rocess trigger
+                                # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
                                 break  
 
     # search generate statements for direct assignments
