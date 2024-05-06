@@ -49,6 +49,7 @@ signals = target_vhdl.signal
 for signal in signals:
     num_strings_match, num_line_match = find_string_matches(tld,signal[0])
     if num_strings_match < 2:
-        print(f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} times")
+        if len(num_line_match)>0:
+            print(f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} time(s). line {COLORS[1]}{num_line_match[0][0]}{COLORS[6]}")
         # for lines in num_line_match:
         #     print(f"-----> {lines}")
