@@ -26,6 +26,11 @@ show_var = True
 show_const = True
 show_sig = True
 show_pros = True
+show_comp = True
+show_func = True
+show_gen = True
+show_lib = True
+show_types = True
 
 # if not (
 #     (len(sys.argv) == 2) | (len(sys.argv) == 3)
@@ -66,33 +71,33 @@ target_vhdl = parse_vhdl(file)
 print(color.GREEN + "---------------------------------------------------" + color.END)
 print(
     "Getting Info For "
-    + color.YELLOW
+    + color.GREEN
     + target_vhdl.url
     + color.END
 )
-print( target_vhdl.data)
-print(color.BLUE + "   components:")
+print( f"Name: {color.GREEN}{target_vhdl.data}{color.END}  -  Arch: {color.GREEN}{target_vhdl.arch}" )
+print(color.BLUE + "   Components:")
 for i in target_vhdl.component:
-    print("        --" + str(i.data))
-print(color.END + color.GREEN + "   entities:")
+    print("        -->" + str(i.data))
+print(color.END + color.GREEN + "   Entities:")
 for i in target_vhdl.children:
-        print("        --" + str(i.data))
+        print("        -->" + str(i.data))
 if show_pros == True:
-    print(color.END + color.YELLOW + "   process:")
+    print(color.END + color.YELLOW + "   Process:")
     for i in target_vhdl.process:
-        print("        --" + str(i))
+        print("        -->" + str(i))
 if show_const == True:
-    print(color.END + color.DARKCYAN + "   constants:")
+    print(color.END + color.DARKCYAN + "   Constants:")
     for i in target_vhdl.constant:
-        print("        --" + str(i))
+        print("        -->" + str(i))
 if show_att == True:
-    print(color.END + color.CYAN + "   attributes:")
+    print(color.END + color.CYAN + "   Attributes:")
     for i in target_vhdl.attribute:
-        print("        --" + str(i))
+        print("        -->" + str(i))
 if show_sig == True:
-    print(color.END + color.GREEN + "   signals:")
+    print(color.END + color.GREEN + "   Signals:")
     for i in target_vhdl.signal:
-        print("        --" + str(i))
+        print("        -->" + str(i))
 print (color.GREEN
     + "---------------------------------------------------"
     + color.END
