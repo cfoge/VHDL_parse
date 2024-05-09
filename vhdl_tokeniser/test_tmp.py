@@ -1,8 +1,10 @@
+# a test program designed to check how long it takes to run functions
+
 
 import os
 from token_test import *
 # from trace_sign import *
-from reg_decode import *
+# from reg_decode import *
 
 import time
 

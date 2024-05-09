@@ -3,7 +3,6 @@ import sys
 import glob
 import argparse
 from pfind import search_files
-## make version for constant, signal, variable  ,subtype , package, library (also search use)
 search_type = 'package'
 
 if __name__ == "__main__":
