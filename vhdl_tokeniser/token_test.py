@@ -897,7 +897,8 @@ def parse_vhdl(file_name, just_port = False):
                 entity_vhdl.type = "package"
 
         try:
-            if token_type == 'GenericKeyword' and len(make_block(token_type,current_position,"(")) == 0: # there is no 'map' following the generic keyword
+            if token_type == 'GenericKeyword' and len(extract_tokens_between(tokens, "generic", "(",current_position)) < 3: # there is no 'map' following the generic keyword
+                # genericMAP = extract_tokens_between(tokens, "generic", "(",current_position)                
                 decoded_gen = (decode_port(token_type,current_position,end_keywords_mapping, 'GenericKeyword'))
                 entity_vhdl.generic = format_port(decoded_gen, True) # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names 
         except Exception as e:

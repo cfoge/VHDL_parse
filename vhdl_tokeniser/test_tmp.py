@@ -15,7 +15,7 @@ start = time.time()
 # print (primitives)
 # file = "C:/BMD_builds/ava_final/atemava1/src/cpu_regs.vhd"
 # file = "c:/Users/robertjo/Downloads/ems_latest/src/digital_side/control/digital_reg_file.vhd"
-file = "tests/lifo.vhdl"
+file = "vhdl_tokeniser/tests/test4.vhdl"
 # reg_file = read_vhdl_file(file)
 target_vhdl = parse_vhdl(file)
 
