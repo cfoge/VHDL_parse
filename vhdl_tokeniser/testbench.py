@@ -5,7 +5,7 @@ files_to_tb = "vhdl_tokeniser/tests/lifo2.vhd"
 
 decoded = parse_vhdl(files_to_tb, True)
 tb_name = f"TB_{decoded.data}"
-#add arg parser
+# add arg parser
 # add function to allign => based on gen/port lenghth
 
 verbose = True
@@ -67,9 +67,9 @@ if len(decoded.port) > 0:
     f.write(f"\n")
 f.close()
 
-#remove duplicates form the Liberary list
+# remove duplicates form the Liberary list
 temp = [idx for idx, val in enumerate(lib_list) if val in lib_list[:idx]]
- 
+
 # excluding duplicate indices from other list
 clean_lib_list = [ele for idx, ele in enumerate(lib_list) if idx not in temp]
 
@@ -78,35 +78,37 @@ contents = None
 header = "--Auto generated Test Bench\n"
 footer = ""
 
-with open(f"{tb_name}.vhdl",'r') as contents:
-      save = contents.read()
+with open(f"{tb_name}.vhdl", "r") as contents:
+    save = contents.read()
 
 # generate header
 for lib in clean_lib_list:
     if "." not in lib:
         header = header + f"LIBRARY {lib}; \n"
     else:
-        header = header + f"USE {lib}; \n"     
+        header = header + f"USE {lib}; \n"
 
-header = header + f"\nentity {tb_name} is \nport ( clk, rst : in std_logic);\nend {tb_name};\n\narchitecture rtl of {tb_name} is \n \n"
+header = (
+    header
+    + f"\nentity {tb_name} is \nport ( clk, rst : in std_logic);\nend {tb_name};\n\narchitecture rtl of {tb_name} is \n \n"
+)
 
 if all_ports_2_toplevel == True:
     for generic in generic_list:
         end_of_gen = ""
         if gen[3] != 1:
-            if isinstance(gen[3],int):
-                gen_msb = gen[3] -1
+            if isinstance(gen[3], int):
+                gen_msb = gen[3] - 1
                 end_of_gen = end_of_gen + f"({gen_msb} downto 0)"
         if gen[4] != None:
             end_of_gen = end_of_gen + f" := {gen[4]}"
         header = header + f"constant {gen[0]} : {gen[2]}{end_of_gen}; \n"
 
-
     for port in port_list:
         end_of_port = ""
         if port[3] != 1:
-            if isinstance(port[3],int):
-                port_msb = port[3] -1
+            if isinstance(port[3], int):
+                port_msb = port[3] - 1
                 end_of_port = end_of_port + f"({port_msb} downto 0)"
         if port[4] != None:
             end_of_port = end_of_port + f" := {port[4]}"
@@ -115,12 +117,14 @@ if all_ports_2_toplevel == True:
 
 header = header + "\nbegin\n"
 
-with open(f"{tb_name}.vhdl",'w') as contents:
-      contents.write(header)
+with open(f"{tb_name}.vhdl", "w") as contents:
+    contents.write(header)
 
-save_out = save + footer + "\n--Add Test cases here...\nend rtl;\n" # add the file contents and the footer/end of the file back in.
+save_out = (
+    save + footer + "\n--Add Test cases here...\nend rtl;\n"
+)  # add the file contents and the footer/end of the file back in.
 
-with open(f"{tb_name}.vhdl",'a') as contents:
-      contents.write(save_out)
+with open(f"{tb_name}.vhdl", "a") as contents:
+    contents.write(save_out)
 
 f.close()

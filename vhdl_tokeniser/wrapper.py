@@ -1,12 +1,15 @@
 ## Parse_VHDL 2023 CFOGE
-## wrapper.py 
-## A Script to generate a VHDL module from a list VHDL files, where each file is instantiated and may be connected to signals automaticly  
+## wrapper.py
+## A Script to generate a VHDL module from a list VHDL files, where each file is instantiated and may be connected to signals automaticly
 
 import argparse
 from token_test import parse_vhdl
 import os
 
-def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=False, make_signals=False):
+
+def generate_vhdl_wrapper(
+    file_paths, wrapper_name, verbose=False, save_to_file=False, make_signals=False
+):
     decoded_list = []
 
     for file_path in file_paths:
@@ -15,7 +18,7 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
     lib_list = []
     generic_list = []
     port_list = []
-    signals_list = ''
+    signals_list = ""
 
     for decoded in decoded_list:
         for lib in decoded.lib:
@@ -64,27 +67,27 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
                 f.write(f");\n")
                 f.write(f"\n")
 
-        signals = ''
+        signals = ""
         if make_signals == True:
             for port in decoded.port:
                 end_of_port = ""
                 if port[3] != 1:
                     try:
-                        port_msb = port[3] -1
+                        port_msb = port[3] - 1
                         end_of_port = end_of_port + f"({port_msb} downto 0)"
                     except:
                         port_msb = "unknown"
                         if " to " in port[3]:
-                            port_width = port[3].replace("to","downto")
+                            port_width = port[3].replace("to", "downto")
                         else:
                             port_width = port[3]
                         end_of_port = end_of_port + f"({port_width})"
-                    
+
                 if port[4] != None:
                     end_of_port = end_of_port + f" := {port[4]}"
                 signals = signals + f"signal {port[0]} : {port[2]}{end_of_port}; \n"
         signals_list = signals_list + signals
-  
+
     # Remove duplicates from the Library list
     temp = [idx for idx, val in enumerate(lib_list) if val in lib_list[:idx]]
     clean_lib_list = [ele for idx, ele in enumerate(lib_list) if idx not in temp]
@@ -93,7 +96,7 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
     header = "--Auto generated VHDL Wrapper\n"
     footer = ""
 
-    with open("wrapper_out.vhdl", 'r') as contents:
+    with open("wrapper_out.vhdl", "r") as contents:
         save = contents.read()
 
     # Generate header
@@ -105,7 +108,6 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
 
     header = header + f"\nentity {wrapper_name} is \n"
 
-
     # for port in port_list:
     #     end_of_port = ""
     #     if port[3] != 1:
@@ -115,20 +117,25 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
     #         end_of_port = end_of_port + f" := {port[4]}"
     #     header = header + f"{port[0]} : {port[1]} {port[2]}{end_of_port}; \n"
 
-    header = header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n"
+    header = (
+        header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n"
+    )
 
     header = header + f"begin \n"
 
-    with open("wrapper_out.vhdl", 'w') as contents:
+    with open("wrapper_out.vhdl", "w") as contents:
         contents.write(header)
 
     if make_signals == True:
-        save_out = signals_list + "\n" + save + footer + "\nend rtl;\n"  # add the file contents and the footer/end of the file back in.
+        save_out = (
+            signals_list + "\n" + save + footer + "\nend rtl;\n"
+        )  # add the file contents and the footer/end of the file back in.
     else:
-        save_out = save + footer + "\nend rtl;\n"  # add the file contents and the footer/end of the file back in.
+        save_out = (
+            save + footer + "\nend rtl;\n"
+        )  # add the file contents and the footer/end of the file back in.
 
-
-    with open("wrapper_out.vhdl", 'a') as contents:
+    with open("wrapper_out.vhdl", "a") as contents:
         contents.write(save_out)
     print(header)
     print(save_out)
@@ -138,12 +145,21 @@ def generate_vhdl_wrapper(file_paths, wrapper_name, verbose=False, save_to_file=
 
 if __name__ == "__main__":
     # Add argparse for command-line arguments
-    parser = argparse.ArgumentParser(description='VHDL wrapper generator')
-    parser.add_argument('files', type=str, nargs='+', help='Input VHDL files')
-    parser.add_argument('-n', '--name', type=str,default='wrapper', help='Wrapper entity name')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Print verbose output')
-    parser.add_argument('-sig', '--signal', action='store_true', help='create signals from the ports of modules beign wrapped')
-    parser.add_argument('-s', '--save', action='store_true', help='Save output to file')
+    parser = argparse.ArgumentParser(description="VHDL wrapper generator")
+    parser.add_argument("files", type=str, nargs="+", help="Input VHDL files")
+    parser.add_argument(
+        "-n", "--name", type=str, default="wrapper", help="Wrapper entity name"
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Print verbose output"
+    )
+    parser.add_argument(
+        "-sig",
+        "--signal",
+        action="store_true",
+        help="create signals from the ports of modules beign wrapped",
+    )
+    parser.add_argument("-s", "--save", action="store_true", help="Save output to file")
 
     # # Check if the correct number of arguments is provided
     args = parser.parse_args()
@@ -152,6 +168,12 @@ if __name__ == "__main__":
     save_to_file = args.save
 
     # Generate VHDL wrapper
-    generate_vhdl_wrapper(args.files, args.name, verbose=args.verbose, save_to_file=save_to_file, make_signals=args.signal)
+    generate_vhdl_wrapper(
+        args.files,
+        args.name,
+        verbose=args.verbose,
+        save_to_file=save_to_file,
+        make_signals=args.signal,
+    )
     # files = ["tests/test2.vhdl", "tests/test1.vhdl"]
     # generate_vhdl_wrapper(files, "wraper_wth_sig", verbose=False, save_to_file=False, make_signals=True)

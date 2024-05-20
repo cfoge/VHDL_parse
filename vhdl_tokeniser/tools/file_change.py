@@ -5,6 +5,7 @@ import time
 
 CHANGE_LOG_FILE = "change_log.txt"
 
+
 def files_have_changed(directory):
     """
     Check if any files in the directory have changed since the last check.
@@ -23,31 +24,36 @@ def files_have_changed(directory):
 
     return False
 
+
 def load_last_checked_time():
     """
     Load the last checked time from the change log file.
     If no previous time is stored, return a default value (e.g., 0).
     """
     if os.path.exists(CHANGE_LOG_FILE):
-        with open(CHANGE_LOG_FILE, 'r') as file:
+        with open(CHANGE_LOG_FILE, "r") as file:
             last_checked_time = float(file.readline().strip())
     else:
         last_checked_time = 0
     return last_checked_time
+
 
 def update_last_checked_time():
     """
     Update the last checked time in the change log file to the current time.
     """
     current_time = time.time()
-    with open(CHANGE_LOG_FILE, 'w') as file:
+    with open(CHANGE_LOG_FILE, "w") as file:
         file.write(str(current_time))
 
+
 if __name__ == "__main__":
-    directory = "C:/Users/robertjo/Documents/FPGA_automation_scripts/find_in_project_tools"
+    directory = (
+        "C:/Users/robertjo/Documents/FPGA_automation_scripts/find_in_project_tools"
+    )
     if files_have_changed(directory):
         print("Files have changed since the last check.")
-     
+
     else:
         print("No files have changed since the last check.")
 

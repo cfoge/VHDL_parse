@@ -8,6 +8,7 @@ from token_test import *
 import os
 import argparse
 
+
 class color:
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
@@ -69,19 +70,16 @@ target_vhdl = parse_vhdl(file)
 
 
 print(color.GREEN + "---------------------------------------------------" + color.END)
+print("Getting Info For " + color.GREEN + target_vhdl.url + color.END)
 print(
-    "Getting Info For "
-    + color.GREEN
-    + target_vhdl.url
-    + color.END
+    f"Name: {color.GREEN}{target_vhdl.data}{color.END}  -  Arch: {color.GREEN}{target_vhdl.arch}"
 )
-print( f"Name: {color.GREEN}{target_vhdl.data}{color.END}  -  Arch: {color.GREEN}{target_vhdl.arch}" )
 print(color.BLUE + "   Components:")
 for i in target_vhdl.component:
     print("        -->" + str(i.data))
 print(color.END + color.GREEN + "   Entities:")
 for i in target_vhdl.children:
-        print("        -->" + str(i.data))
+    print("        -->" + str(i.data))
 if show_pros == True:
     print(color.END + color.YELLOW + "   Process:")
     for i in target_vhdl.process:
@@ -98,7 +96,4 @@ if show_sig == True:
     print(color.END + color.GREEN + "   Signals:")
     for i in target_vhdl.signal:
         print("        -->" + str(i))
-print (color.GREEN
-    + "---------------------------------------------------"
-    + color.END
-)
+print(color.GREEN + "---------------------------------------------------" + color.END)

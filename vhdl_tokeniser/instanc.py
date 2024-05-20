@@ -1,20 +1,26 @@
 ## Parse_VHDL 2023 CFOGE
-## instanc.py 
-## A Script to instantiate a VHDL module from its VHDL file 
+## instanc.py
+## A Script to instantiate a VHDL module from its VHDL file
 
 import argparse
 import sys
 from token_test import *
 
 # Add argparse for command-line arguments
-parser = argparse.ArgumentParser(description='VHDL instance generator', formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('file', type=str, help='Input file')
-parser.add_argument('-v','--verbose', action='store_true', help='Print verbose output')
-parser.add_argument('-s', '--save', action='store_true', help='Save output to file')
-parser.add_argument('--h', action='help', default=argparse.SUPPRESS,
-                    help='Show this help message and exit\n'
-                         'Example usage:\n'
-                         'python script.py input.vhdl --verbose --save\n')
+parser = argparse.ArgumentParser(
+    description="VHDL instance generator", formatter_class=argparse.RawTextHelpFormatter
+)
+parser.add_argument("file", type=str, help="Input file")
+parser.add_argument("-v", "--verbose", action="store_true", help="Print verbose output")
+parser.add_argument("-s", "--save", action="store_true", help="Save output to file")
+parser.add_argument(
+    "--h",
+    action="help",
+    default=argparse.SUPPRESS,
+    help="Show this help message and exit\n"
+    "Example usage:\n"
+    "python script.py input.vhdl --verbose --save\n",
+)
 
 # Check if the correct number of arguments is provided
 if len(sys.argv) < 2:
@@ -27,9 +33,9 @@ args = parser.parse_args()
 decoded = parse_vhdl(args.file, False)
 
 # Initialize save_to_file based on command-line argument
-save_to_file = False #args.s
+save_to_file = False  # args.s
 
-#add arg parser
+# add arg parser
 # add function to allign => based on gen/port lenghth
 
 verbose = True

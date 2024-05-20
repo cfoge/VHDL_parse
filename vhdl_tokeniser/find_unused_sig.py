@@ -3,14 +3,15 @@ import os
 import argparse
 
 COLORS = [
-    '\033[97m',  # WHITE
-    '\033[92m',  # GREEN
-    '\033[94m',  # BLUE
-    '\033[93m',  # YELLOW
-    '\033[96m',  # CYAN
-    '\033[95m',  # MAGENTA
-    '\033[0m',   # RESET
+    "\033[97m",  # WHITE
+    "\033[92m",  # GREEN
+    "\033[94m",  # BLUE
+    "\033[93m",  # YELLOW
+    "\033[96m",  # CYAN
+    "\033[95m",  # MAGENTA
+    "\033[0m",  # RESET
 ]
+
 
 def find_string_matches(file_path, search_string):
     """
@@ -28,7 +29,7 @@ def find_string_matches(file_path, search_string):
     matched_lines = []
 
     # Open the text document
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         # Iterate through each line in the file
         for line_number, line in enumerate(file, start=1):
             # Check if the search string is in the line
@@ -38,18 +39,21 @@ def find_string_matches(file_path, search_string):
 
     return match_count, matched_lines
 
-tld = '//switcher-build2/users/robertj/crcconday/fpga/src/audio_monitor_12g_g3.vhd'
+
+tld = "//switcher-build2/users/robertj/crcconday/fpga/src/audio_monitor_12g_g3.vhd"
 
 
-#Parse the VHDL file
+# Parse the VHDL file
 target_vhdl = parse_vhdl(tld)
 
 signals = target_vhdl.signal
 
 for signal in signals:
-    num_strings_match, num_line_match = find_string_matches(tld,signal[0])
+    num_strings_match, num_line_match = find_string_matches(tld, signal[0])
     if num_strings_match < 2:
-        if len(num_line_match)>0:
-            print(f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} time(s). line {COLORS[1]}{num_line_match[0][0]}{COLORS[6]}")
+        if len(num_line_match) > 0:
+            print(
+                f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} time(s). line {COLORS[1]}{num_line_match[0][0]}{COLORS[6]}"
+            )
         # for lines in num_line_match:
         #     print(f"-----> {lines}")
