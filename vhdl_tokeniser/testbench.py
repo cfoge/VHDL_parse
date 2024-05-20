@@ -1,7 +1,7 @@
 from token_test import *
 import os
 
-files_to_tb = "tests/test1.vhdl"
+files_to_tb = "vhdl_tokeniser/tests/lifo2.vhd"
 
 decoded = parse_vhdl(files_to_tb, True)
 tb_name = f"TB_{decoded.data}"
@@ -91,11 +91,23 @@ for lib in clean_lib_list:
 header = header + f"\nentity {tb_name} is \nport ( clk, rst : in std_logic);\nend {tb_name};\n\narchitecture rtl of {tb_name} is \n \n"
 
 if all_ports_2_toplevel == True:
+    for generic in generic_list:
+        end_of_gen = ""
+        if gen[3] != 1:
+            if isinstance(gen[3],int):
+                gen_msb = gen[3] -1
+                end_of_gen = end_of_gen + f"({gen_msb} downto 0)"
+        if gen[4] != None:
+            end_of_gen = end_of_gen + f" := {gen[4]}"
+        header = header + f"constant {gen[0]} : {gen[2]}{end_of_gen}; \n"
+
+
     for port in port_list:
         end_of_port = ""
         if port[3] != 1:
-            port_msb = port[3] -1
-            end_of_port = end_of_port + f"({port_msb} downto 0)"
+            if isinstance(port[3],int):
+                port_msb = port[3] -1
+                end_of_port = end_of_port + f"({port_msb} downto 0)"
         if port[4] != None:
             end_of_port = end_of_port + f" := {port[4]}"
         header = header + f"signal {port[0]} : {port[2]}{end_of_port}; \n"

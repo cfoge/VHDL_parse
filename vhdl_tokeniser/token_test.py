@@ -378,8 +378,9 @@ def decode_port(token_type,current_position,end_token,port_token, token_in = 0, 
             this_token_type = token_type
 
             token_type, token_text = tokens_int[i]
-
-            if (token_type in end_token and token_type not in port_token):
+            if port_token == 'GenericKeyword' and token_type == 'PortKeyword':
+                return token_list
+            if (token_type in end_token and token_type not in port_token): # this doesnt work correctly does it?
                 return token_list
             if token_text == splitter:
                 port_num = port_num + 1
@@ -802,6 +803,11 @@ def parse_vhdl(file_name, just_port = False):
     tokens_raw = tokenize_vhdl_code(vhdl_code)
     global tokens
     tokens = replace_end_process_tokens(tokens_raw)
+
+    proces_ranges = []
+    generate_ranges = []
+    func_ranges = []
+    component_ranges = []
 
     if just_port == False:
         proces_ranges = extract_process_lines(tokens, "ProcessKeyword", "EndProcessKeyword")
