@@ -90,10 +90,16 @@ for lib in clean_lib_list:
 
 header = (
     header
-    + f"\nentity {tb_name} is \nport ( clk, rst : in std_logic);\nend {tb_name};\n\narchitecture rtl of {tb_name} is \n \n"
+    + f"\nentity {tb_name} is \n\nend {tb_name};\n\narchitecture rtl of {tb_name} is \n \n"
 )
 
+found_clk = False
+found_rst = False
+clk_list = []
+reset_list = []
+
 if all_ports_2_toplevel == True:
+# detect ports and generics
     for generic in generic_list:
         end_of_gen = ""
         if gen[3] != 1:
@@ -104,7 +110,16 @@ if all_ports_2_toplevel == True:
             end_of_gen = end_of_gen + f" := {gen[4]}"
         header = header + f"constant {gen[0]} : {gen[2]}{end_of_gen}; \n"
 
+# detect CLOCKS and resets
     for port in port_list:
+        if 'clk' in port[0] or 'clock' in port[0]: # if the port name include CLK or clock and has lenght of one add it to a list of signals that could be clocks
+            if port[2] == 'std_ulogic' or port[2] == 'std_logic':
+                found_clk = True
+                clk_list.append(port[0] )
+        if 'rst' in port[0] or 'reset' in port[0]: # if the port name include CLK or clock and has lenght of one add it to a list of signals that could be clocks
+            if port[2] == 'std_ulogic' or port[2] == 'std_logic':
+                found_rst = True
+                reset_list.append(port[0] )
         end_of_port = ""
         if port[3] != 1:
             if isinstance(port[3], int):
@@ -115,7 +130,20 @@ if all_ports_2_toplevel == True:
         header = header + f"signal {port[0]} : {port[2]}{end_of_port}; \n"
 
 
-header = header + "\nbegin\n"
+header = header + "\nbegin\n\n"
+
+# create clocking process
+
+# create reset process, detect negitive reset as active
+if len(reset_list) != 0:
+        header = header + "-- Test Bench Resets\n"
+for reset in reset_list:
+    if '_n' in reset:
+        header = header + f"{reset} <= '0', '1' after 25 ns, '0' after 35 ns ; \n"
+    else:
+        header = header + f"{reset} <= '1', '0' after 25 ns, '1' after 35 ns ; \n"
+
+header = header + "\n\n"
 
 with open(f"{tb_name}.vhdl", "w") as contents:
     contents.write(header)
