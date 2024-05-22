@@ -1,3 +1,5 @@
+# This script searches a VHDL file and finds any signals declared but not used
+
 from token_test import *
 import os
 import argparse
