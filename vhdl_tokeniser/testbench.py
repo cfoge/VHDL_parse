@@ -1,7 +1,7 @@
 from token_test import *
 import os
 
-files_to_tb = "vhdl_tokeniser/tests/lifo2.vhd"
+files_to_tb = "vhdl_tokeniser/tests/test2.vhdl"
 
 decoded = parse_vhdl(files_to_tb, True)
 tb_name = f"TB_{decoded.data}"
@@ -42,12 +42,12 @@ if len(decoded.generic) > 0:
     f.write(f"generic map (\n")
     for gen in decoded.generic[:-1]:
         if verbose:
-            vb = f"--{gen[1]} width = {gen[2]}"
+            vb = f"--{gen[1]}, {gen[2]} "
         spaces = " " * (genspacing - len(gen[0]))
         f.write(f"{gen[0]}{spaces}=> {gen[0]}, {vb}\n")
     gen = decoded.generic[-1]
     if verbose:
-        vb = f"--{gen[1]} width = {gen[2]}"
+        vb = f"--{gen[1]}, {gen[2]}"
     spaces = " " * (genspacing - len(gen[0]))
     f.write(f"{gen[0]}{spaces}=> {gen[0]} {vb}\n")
     f.write(f");\n")
@@ -55,12 +55,12 @@ if len(decoded.port) > 0:
     f.write(f"port map (\n")
     for port in decoded.port[:-1]:
         if verbose:
-            vb = f"--{port[1]} width = {port[2]}"
+            vb = f"--{port[1]}, {port[2]}"
         spaces = " " * (portspacing - len(port[0]))
         f.write(f"{port[0]}{spaces}=> {port[0]}, {vb}\n")
     port = decoded.port[-1]
     if verbose:
-        vb = f"--{port[1]} width = {port[2]}"
+        vb = f"--{port[1]}, {port[2]}"
     spaces = " " * (portspacing - len(port[0]))
     f.write(f"{port[0]}{spaces}=> {port[0]} {vb}\n")
     f.write(f");\n")
@@ -100,6 +100,7 @@ reset_list = []
 
 if all_ports_2_toplevel == True:
 # detect ports and generics
+    header = header + "constant clk_period : time := 1 ns;\n" # add in clock period constant
     for generic in generic_list:
         end_of_gen = ""
         if gen[3] != 1:
@@ -127,12 +128,28 @@ if all_ports_2_toplevel == True:
                 end_of_port = end_of_port + f"({port_msb} downto 0)"
         if port[4] != None:
             end_of_port = end_of_port + f" := {port[4]}"
+        else:
+            if port[3] != 1:
+                end_of_port = end_of_port + f" := (others => '0')"
+            else:
+                end_of_port = end_of_port + f" := '0'"
         header = header + f"signal {port[0]} : {port[2]}{end_of_port}; \n"
+
 
 
 header = header + "\nbegin\n\n"
 
 # create clocking process
+if len(clk_list) != 0:
+        header = header + "-- Test Bench Clocks\n"
+for clk in clk_list:
+    header = header + f"""{clk}_process : process
+       begin
+        {clk} <= '0';
+        wait for clk_period/2;  --for 0.5 ns signal is '0'.
+        {clk} <= '1';
+        wait for clk_period/2;  --for next 0.5 ns signal is '1'. 
+end process;"""
 
 # create reset process, detect negitive reset as active
 if len(reset_list) != 0:
