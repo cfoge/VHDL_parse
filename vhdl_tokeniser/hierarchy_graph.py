@@ -1,3 +1,5 @@
+#WORK IN PROGRESS!!!!
+
 # This script creates a hiracical representation of your VHDL project.
 # It will print to the console which VHDL modules are instanciated by which other module
 # NOTE: this version of the script uses plotly to graph the result

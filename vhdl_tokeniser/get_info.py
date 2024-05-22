@@ -83,7 +83,7 @@ for i in target_vhdl.children:
 if show_pros == True:
     print(color.END + color.YELLOW + "   Process:")
     for i in target_vhdl.process:
-        print("        -->" + str(i))
+        print("        --> " + str(i[0])+ ": " + str(i[1]))
 if show_const == True:
     print(color.END + color.DARKCYAN + "   Constants:")
     for i in target_vhdl.constant:
