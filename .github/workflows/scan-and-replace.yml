@@ -3,7 +3,7 @@ name: Scan and Replace File Paths
 on:
   push:
     branches:
-      - main  # or any other branch you want to target
+     -dev/gh_actions # - main  # or any other branch you want to target
 
 jobs:
   scan-and-replace:
