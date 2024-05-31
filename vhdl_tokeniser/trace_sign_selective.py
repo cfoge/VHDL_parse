@@ -4,9 +4,18 @@
 import os
 from token_test import *
 import graphviz
-import time
+import sys
 
-
+COLORS = [
+    "\033[97m",  # WHITE
+    "\033[92m",  # GREEN
+    "\033[94m",  # BLUE
+    "\033[93m",  # YELLOW
+    "\033[96m",  # CYAN
+    "\033[95m",  # MAGENTA          ---Important notes
+    "\031[95m",  # RED              ---ERRORS
+    "\033[0m",  # RESET
+]
 ########################### search node
 class TreeNode(object):
     def __init__(self, fname, search, hdl_type, if_mod_name, assigned_to):
@@ -92,7 +101,6 @@ def attach_dependent_objects(
 ):  # this function creates a vhdl object hieracy of only instanciated vhdl entitys
     try:
         for child in parent_vhdl_obj.children_name:
-            tic = time.perf_counter()
             for vhdl_found_entities in entity_texts_with_path:
                 if len(vhdl_found_entities[0]) > 0:
                     if vhdl_found_entities[0] == child.mod:
@@ -102,23 +110,21 @@ def attach_dependent_objects(
                             new_child, entity_texts_with_path
                         )  # Recursive call
                         break
-            toc = time.perf_counter()
-            print(f"checked all files in {toc - tic:0.4f} seconds")
 
     except Exception as e:
         error_log.append(["file_path_error", e])
 
 
 # root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
-root_dir = "//switcher-build2/users/robertj/crcconday"
+root_dir = "C:/BMD_builds/crc_error_fix"
 # target_vhdl_in = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga/src/digital_side/test_1_build/test_digital_side.vhd'
 target_vhdl_in = (
-    "//switcher-build2/users/robertj/crcconday/fpga/src/audio_monitor_12g_g3.vhd"
+    "C:/BMD_builds/crc_error_fix/fpga/src/audio_monitor_12g_g3.vhd"
 )
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "sdi_rx_bus_en"
+find_str = "clk_150mhz"
 # find_str = 'sys_clk'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
@@ -172,7 +178,7 @@ vhdl_files = entity_texts_with_path_unique
 print(f"{len(duplicate_filenames)} duplicate files found")
 if (len(duplicate_filenames)) > 0:
     print(
-        "Duplicate files with the same name can create issues when searching through VHDL hierachys, so duplicates have been removed"
+        f"{COLORS[5]}Duplicate files with the same name can create issues when searching through VHDL hierachys, so duplicates have been removed{COLORS[7]}"
     )
 
 
@@ -193,10 +199,15 @@ for file_path in vhdl_files:
                     entity_texts_with_path.append([entity_text, file_path])
     except:
         unreadible_files = unreadible_files + 1
-print(f"{unreadible_files} vhdl files unreadable")
+
+if unreadible_files != 0:
+    print(f"{COLORS[6]}{unreadible_files} vhdl files unreadable{COLORS[7]}")
 
 
 target_vhdl = parse_vhdl(target_vhdl_in)
+if isinstance(target_vhdl, str) == True:
+    print(target_vhdl)
+    sys.exit()
 
 attach_dependent_objects(target_vhdl, entity_texts_with_path)
 
@@ -207,6 +218,7 @@ assignments = []
 assign_log = []
 possible_assignments = []
 full_assign_list = []
+
 nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
 
 ###################################
@@ -367,21 +379,21 @@ for ass in assignments:
 
 path_tree = nodes[0].paths()
 
-print("---------------------------------------------------")
-print("Searching for " + find_str + " in " + target_vhdl.data)
+print(f"---------------------------------------------------")
+print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {COLORS[1]}{target_vhdl.data}{COLORS[7]}")
 
 for path in path_tree:
     for step in path:
         print(" --> ", end="")
         if len(step) == 2:
             if verbose == False:
-                print(f"{step[0].if_mod_name} = '{step[1]}' ", end="")
+                print(f"{COLORS[1]}{step[0].if_mod_name}{COLORS[7]} = '{step[1]}' ", end="")
             else:
                 print(
-                    f"{step[0].if_mod_name} : {step[0].filename} = '{step[1]}' ", end=""
+                    f"{COLORS[3]}{step[0].if_mod_name}{COLORS[7]} : {step[0].filename} = {COLORS[4]}'{step[1]}'{COLORS[7]} ", end=""
                 )
         else:
-            print(f"{step} = '{find_str}' ", end="")
+            print(f"{COLORS[1]}{step}{COLORS[7]} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
     print("")
 print("")
 print("---------------------------------------------------")
@@ -393,58 +405,58 @@ if verbose == True:  ##print the full line for each assignment for context
     # what to do with possible assignements
 
 
-def create_tree(data):
-    tree = graphviz.Digraph(format="png")
-    parent_node = None
-    existing_edges = set()
+# def create_tree(data):
+#     tree = graphviz.Digraph(format="png")
+#     parent_node = None
+#     existing_edges = set()
 
-    for path in data:
-        for item in path:
-            if isinstance(item, str):
-                parent_node = item
-                tree.node(parent_node, shape="note", label=f"{item}\\n{find_str}")
-            elif isinstance(item, list):
-                if len(item) == 1:
-                    node_label = item[0]
-                    child_node = f"{node_label}_Self"
-                    tree.node(child_node, label=node_label)
-                    if parent_node is not None:
-                        edge = (parent_node, child_node)
-                        if edge not in existing_edges:
-                            tree.edge(parent_node, child_node)
-                            existing_edges.add(edge)
-                elif len(item) == 2:
-                    node_label, edge_label = item
-                    node_label_mod_name = node_label.if_mod_name
-                    node_label_fine_name = node_label.filename
-                    child_node = f"{node_label}_{edge_label}"
-                    if verbose == False:
-                        tree.node(
-                            child_node,
-                            shape="box",
-                            label=f"{node_label_mod_name}\\n'{edge_label}'",
-                        )
-                    else:
-                        tree.node(
-                            child_node,
-                            shape="box",
-                            label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'",
-                        )
-                    if parent_node is not None:
-                        edge = (parent_node, child_node)
-                        if edge not in existing_edges:
-                            tree.edge(parent_node, child_node)
-                            existing_edges.add(edge)
-                    parent_node = child_node
-                else:
-                    raise ValueError("Invalid data format")
-    return tree
+#     for path in data:
+#         for item in path:
+#             if isinstance(item, str):
+#                 parent_node = item
+#                 tree.node(parent_node, shape="note", label=f"{item}\\n{find_str}")
+#             elif isinstance(item, list):
+#                 if len(item) == 1:
+#                     node_label = item[0]
+#                     child_node = f"{node_label}_Self"
+#                     tree.node(child_node, label=node_label)
+#                     if parent_node is not None:
+#                         edge = (parent_node, child_node)
+#                         if edge not in existing_edges:
+#                             tree.edge(parent_node, child_node)
+#                             existing_edges.add(edge)
+#                 elif len(item) == 2:
+#                     node_label, edge_label = item
+#                     node_label_mod_name = node_label.if_mod_name
+#                     node_label_fine_name = node_label.filename
+#                     child_node = f"{node_label}_{edge_label}"
+#                     if verbose == False:
+#                         tree.node(
+#                             child_node,
+#                             shape="box",
+#                             label=f"{node_label_mod_name}\\n'{edge_label}'",
+#                         )
+#                     else:
+#                         tree.node(
+#                             child_node,
+#                             shape="box",
+#                             label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'",
+#                         )
+#                     if parent_node is not None:
+#                         edge = (parent_node, child_node)
+#                         if edge not in existing_edges:
+#                             tree.edge(parent_node, child_node)
+#                             existing_edges.add(edge)
+#                     parent_node = child_node
+#                 else:
+#                     raise ValueError("Invalid data format")
+#     return tree
 
 
-data = path_tree
+# data = path_tree
 
-tree_map = create_tree(data)
-tree_map.render("tree", format="png", view=True)
+# tree_map = create_tree(data)
+# tree_map.render("tree", format="png", view=True)
 
 
 print("")
