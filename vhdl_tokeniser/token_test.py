@@ -38,16 +38,16 @@ class vhdl_obj(object):
         self.func = []
         self.generate = []
         self.primitives = []
-        self.modname = ""
-        self.url = ""
+        self.modname = "Insert File path"
+        self.url = "Insert File path"
 
 
 primitives_list = (
     [  # list of built in primitives (xilinx), should have anoption to pass in a list
-        "AND2B1L",
+        "Insert File path",
         "AUTOBUF",
         "BIBUF",
-        "BSCANE2",
+        "Insert File path",
         "BUF",
         "BUFCE_LEAF",
         "BUFCE_ROW",
@@ -65,27 +65,27 @@ primitives_list = (
         "BUFMR",
         "BUFMRCE",
         "BUFR",
-        "CAPTUREE2",
-        "CARRY4",
-        "CARRY8",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "CFGLUT5",
         "DCIRESET",
-        "DCM_ADV",
-        "DCM_SP",
+        "Insert File path",
+        "Insert File path",
         "DIFFINBUF",
-        "DNA_PORT",
-        "DNA_PORTE2",
+        "Insert File path",
+        "Insert File path",
         "DPHY_DIFFINBUF",
-        "DSP48E1",
-        "DSP48E2",
-        "DSP_ALU",
-        "DSP_A_B_DATA",
-        "DSP_C_DATA",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "DSP_MULTIPLIER",
-        "DSP_M_DATA",
-        "DSP_OUTPUT",
-        "DSP_PREADD",
-        "DSP_PREADD_DATA",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "EFUSE_USR",
         "FDCE",
         "FDPE",
@@ -98,9 +98,9 @@ primitives_list = (
         "FRAME_ECCE2",
         "FRAME_ECCE3",
         "FRAME_ECCE4",
-        "GLBL_VHD",
-        "GND",
-        "HARD_SYNC",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "HPIO_VREF",
         "IBUF",
         "IBUFCTRL",
@@ -148,24 +148,24 @@ primitives_list = (
         "ISERDESE1",
         "ISERDES_NODELAY",
         "JTAG_SIME2",
-        "KEEPER",
-        "LDCE",
-        "LDPE",
-        "LUT1",
-        "LUT2",
-        "LUT3",
-        "LUT4",
-        "LUT5",
-        "LUT6",
-        "LUT6_2",
-        "MASTER_JTAG",
-        "MMCME2_ADV",
-        "MMCME2_BASE",
-        "MMCME3_ADV",
-        "MMCME3_BASE",
-        "MMCME4_ADV",
-        "MMCME4_BASE",
-        "MUXCY",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "MUXF7",
         "MUXF8",
         "MUXF9",
@@ -181,88 +181,88 @@ primitives_list = (
         "OBUFTDS",
         "OBUFTDS_DCIEN",
         "OBUFT_DCIEN",
-        "ODDR",
-        "ODDRE1",
-        "ODELAYE2",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "ODELAYE2_FINEDELAY",
-        "ODELAYE3",
-        "OR2L",
-        "OSERDES",
-        "OSERDESE1",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "PHASER_REF",
-        "PLLE2_ADV",
-        "PLLE2_BASE",
-        "PLLE3_ADV",
-        "PLLE3_BASE",
-        "PLLE4_ADV",
-        "PLLE4_BASE",
-        "PS7",
-        "PULLDOWN",
-        "PULLUP",
-        "RAM128X1D",
-        "RAM128X1S",
-        "RAM256X1D",
-        "RAM256X1S",
-        "RAM32M",
-        "RAM32M16",
-        "RAM32X16DR8",
-        "RAM32X1D",
-        "RAM32X1S",
-        "RAM512X1S",
-        "RAM64M",
-        "RAM64M8",
-        "RAM64X1D",
-        "RAM64X1S",
-        "RAM64X8SW",
-        "RAMB18E1",
-        "RAMB18E2",
-        "RAMB36E1",
-        "RAMB36E2",
-        "RAMD32",
-        "RAMD64E",
-        "RAMS32",
-        "RAMS64E",
-        "RAMS64E1",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "RIU_OR",
         "SIM_CONFIGE2",
         "SIM_CONFIGE3",
-        "SRL16E",
-        "SRLC16E",
-        "SRLC32E",
-        "STARTUPE2",
-        "STARTUPE3",
-        "SYSMONE1",
-        "SYSMONE4",
-        "URAM288",
-        "URAM288_BASE",
-        "USR_ACCESSE2",
-        "VCC",
-        "VCU",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
         "vhdl_analyze_order",
-        "XADC",
-        "XORCY",
-        "ZHOLD_DELAY",
+        "Insert File path",
+        "Insert File path",
+        "Insert File path",
     ]
 )
 
 # Define regular expressions for VHDL tokens
 token_patterns = [
     (r"^\s+", "SpaceToken"),  # Match whitespace characters
-    (r"^--.*", "SingleLineCommentToken"),  # Match single-line comments
+    (r"Insert File path", "SingleLineCommentToken"),  # Match single-line comments
     (
         r"^\b--.*\n",
         "SingleLineCommentToken",
     ),  # Match single-line comments ending with newline
-    (r"^/\*.*?\*/", "MultiLineCommentToken"),  # Match multi-line comments
-    (r"^:|;|\(|\)|,", "DelimiterToken"),  # Match delimiters like :, ;, (, ), and ,
+    (r"Insert File path", "MultiLineCommentToken"),  # Match multi-line comments
+    (r"Insert File path", "DelimiterToken"),  # Match delimiters like :, ;, (, ), and ,
     # (r'^:=', 'AssignmentOperatorToken'),  # Match assignment operator :=
     (
         r"^\b(library|use|if|entity|architecture|begin|end|process|generic|generate|port|process|signal|constant|function|package|type|subtype|component)\b",
         "KeywordToken",
     ),  # Match keywords
     (r"^[A-Za-z][A-Za-z0-9_]*", "IdentifierToken"),  # Match identifiers
-    (r"^[0-9]+", "NumberToken"),  # Match numbers
-    (r"^.?", "CharacterToken"),  # Match any other character
+    (r"Insert File path", "NumberToken"),  # Match numbers
+    (r"Insert File path", "CharacterToken"),  # Match any other character
 ]
 
 # Create a list of token types
@@ -338,13 +338,13 @@ def tokenize_vhdl_code(code):
             match = re.match(pattern, code[current_position:])
             if match:
                 matched_text = match.group(0)
-                # if "/" in matched_text:
+                # if "Insert File path" in matched_text:
                 #     # if code[current_position+1] == '*':
                 #     #     in_multi_line_comment = True
                 #     #     current_position += 2
                 #         current_position += 1
 
-                if token_type == "SingleLineCommentToken" and "--" in matched_text:
+                if token_type == "SingleLineCommentToken" and "Insert File path" in matched_text:
                     single_line_comment_end = matched_text.find("\n")
                     if single_line_comment_end != -1:
                         tokens.append(
@@ -388,7 +388,7 @@ def replace_end_process_tokens(tokens):
     while i < len(tokens):
         token_type, token_text = tokens[i]
 
-        if token_text == "=":
+        if token_text == "Insert File path":
             try:
                 token_type_next, token_text_next = tokens[i + 1]
             except IndexError:
@@ -399,16 +399,16 @@ def replace_end_process_tokens(tokens):
             except IndexError:
                 token_text_prev = None
 
-            if token_text_next == ">":
-                tokens[i] = ("AssignKeyword", "=>")
+            if token_text_next == "Insert File path":
+                tokens[i] = ("AssignKeyword", "Insert File path")
                 tokens.pop(i + 1)
 
-            elif token_text_prev == ":":
-                tokens[i] = ("AssignKeyword", ":=")
+            elif token_text_prev == "Insert File path":
+                tokens[i] = ("AssignKeyword", "Insert File path")
                 tokens.pop(i - 1)
 
-            elif token_text_prev == "<":
-                tokens[i] = ("AssignKeyword_to", "<=")
+            elif token_text_prev == "Insert File path":
+                tokens[i] = ("AssignKeyword_to", "Insert File path")
                 tokens.pop(i - 1)
 
         elif token_text in primitives_list:
@@ -515,14 +515,14 @@ def find_prev_till(current_position, end_tokens, token_in=[]):
     start = current_position - 1
     for i in range(start, end, -1):
         token_type, token_text = tokens_to_parse[i]
-        text_no_white_spaces = token_text.replace(" ", "")
+        text_no_white_spaces = token_text.replace(" ", "Insert File path")
         if text_no_white_spaces in end_tokens:
-            token_str = ""
+            token_str = "Insert File path"
             for token_found in tokens_list:
                 token_str = token_found + token_str
             return token_str
         else:
-            if "\n" not in token_text and "--" not in token_text:
+            if "\n" not in token_text and "Insert File path" not in token_text:
                 tokens_list.append(token_text)
     return -1
 
@@ -553,19 +553,19 @@ def make_block(
         this_token_type, token_text = tokens_to_parse[i]
         if type(end_token) is list:
             for end_tok in end_token:
-                if token_text.replace(" ", "") == end_tok:
+                if token_text.replace(" ", "Insert File path") == end_tok:
                     return (
                         token_list[0][1]
                         if len(token_list) == 1
-                        else "".join(token_text for _, token_text in token_list)
+                        else "Insert File path".join(token_text for _, token_text in token_list)
                     )
 
         else:
-            if token_text.replace(" ", "") == end_token:
+            if token_text.replace(" ", "Insert File path") == end_token:
                 return (
                     token_list[0][1]
                     if len(token_list) == 1
-                    else "".join(token_text for _, token_text in token_list)
+                    else "Insert File path".join(token_text for _, token_text in token_list)
                 )
 
         if token_type not in ("SpaceToken", this_token_type):
@@ -590,7 +590,7 @@ def find_index_by_keyword(token_input, keyword):
     return indexes
 
 
-def find_name(token_type, current_position, search_limit, dir=0, sperator=":"):
+def find_name(token_type, current_position, search_limit, dir=0, sperator="Insert File path"):
     if dir == 0:
         end = current_position - search_limit
         step = -1
@@ -616,7 +616,7 @@ def find_name(token_type, current_position, search_limit, dir=0, sperator=":"):
                 if (
                     token_type == "EndKeyword"
                     or token_text == "port"
-                    or token_text == ";"
+                    or token_text == "Insert File path"
                 ):
                     return "end"
             return "Unnammed"
@@ -627,7 +627,7 @@ def find_name(token_type, current_position, search_limit, dir=0, sperator=":"):
 
 
 def decode_port(
-    token_type, current_position, end_token, port_token, token_in=0, splitter=";"
+    token_type, current_position, end_token, port_token, token_in=0, splitter="Insert File path"
 ):  # decodes lines with the strcutre of a port such as generics/assignements ect
     if token_in != 0:
         tokens_int = token_in
@@ -635,7 +635,7 @@ def decode_port(
     else:
         tokens_int = tokens
         search_position = current_position
-    token_list = [""]
+    token_list = ["Insert File path"]
     port_num = 0
     for i in range(search_position, len(tokens_int)):
         this_token_type = token_type
@@ -649,7 +649,7 @@ def decode_port(
             return token_list
         if token_text == splitter:
             port_num = port_num + 1
-            token_list.append("")
+            token_list.append("Insert File path")
 
         if (
             token_type != "SpaceToken"
@@ -662,8 +662,8 @@ def decode_port(
                 or token_type == "NumberToken"
                 or token_type == "CharacterToken"
                 or token_type == "AssignKeyword"
-                or token_text == ","
-                or token_text == ":"
+                or token_text == "Insert File path"
+                or token_text == "Insert File path"
             ):
                 token_list[port_num] = token_list[port_num] + token_text + " "
         # Check if the token is a delimiter token (adjust the condition as needed)
@@ -680,7 +680,7 @@ def decode_ent_port(
     tokens_int = token_in
     search_position = 0
 
-    token_list = [""]
+    token_list = ["Insert File path"]
     port_num = 0
     found_function = 0
 
@@ -690,13 +690,13 @@ def decode_ent_port(
 
         if "to_" in token_text:
             found_function = 1
-        if token_text == ";":
+        if token_text == "Insert File path":
             return token_list
-        if token_text == "," and found_function == 0:
+        if token_text == "Insert File path" and found_function == 0:
             port_num = port_num + 1
-            token_list.append("")
-        if token_text == "," and found_function == 1:
-            token_text = "/"  # replace , with / to avoid parser confusion
+            token_list.append("Insert File path")
+        if token_text == "Insert File path" and found_function == 1:
+            token_text = "Insert File path"  # replace , with / to avoid parser confusion
             found_function = 0
         if token_type != "SpaceToken":
 
@@ -705,9 +705,9 @@ def decode_ent_port(
                 or token_type == "NumberToken"
                 or token_type == "CharacterToken"
             ):
-                if token_text != "," and token_text != "map":
+                if token_text != "Insert File path" and token_text != "map":
                     token_list[port_num] = token_list[port_num] + token_text + " "
-            if token_text == "=>":
+            if token_text == "Insert File path":
                 token_list[port_num] = token_list[port_num] + token_text + " "
 
         # Check if the token is a delimiter token (adjust the condition as needed)
@@ -720,13 +720,13 @@ def decode_block(
     block, endLine
 ):  # decodes lines with the strcutre of a port such as generics/assignements ect
     try:
-        token_list = [""]
+        token_list = ["Insert File path"]
         block_num = 0
         for i in range(len(block)):
             token_type, token_text = block[i]
             if token_text == endLine:
                 block_num = block_num + 1
-                token_list.append("")
+                token_list.append("Insert File path")
 
             if token_type != "SpaceToken" and token_text != endLine:
 
@@ -740,8 +740,8 @@ def decode_block(
             # Check if the token is a delimiter token (adjust the condition as needed)
 
             # Update the current position for future searches
-        if token_list[-1] == "":
-            token_list.remove("")
+        if token_list[-1] == "Insert File path":
+            token_list.remove("Insert File path")
         return token_list
     except Exception as e:
         error_log.append(["decode_block error", file_path_error, e])
@@ -751,7 +751,7 @@ def decode_sig(
     token_type, current_position, end_token
 ):  # decodes lines with the strcutre of a port such as generics/assignements ect
     search_position = current_position
-    token_list = [""]
+    token_list = ["Insert File path"]
     port_num = 0
     for i in range(search_position, len(tokens)):
         this_token_type = token_type
@@ -767,8 +767,8 @@ def decode_sig(
                 or token_type == "NumberToken"
                 or token_type == "CharacterToken"
                 or token_type == "AssignKeyword"
-                or token_text == ","
-                or token_text == ":"
+                or token_text == "Insert File path"
+                or token_text == "Insert File path"
             ):
                 token_list[port_num] = token_list[port_num] + token_text + " "
         # Check if the token is a delimiter token (adjust the condition as needed)
@@ -856,7 +856,7 @@ def extract_bit_len(str_in, type_in="std_logic_vector"):
             return return_len
 
     elif (
-        "-" in str_in or "/" in str_in or "+" in str_in or "*" in str_in
+        "Insert File path" in str_in or "Insert File path" in str_in or "Insert File path" in str_in or "Insert File path" in str_in
     ) and "downto" in str_in:
         a_num = False
         b_num = False
@@ -898,8 +898,8 @@ def validate_list_elements_equations(lst):
 
         # Check if the string represents a valid operation
         if (
-            element not in {"=", "-", "+", "/", "*"}
-            and not element.replace(".", "", 1).isdigit()
+            element not in {"Insert File path", "Insert File path", "Insert File path", "Insert File path", "Insert File path"}
+            and not element.replace("Insert File path", "Insert File path", 1).isdigit()
         ):
             return False
 
@@ -916,7 +916,7 @@ def calculate_equations(string):
     results = []
     for equation in equations:
         try:
-            result = eval("".join(equation))
+            result = eval("Insert File path".join(equation))
             # results.append((equation, result))
             results = result
         except (ZeroDivisionError, SyntaxError, TypeError) as e:
@@ -933,9 +933,9 @@ def format_port(decoded_gen, generic=False, obj_in=None):
             obj_in = entity_vhdl
         result = []
         if decoded_gen == -1:
-            return ""
+            return "Insert File path"
         for i in decoded_gen:
-            in_out_inout = ""
+            in_out_inout = "Insert File path"
             type_found = False
 
             if not generic:
@@ -947,15 +947,15 @@ def format_port(decoded_gen, generic=False, obj_in=None):
                     in_out_inout = "inout"
 
             if " subtype " in i:
-                i = i.replace("subtype", "").strip()
+                i = i.replace("subtype", "Insert File path").strip()
             if " type " in i:
-                i = i.replace("type", "").strip()
+                i = i.replace("type", "Insert File path").strip()
                 type_found = True
                 type_val = i.split(" of ")
-                if ";" in type_val[1]:
-                    type_val[1] = type_val[1].replace(";", "")
+                if "Insert File path" in type_val[1]:
+                    type_val[1] = type_val[1].replace("Insert File path", "Insert File path")
 
-            if "," in i and ":" in i:
+            if "Insert File path" in i and "Insert File path" in i:
                 check_number_of_splits = i.split(
                     ": "
                 )  # this is just a workaround to avoid an issue
@@ -966,7 +966,7 @@ def format_port(decoded_gen, generic=False, obj_in=None):
                     sig_dec = "unknown"
                 i = sig_dec
                 split = i.split(" ")
-                name = [n.strip() for n in sig_names.split(",") if n.strip()]
+                name = [n.strip() for n in sig_names.split("Insert File path") if n.strip()]
                 port_type = find_type(i) if not type_found else type_val[1].strip()
                 port_width = find_width(i, port_type)
                 port_val = extract_port_val(i)
@@ -1000,11 +1000,11 @@ def format_port(decoded_gen, generic=False, obj_in=None):
 
 def extract_port_val(i):
     port_val = None
-    if "=" in i:
-        equal_sign_index = i.find("=")
+    if "Insert File path" in i:
+        equal_sign_index = i.find("Insert File path")
         if equal_sign_index != -1:
             # Extract the text after '=' with no spaces
-            port_temp = i[equal_sign_index + 1 :].replace(" ", "").replace("'", "")
+            port_temp = i[equal_sign_index + 1 :].replace(" ", "Insert File path").replace("Insert File path", "Insert File path")
             try:
                 if find_type(i) in ["real", "natural"]:
                     port_val = float(port_temp)
@@ -1075,7 +1075,7 @@ def get_filenames_without_extension(
 # Read VHDL code from a file
 def read_vhdl_file(file_path):
     with open(file_path, "r") as file:
-        vhdl_code_i = ""
+        vhdl_code_i = "Insert File path"
         try:
             vhdl_code_i = file.read()
         except Exception as e:
@@ -1088,10 +1088,10 @@ def read_vhdl_file(file_path):
 
 def extract_text_until_keywords(file_path):
     with open(file_path, "r") as file:
-        extracted_text = ""
+        extracted_text = "Insert File path"
         for line in file:
             extracted_text += line
-            if all(keyword in line.lower() for keyword in ["architecture", "of", "is"]):
+            if all(keyword in line.lower() for keyword in ["architecture", "Insert File path", "is"]):
                 break
     return extracted_text
 
@@ -1112,7 +1112,7 @@ error_log = []
 
 def parse_vhdl(file_name, just_port=False):
     global entity_vhdl
-    vhdl_code = ""
+    vhdl_code = "Insert File path"
     file_path = file_name
     global file_path_error
     file_path_error = file_path
@@ -1171,7 +1171,7 @@ def parse_vhdl(file_name, just_port=False):
             entity_vhdl_list = getattr(entity_vhdl, token_actions[token_type])
             try:
                 entity_vhdl_list.append(
-                    make_block(token_type, current_position, ";").strip()
+                    make_block(token_type, current_position, "Insert File path").strip()
                 )
             except Exception as e:
                 error_log.append(["entity_vhdl_list error", file_path_error, e])
@@ -1187,7 +1187,7 @@ def parse_vhdl(file_name, just_port=False):
                 ent_name = find_prev_ident(current_position)
                 # ent_name = find_name("IdentifierToken", current_position, 6)
                 entity = extract_tokens_between(
-                    tokens, token_text, ";", current_position
+                    tokens, token_text, "Insert File path", current_position
                 )
                 mod_name = token_text
             else:
@@ -1195,23 +1195,23 @@ def parse_vhdl(file_name, just_port=False):
                 # ent_name = find_name("IdentifierToken", current_position, 6)
                 if ent_name == "generate":
                     ent_name = "unnamed"
-                entity = extract_tokens_between(tokens, "entity", ";", current_position)
+                entity = extract_tokens_between(tokens, "entity", "Insert File path", current_position)
                 if entity[0][1] == "work":
                     mod_name = entity[0][1] + entity[1][1] + entity[2][1]
                 else:
                     mod_name = entity[0][1]
                 if "work." in mod_name:
-                    tmp1 = mod_name.replace("work.", "")
+                    tmp1 = mod_name.replace("work.", "Insert File path")
                     mod_name = tmp1
             generic = []
             port = []
             if any(token_type == "GenericKeyword" for token_type, _ in entity):
                 generic = extract_tokens_between(
-                    tokens, "generic", ";", current_position
+                    tokens, "generic", "Insert File path", current_position
                 )
             if any(token_type == "PortKeyword" for token_type, _ in entity):
-                port = extract_tokens_between(tokens, "port", ";", current_position)
-                port.append(("DelimiterToken", ";"))
+                port = extract_tokens_between(tokens, "port", "Insert File path", current_position)
+                port.append(("DelimiterToken", "Insert File path"))
                 port.append(("EndKeyword", "end"))
 
             mod = instanc(mod_name, ent_name, 0)
@@ -1220,11 +1220,11 @@ def parse_vhdl(file_name, just_port=False):
                 gen_dec = decode_ent_port(generic)
                 if gen_dec != -1:
                     for generic in gen_dec:
-                        mod.gen.append(generic.split("=>"))
+                        mod.gen.append(generic.split("Insert File path"))
             if len(port) > 0:
                 port_dec = decode_ent_port(port)
                 for ports in port_dec:
-                    temp1 = ports.split("=>")
+                    temp1 = ports.split("Insert File path")
                     if len(temp1) > 1:
                         mod.port.append([temp1[0].strip(), temp1[1].strip()])
             # decode the port and genric if it exists
@@ -1254,11 +1254,11 @@ def parse_vhdl(file_name, just_port=False):
             if (
                 token_type == "GenericKeyword"
                 and len(
-                    extract_tokens_between(tokens, "generic", "(", current_position)
+                    extract_tokens_between(tokens, "generic", "Insert File path", current_position)
                 )
                 < 3
             ):  # there is no 'map' following the generic keyword
-                # genericMAP = extract_tokens_between(tokens, "generic", "(",current_position)
+                # genericMAP = extract_tokens_between(tokens, "generic", "Insert File path",current_position)
                 decoded_gen = decode_port(
                     token_type, current_position, end_keywords_mapping, "GenericKeyword"
                 )
@@ -1269,7 +1269,7 @@ def parse_vhdl(file_name, just_port=False):
             error_log.append(["GenericKeyword error", file_path_error, e])
 
         if token_type == "PortKeyword":
-            find_map = make_block(token_type, current_position, "(")
+            find_map = make_block(token_type, current_position, "Insert File path")
             if (
                 len(find_map) == 0 or find_map == " "
             ):  # there is no 'map' following the generic keyword
@@ -1303,12 +1303,12 @@ def parse_vhdl(file_name, just_port=False):
         if token_type == "ArchitectureKeyword":
             if global_arch == 0:  # detect first arch decleration which is module arch
                 entity_vhdl.arch = make_block(
-                    token_type, current_position, "of"
+                    token_type, current_position, "Insert File path"
                 ).strip()
                 global_arch = 1
         if just_port == False:
             if token_type == "SignalKeyword":
-                decoded_por = decode_sig(token_type, current_position, ";")
+                decoded_por = decode_sig(token_type, current_position, "Insert File path")
                 format_sig_tmp = format_port(decoded_por)
                 if len(format_sig_tmp) == 1:
                     entity_vhdl.signal.append(format_sig_tmp[0])
@@ -1317,21 +1317,21 @@ def parse_vhdl(file_name, just_port=False):
                         entity_vhdl.signal.append(i)
 
             elif token_type == "ConstantKeyword":
-                decoded_por = decode_sig(token_type, current_position, ";")
+                decoded_por = decode_sig(token_type, current_position, "Insert File path")
                 entity_vhdl.constant.append(format_port(decoded_por, True)[0])
 
             elif token_type == "SubtypeKeyword":
-                decoded_por = decode_sig(token_type, current_position, ";")
+                decoded_por = decode_sig(token_type, current_position, "Insert File path")
                 entity_vhdl.subtype.append(format_port(decoded_por)[0])
 
             elif token_type == "TypeKeyword":
-                decoded_por = (decode_sig(token_type, current_position, ";"))[0]
+                decoded_por = (decode_sig(token_type, current_position, "Insert File path"))[0]
                 split_type = decoded_por
                 if " is " in decoded_por:
                     split_type = decoded_por.split(" is ")
                 if len(split_type) == 2:
-                    if "," in split_type[1]:
-                        multiple_types = split_type[1].split(",")
+                    if "Insert File path" in split_type[1]:
+                        multiple_types = split_type[1].split("Insert File path")
                         entity_vhdl.type_dec.append((split_type[0], multiple_types))
                     else:
                         entity_vhdl.type_dec.append((split_type[0], split_type[1]))
@@ -1340,16 +1340,16 @@ def parse_vhdl(file_name, just_port=False):
 
             elif token_type == "GenerateKeyword":
                 generate_name = find_name("IdentifierToken", current_position, 26)
-                gen_triger_str = decode_block(gen_trigger, ";")
+                gen_triger_str = decode_block(gen_trigger, "Insert File path")
                 gen_contents = extract_process_blocks(current_position)
                 assignments = find_index_by_keyword(gen_contents, "AssignKeyword_to")
                 gen_assignments = []
                 for found_ass_loc in assignments:
                     assign = tokens[current_position + found_ass_loc]
                     assign_from = make_block(
-                        "<=",
+                        "Insert File path",
                         current_position + found_ass_loc + 1,
-                        [";", "when", "\n"],
+                        ["Insert File path", "when", "\n"],
                         1,
                         0,
                         1,
@@ -1357,7 +1357,7 @@ def parse_vhdl(file_name, just_port=False):
                     assign_to = find_prev_till(
                         current_position + found_ass_loc,
                         [
-                            ";",
+                            "Insert File path",
                             "begin",
                             "when",
                             "then",
@@ -1365,13 +1365,13 @@ def parse_vhdl(file_name, just_port=False):
                             "else",
                             "\n",
                             "\n\n",
-                            "--",
-                            "=>",
+                            "Insert File path",
+                            "Insert File path",
                         ],
                     )
                     if assign_to != -1 and assign_from != -1:
                         if (
-                            ("--" in assign_from) or ("--" in assign_to)
+                            ("Insert File path" in assign_from) or ("Insert File path" in assign_to)
                         ) == 0:  # it will skip stuff it cant decode
 
                             gen_assignments.append(
@@ -1388,10 +1388,10 @@ def parse_vhdl(file_name, just_port=False):
                 prcess_name = find_name("IdentifierToken", current_position, 9)
                 if prcess_name == "generate" or prcess_name == "end":
                     prcess_name = "unnamed"
-                process_dep = make_block(token_type, current_position, ")")
+                process_dep = make_block(token_type, current_position, "Insert File path")
                 if process_dep != -1:
                     process_dep = process_dep[1:]
-                    if process_dep[0] == "(":
+                    if process_dep[0] == "Insert File path":
                         process_dep = process_dep[1:]
                 process_contents = extract_process_blocks(current_position)
                 assignments = find_index_by_keyword(
@@ -1401,9 +1401,9 @@ def parse_vhdl(file_name, just_port=False):
                 for found_ass_loc in assignments:
                     assign = tokens[current_position + found_ass_loc]
                     assign_from = make_block(
-                        "<=",
+                        "Insert File path",
                         current_position + found_ass_loc + 1,
-                        [";", "when", "\n"],
+                        ["Insert File path", "when", "\n"],
                         1,
                         0,
                         1,
@@ -1411,7 +1411,7 @@ def parse_vhdl(file_name, just_port=False):
                     assign_to = find_prev_till(
                         current_position + found_ass_loc,
                         [
-                            ";",
+                            "Insert File path",
                             "begin",
                             "when",
                             "then",
@@ -1419,13 +1419,13 @@ def parse_vhdl(file_name, just_port=False):
                             "else",
                             "\n",
                             "\n\n",
-                            "--",
-                            "=>",
+                            "Insert File path",
+                            "Insert File path",
                         ],
                     )
                     if assign_to != -1 and assign_from != -1:
                         if (
-                            ("--" in assign_from) or ("--" in assign_to)
+                            ("Insert File path" in assign_from) or ("Insert File path" in assign_to)
                         ) == 0:  # it will skip stuff it cant decode
 
                             process_assignments.append(
@@ -1438,10 +1438,10 @@ def parse_vhdl(file_name, just_port=False):
 
                 # search inside process for contents
             if token_text == "assert":
-                assert_tok = make_block("", current_position, ";", 1, 0, 1)
+                assert_tok = make_block("Insert File path", current_position, "Insert File path", 1, 0, 1)
                 entity_vhdl.nonSynth.append(assert_tok)
 
-            elif token_text == "<=":  # detect assignements
+            elif token_text == "Insert File path":  # detect assignements
                 ignore = 0
                 # find out if the assign is inside of a func, generate or process and if so ignore for now
                 if (
@@ -1453,33 +1453,33 @@ def parse_vhdl(file_name, just_port=False):
                 if ignore == 0:
                     # assign_from = find_prev_ident(current_position)
                     assign_from = make_block(
-                        "<=", current_position + 1, [";", "\n", "when"], 1, 0, 1
+                        "Insert File path", current_position + 1, ["Insert File path", "\n", "when"], 1, 0, 1
                     )
                     assign_to = find_prev_till(
                         current_position,
                         [
-                            ";",
+                            "Insert File path",
                             "begin",
                             "when",
                             "\n",
                             "\n\n",
                             "then",
                             "else",
-                            "--",
-                            "=>",
+                            "Insert File path",
+                            "Insert File path",
                         ],
                     )
-                    # assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
+                    # assign_to  = find_name("IdentifierToken", current_position, 10, 0, "Insert File path") #using " " as a seperator could make issues in the future
                     if assign_to == -1:
                         assign_to = "error"
                     entity_vhdl.assign.append([assign_to.strip(), assign_from.strip()])
 
             elif token_type == "FunctionKeyword":
-                funct_name = make_block(token_type, current_position, "(")
+                funct_name = make_block(token_type, current_position, "Insert File path")
                 func_inputs_tmp = extract_tokens_between(
-                    tokens, "(", ")", current_position
+                    tokens, "Insert File path", "Insert File path", current_position
                 )
-                func_inputs_tmp2 = decode_block(func_inputs_tmp, ";")
+                func_inputs_tmp2 = decode_block(func_inputs_tmp, "Insert File path")
                 func_inputs = format_port(func_inputs_tmp2)
 
                 return_type_tmp = extract_tokens_between(
@@ -1497,11 +1497,11 @@ def parse_vhdl(file_name, just_port=False):
             #     # test = make_block(token_type,current_position,"end", 0, 5)
             #     # if make_block(token_type,current_position,"end", 0, 6) == -1 : # search back wards for an end that precedes the process so we only detect the start of processes
             #         prcess_name = find_name("IdentifierToken", current_position, 4)
-            #         process_dep = make_block(token_type,current_position,")")
+            #         process_dep = make_block(token_type,current_position,"Insert File path")
             #         entity_vhdl.process.append([prcess_name, process_dep])
         current_position = current_position + 1
 
     return entity_vhdl
 
 
-# print("")
+# print("Insert File path")

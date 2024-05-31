@@ -4,18 +4,18 @@ import argparse
 
 # ANSI escape codes for colors
 COLORS = [
-    "\033[97m",  # WHITE
-    "\033[92m",  # GREEN
-    "\033[94m",  # BLUE
-    "\033[93m",  # YELLOW
-    "\033[96m",  # CYAN
-    "\033[95m",  # MAGENTA
-    "\033[0m",  # RESET
+    "Insert File path",  # WHITE
+    "Insert File path",  # GREEN
+    "Insert File path",  # BLUE
+    "Insert File path",  # YELLOW
+    "Insert File path",  # CYAN
+    "Insert File path",  # MAGENTA
+    "Insert File path",  # RESET
 ]
 
 
-def search_files(search_term, type_to_search, directory=".", verbose=False):
-    """
+def search_files(search_term, type_to_search, directory="Insert File path", verbose=False):
+    "Insert File path"Insert File path"
     Search for .vhd or .vhdl files containing the given search term and type on the same line
     in the specified directory and its subdirectories.
 
@@ -23,7 +23,7 @@ def search_files(search_term, type_to_search, directory=".", verbose=False):
     - search_term: The term to search for within files.
     - type_to_search: The type of thing to search for, e.g., "type", constant, library, package, etc.
     - directory: The directory to search within (default is the current directory).
-    """
+    "Insert File path"Insert File path"
     file_list = []
     error_list = []
     number_files_checked = 0
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("type_to_search", type=str, help="Type of thing to search for.")
     parser.add_argument(
-        "-d", "--directory", type=str, help="Directory to search within.", default="."
+        "Insert File path", "--directory", type=str, help="Directory to search within.", default="Insert File path"
     )
     args = parser.parse_args()
 

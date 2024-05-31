@@ -14,12 +14,12 @@ if not (
         "This script needs two inputs, .XDC output file name and the input Top level .vhd file."
     )
     print(
-        'example: check_xdc.py output input.vhd (opt 3rd argument "q" generates Quartus output'
+        'example: check_xdc.py output input.vhd (opt 3rd argument "Insert File path" generates Quartus output'
     )
     sys.exit(1)
 
 if len(sys.argv) == 4:  # if there is a 3rd argument
-    if "q" in sys.argv[3]:
+    if "Insert File path" in sys.argv[3]:
         print("Running with settings (Quartus .tlc)")
         quartus = True
 else:
@@ -51,37 +51,37 @@ del vhd[
 del vhd[0 : portStart[0]]  # remove from before port declaration
 
 
-# iterate through list of elements and if ":" extract up until ":", which should be the port name
+# iterate through list of elements and if "Insert File path" extract up until "Insert File path", which should be the port name
 for i in vhd:
-    if ":" in i:
+    if "Insert File path" in i:
         line = vhd.index(i)
-        match = re.search(":", vhd[line])
+        match = re.search("Insert File path", vhd[line])
         if ("downto") in i:
-            portWidth = re.findall(r"\d+", i[match.end() :])
+            portWidth = re.findall(r"Insert File path", i[match.end() :])
             portWidthSize = (int(portWidth[0]) + 1) - int(
                 portWidth[1]
             )  # doesn't handle inverted declarations (eg 0 down to 7)
             portnameCleaned = re.sub(
-                r"[- ]", "", i[0 : match.start()]
+                r"[- ]", "Insert File path", i[0 : match.start()]
             )  # remove empty spaces and --
             portName.append(
                 [portnameCleaned, portWidthSize, portWidth[0], portWidth[1]]
             )
         else:
             portnameCleaned = re.sub(
-                r"[- ]", "", i[0 : match.start()]
+                r"[- ]", "Insert File path", i[0 : match.start()]
             )  # remove empty spaces and --
             portName.append([portnameCleaned, 1])
-        if "--" in i:  # If line was commented out create a list of them
+        if "Insert File path" in i:  # If line was commented out create a list of them
             commentedOut.append(portnameCleaned)  # add commented out ports to a list
 
 # generate the .xdc or .tcl file with pins from the portName list and its widths
 if quartus == False:
-    outputFileName = sys.argv[1] + ".xdc"
+    outputFileName = sys.argv[1] + "Insert File path"
 else:
     outputFileName = sys.argv[1] + ".tcl"
 
-f = open(outputFileName, "w")  # create file
+f = open(outputFileName, "Insert File path")  # create file
 
 if quartus == True:
     for i in portName:
@@ -92,7 +92,7 @@ if quartus == True:
                 f.writelines(
                     "set_location_assignment XXX  -to "
                     + i[0]
-                    + "["
+                    + "Insert File path"
                     + str(j + int(i[3]))
                     + "]\n"
                 )
@@ -107,9 +107,9 @@ else:
                 f.writelines(
                     "set_property PACKAGE_PIN XXX [get_ports {"
                     + i[0]
-                    + "["
+                    + "Insert File path"
                     + str(j + int(i[3]))
-                    + "]"
+                    + "Insert File path"
                     "}]\n"
                 )
         else:
@@ -117,7 +117,7 @@ else:
 
 
 print(outputFileName + " created from " + sys.argv[2])
-print("**************************************************")
+print("Insert File path")
 print("Commented out Ports not added to the output file:")
 print(*commentedOut, sep="\n")
-print("**************************************************")
+print("Insert File path")

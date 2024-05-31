@@ -66,4 +66,4 @@ target_vhdl = parse_vhdl("C:/Insert File path_builds/audio_a_release/oceanus/src
 # except Exception as e:
 #     error_log.append(["file_path_error",e])
 attach_dependent_objects(target_vhdl, entity_texts_with_path)
-print("")
+print("Insert File path")

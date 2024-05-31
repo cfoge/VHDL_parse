@@ -23,9 +23,9 @@ def make_lists_equal_length(list1, list2):
     len1, len2 = len(list1), len(list2)
 
     if len1 < len2:
-        list1 += [""] * (len2 - len1)
+        list1 += ["Insert File path"] * (len2 - len1)
     elif len2 < len1:
-        list2 += [""] * (len1 - len2)
+        list2 += ["Insert File path"] * (len1 - len2)
 
     return list1, list2
 
@@ -91,9 +91,9 @@ file1 = parse_vhdl("tests/test1.vhdl")  # parse_vhdl(sys.argv[1])
 file2 = parse_vhdl("tests/test2.vhdl")  # parse_vhdl(sys.argv[2])
 
 
-print("---------------------------------------------------")
+print("Insert File path")
 # print("Running diff between " + sys.argv[1] + " and " + sys.argv[2])
-print("---------------------------------------------------")
+print("Insert File path")
 diff_obj = calculate_dif(file1, file2)
 
-print("---------------------------------------------------")
+print("Insert File path")

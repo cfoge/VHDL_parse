@@ -15,10 +15,10 @@ if __name__ == "__main__":
         "search_term", type=str, help="Term to search for within files."
     )
     parser.add_argument(
-        "-d", "--directory", type=str, help="Directory to search within.", default="."
+        "Insert File path", "--directory", type=str, help="Directory to search within.", default="Insert File path"
     )
     parser.add_argument(
-        "-v",
+        "Insert File path",
         "--verbose",
         action="store_true",
         help="Print verbose output (prints the next few lines after it finds a match)",

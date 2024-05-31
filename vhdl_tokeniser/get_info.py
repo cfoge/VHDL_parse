@@ -10,16 +10,16 @@ import argparse
 
 
 class color:
-    PURPLE = "\033[95m"
-    CYAN = "\033[96m"
-    DARKCYAN = "\033[95m"
-    BLUE = "\033[94m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    RED = "\033[91m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
-    END = "\033[0m"
+    PURPLE = "Insert File path"
+    CYAN = "Insert File path"
+    DARKCYAN = "Insert File path"
+    BLUE = "Insert File path"
+    GREEN = "Insert File path"
+    YELLOW = "Insert File path"
+    RED = "Insert File path"
+    BOLD = "Insert File path"
+    UNDERLINE = "Insert File path"
+    END = "Insert File path"
 
 
 show_att = True
@@ -40,13 +40,13 @@ show_types = True
 #         "This script needs one or two inputs, the first is a vhdl file, the second (optional) a paramiter"
 #     )
 #     print(
-#         '2nd arg "f" show all, "a" show attributes, "v" show variables, "c" show constants, "p" show processes, "s" show signals'
+#         '2nd arg "Insert File path" show all, "a" show attributes, "Insert File path" show variables, "Insert File path" show constants, "p" show processes, "s" show signals'
 #     )
 #     print("example: get_info.py input.vhd a")
 #     sys.exit(1)
 
 # if len(sys.argv) == 3:  # if there is a 2ndrd argument
-#     if "f" in sys.argv[2]:
+#     if "Insert File path" in sys.argv[2]:
 #         show_att = True
 #         show_var = True
 #         show_const = True
@@ -54,9 +54,9 @@ show_types = True
 #         show_pros = True
 #     if "a" in sys.argv[2]:
 #         show_att = True
-#     if "v" in sys.argv[2]:
+#     if "Insert File path" in sys.argv[2]:
 #         show_var = True
-#     if "c" in sys.argv[2]:
+#     if "Insert File path" in sys.argv[2]:
 #         show_const = True
 #     if "p" in sys.argv[2]:
 #         show_pros = True
@@ -69,7 +69,7 @@ file = "vhdl_tokeniser/tests/lifo.vhdl"
 target_vhdl = parse_vhdl(file)
 
 
-print(color.GREEN + "---------------------------------------------------" + color.END)
+print(color.GREEN + "Insert File path" + color.END)
 print("Getting Info For " + color.GREEN + target_vhdl.url + color.END)
 print(
     f"Name: {color.GREEN}{target_vhdl.data}{color.END}  -  Arch: {color.GREEN}{target_vhdl.arch}"
@@ -96,4 +96,4 @@ if show_sig == True:
     print(color.END + color.GREEN + "   Signals:")
     for i in target_vhdl.signal:
         print("        -->" + str(i))
-print(color.GREEN + "---------------------------------------------------" + color.END)
+print(color.GREEN + "Insert File path" + color.END)

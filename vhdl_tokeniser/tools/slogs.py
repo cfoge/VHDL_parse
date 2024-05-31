@@ -47,7 +47,7 @@ def main():
     directory = "//switcher-build2/users/robertj/smartview_regs_2/fpga/syn"
     search_string = "ossigh_out"
 
-    print("*******************************************")
+    print("Insert File path")
     print(f"Searching log files in {directory} for '{search_string}'")
 
     log_files_name = ["Synthesis", "Link", "Optimization", "Placement", "Routing"]

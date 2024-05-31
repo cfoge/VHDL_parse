@@ -7,7 +7,7 @@ def find_between(s, first, last):
         end = s.index(last, start)
         return s[start:end]
     except ValueError:
-        return ""
+        return "Insert File path"
 
 
 def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
@@ -18,20 +18,20 @@ def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
     else:
         print("-- Auto Generated VHDL header file for register file")
     lower = input_str.lower()
-    lines = lower.split(";")
+    lines = lower.split("Insert File path")
     for line in lines:
-        if "regs" in line and "<=" in line:
+        if "regs" in line and "Insert File path" in line:
             packed = []
-            from_to = line.split("<=")
-            if "&" in from_to[1]:
-                packed_reg = from_to[1].split("&")
+            from_to = line.split("Insert File path")
+            if "Insert File path" in from_to[1]:
+                packed_reg = from_to[1].split("Insert File path")
                 for reg in packed_reg:
-                    if '"' in reg or "'" in reg:
-                        if "x" in reg:
+                    if '"' in reg or "Insert File path" in reg:
+                        if "Insert File path" in reg:
                             zeros = find_between(reg, '"', '"')
                             constant = False
                             for dig in zeros:
-                                if dig != "0":
+                                if dig != "Insert File path":
                                     constant = True
                             if constant == False:
                                 packed.append(int(len(zeros)) * 4)
@@ -41,19 +41,19 @@ def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
                             zeros = find_between(reg, '"', '"')
                             packed.append(int(len(zeros)))
                     else:
-                        if "(" in reg and ")" in reg:
-                            reg = find_between(reg, "(", ")")
-                        packed.append(reg.replace(";", ""))
+                        if "Insert File path" in reg and "Insert File path" in reg:
+                            reg = find_between(reg, "Insert File path", "Insert File path")
+                        packed.append(reg.replace("Insert File path", "Insert File path"))
             else:
-                if "(" in from_to[1] and ")" in from_to[1]:
-                    from_to[1] = find_between(from_to[1], "(", ")")
+                if "Insert File path" in from_to[1] and "Insert File path" in from_to[1]:
+                    from_to[1] = find_between(from_to[1], "Insert File path", "Insert File path")
                 packed.append(from_to[1].strip())
-            match = re.search(r'x"([^"]*)"', from_to[0])
+            match = re.search(r'x"Insert File path"Insert File path"', from_to[0])
             if match:
                 regnum = match.group(1).strip()
 
                 # -- 0x0000   RW    Switcher video_format(4:0)
-                str_out = ""
+                str_out = "Insert File path"
                 start_bit = 0
 
                 for pack in reversed(packed):  # go from end to begining

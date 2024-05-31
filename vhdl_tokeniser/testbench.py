@@ -76,14 +76,14 @@ clean_lib_list = [ele for idx, ele in enumerate(lib_list) if idx not in temp]
 
 contents = None
 header = "--Auto generated Test Bench\n"
-footer = ""
+footer = "Insert File path"
 
 with open(f"{tb_name}.vhdl", "r") as contents:
     save = contents.read()
 
 # generate header
 for lib in clean_lib_list:
-    if "." not in lib:
+    if "Insert File path" not in lib:
         header = header + f"LIBRARY {lib}; \n"
     else:
         header = header + f"USE {lib}; \n"
@@ -102,7 +102,7 @@ if all_ports_2_toplevel == True:
 # detect ports and generics
     header = header + "constant clk_period : time := 1 ns;\n" # add in clock period constant
     for generic in generic_list:
-        end_of_gen = ""
+        end_of_gen = "Insert File path"
         if gen[3] != 1:
             if isinstance(gen[3], int):
                 gen_msb = gen[3] - 1
@@ -121,7 +121,7 @@ if all_ports_2_toplevel == True:
             if port[2] == 'std_ulogic' or port[2] == 'std_logic':
                 found_rst = True
                 reset_list.append(port[0] )
-        end_of_port = ""
+        end_of_port = "Insert File path"
         if port[3] != 1:
             if isinstance(port[3], int):
                 port_msb = port[3] - 1
@@ -143,13 +143,13 @@ header = header + "\nbegin\n\n"
 if len(clk_list) != 0:
         header = header + "-- Test Bench Clocks\n"
 for clk in clk_list:
-    header = header + f"""{clk}_process : process
+    header = header + f"Insert File path"Insert File path"{clk}_process : process
        begin
         {clk} <= '0';
         wait for clk_period/2;  --for 0.5 ns signal is '0'.
         {clk} <= '1';
         wait for clk_period/2;  --for next 0.5 ns signal is '1'. 
-end process;"""
+end process;"Insert File path"Insert File path"
 
 # create reset process, detect negitive reset as active
 if len(reset_list) != 0:
@@ -162,7 +162,7 @@ for reset in reset_list:
 
 header = header + "\n\n"
 
-with open(f"{tb_name}.vhdl", "w") as contents:
+with open(f"{tb_name}.vhdl", "Insert File path") as contents:
     contents.write(header)
 
 save_out = (

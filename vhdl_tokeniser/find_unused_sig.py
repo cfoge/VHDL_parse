@@ -3,17 +3,17 @@ import argparse
 from token_test import parse_vhdl  # Adjust the import if needed
 
 COLORS = [
-    "\033[97m",  # WHITE
-    "\033[92m",  # GREEN
-    "\033[94m",  # BLUE
-    "\033[93m",  # YELLOW
-    "\033[96m",  # CYAN
-    "\033[95m",  # MAGENTA
-    "\033[0m",  # RESET
+    "Insert File path",  # WHITE
+    "Insert File path",  # GREEN
+    "Insert File path",  # BLUE
+    "Insert File path",  # YELLOW
+    "Insert File path",  # CYAN
+    "Insert File path",  # MAGENTA
+    "Insert File path",  # RESET
 ]
 
 def find_string_matches(file_path, search_string):
-    """
+    "Insert File path"Insert File path"
     Find occurrences of a string in a text document and return the number of matches and the lines where the matches are found.
 
     Args:
@@ -22,7 +22,7 @@ def find_string_matches(file_path, search_string):
 
     Returns:
         tuple: A tuple containing the number of matches found and a list of lines where the matches are found.
-    """
+    "Insert File path"Insert File path"
     # Initialize variables
     match_count = 0
     matched_lines = []

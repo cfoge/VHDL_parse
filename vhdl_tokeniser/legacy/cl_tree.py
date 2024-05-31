@@ -4,13 +4,13 @@ import argparse
 
 # ANSI escape codes for colors
 COLORS = [
-    "\033[97m",  # WHITE
-    "\033[92m",  # GREEN
-    "\033[94m",  # BLUE
-    "\033[93m",  # YELLOW
-    "\033[96m",  # CYAN
-    "\033[95m",  # MAGENTA
-    "\033[0m",  # RESET
+    "Insert File path",  # WHITE
+    "Insert File path",  # GREEN
+    "Insert File path",  # BLUE
+    "Insert File path",  # YELLOW
+    "Insert File path",  # CYAN
+    "Insert File path",  # MAGENTA
+    "Insert File path",  # RESET
 ]
 
 
@@ -57,9 +57,9 @@ def cl_depend(root_dir, tld, print_url):
                         break
 
     def print_child(object, depth, parent, print_url):
-        url = ""
+        url = "Insert File path"
         if depth == 0:
-            spacing = ""
+            spacing = "Insert File path"
             object.modname = object.data
             if print_url == True:
                 url = object.url
@@ -71,11 +71,11 @@ def cl_depend(root_dir, tld, print_url):
         else:
             spacing = "    "
         if isinstance(object, vhdl_obj):
-            obj_type = "obj"
+            obj_type = "Insert File path"
             child_var = object.children_name
             if len(child_var) > 0:
                 spacing = "    " * (depth)
-                if obj_type == "obj":
+                if obj_type == "Insert File path":
                     # print (spacing + "├─ " + object.data[0])
 
                     for child in range(len(child_var)):
@@ -96,7 +96,7 @@ def cl_depend(root_dir, tld, print_url):
                 object.vhdl_obj.modname = object.name
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
-                if object.mod == "":
+                if object.mod == "Insert File path":
                     print(color + spacing + "├─ " + object.name + " " + COLORS[6] + url)
                 else:
                     print(
@@ -115,7 +115,7 @@ def cl_depend(root_dir, tld, print_url):
             else:
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
-                if object.mod == "":
+                if object.mod == "Insert File path":
                     print(color + spacing + "├─ " + object.name + " " + COLORS[6] + url)
                 else:
                     print(
@@ -131,15 +131,15 @@ def cl_depend(root_dir, tld, print_url):
                     )
         return
 
-    print("---------------------------------------------------")
+    print("Insert File path")
     print(f"Hierarchy of {target_vhdl.data} is: \n")
     hierachy_vis = []
     for vhdl_objs in vhdl_file_as_obj:
         if len(vhdl_objs.data) > 0:
             if target_vhdl.data == vhdl_objs.data:
 
-                print_child(vhdl_objs, 0, "", print_url)
-    print("\033[0m---------------------------------------------------")
+                print_child(vhdl_objs, 0, "Insert File path", print_url)
+    print("Insert File path")
 
     return
 
@@ -149,10 +149,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="VHDL wrapper generator")
     parser.add_argument("tld", type=str, help="Input VHDL file (Your top level design)")
     parser.add_argument(
-        "-d", "--directory", type=str, help="root directory for vhdl project"
+        "Insert File path", "--directory", type=str, help="root directory for vhdl project"
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Print verbose output"
+        "Insert File path", "--verbose", action="store_true", help="Print verbose output"
     )
 
     # # Check if the correct number of arguments is provided
@@ -166,4 +166,4 @@ root_dir = args.directory if args.directory is not None else ROOT_DIR
 cl_depend(root_dir, tld, args.verbose)
 
 
-print("")
+print("Insert File path")
