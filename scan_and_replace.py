@@ -3,7 +3,7 @@ import re
 
 # Define the path to scan and the replacement pattern
 scan_directory = '.'
-patterns = [r'BMD', r'bmd', r'c:/', r'server']
+patterns = [r'Insert File path', r'Insert File path', r'Insert File path', r'Insert File path']
 replacement = 'Insert File path'
 
 def replace_file_paths():

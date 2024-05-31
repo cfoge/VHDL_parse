@@ -58,7 +58,7 @@ def rearrange_and_group_strings(strings):
 #     sys.exit(1)
 
 filename = "test"#sys.argv[1]
-netlist_filename = 'fpga\syn\BMDPCB1120A_NETLIST.txt' #sys.argv[2] 
+netlist_filename = 'fpga\syn\Insert File pathPCB1120A_NETLIST.txt' #sys.argv[2] 
 chip_id = 'u12' #sys.argv[3]  #this si the symbol in the scematic for the FPGA ic
 prefix = "pl" # this is the prefix that sits in front of your pin names if that is how your scematic is layed out
 

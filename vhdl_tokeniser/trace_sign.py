@@ -84,12 +84,12 @@ def get_data_slim(node):
     return path_list
 
 
-root_dir = "C:/BMD_builds/sdi_audio_test/oceanus"
-# root_dir = 'C:/BMD_builds/ava_2019_fresh'
+root_dir = "C:/Insert File path_builds/sdi_audio_test/oceanus"
+# root_dir = 'C:/Insert File path_builds/ava_2019_fresh'
 target_vhdl = parse_vhdl(
-    "C:/BMD_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd"
+    "C:/Insert File path_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd"
 )
-# target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
+# target_vhdl = parse_vhdl('C:/Insert File path_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
