@@ -116,7 +116,7 @@ def attach_dependent_objects(
 
 
 # root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
-root_dir = "C:/test2/crc_error_fix"
+root_dir = "C:/test3/crc_error_fix"
 # target_vhdl_in = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga/src/digital_side/test_1_build/test_digital_side.vhd'
 target_vhdl_in = (
     "C:/BMD_builds/crc_error_fix/fpga/src/audio_monitor_12g_g3.vhd"
