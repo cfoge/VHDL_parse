@@ -1,8 +1,6 @@
-# This script searches a VHDL file and finds any signals declared but not used
-
-from token_test import *
 import os
 import argparse
+from token_test import parse_vhdl  # Adjust the import if needed
 
 COLORS = [
     "\033[97m",  # WHITE
@@ -13,7 +11,6 @@ COLORS = [
     "\033[95m",  # MAGENTA
     "\033[0m",  # RESET
 ]
-
 
 def find_string_matches(file_path, search_string):
     """
@@ -41,21 +38,22 @@ def find_string_matches(file_path, search_string):
 
     return match_count, matched_lines
 
+def main():
+    parser = argparse.ArgumentParser(description='Search a VHDL file for declared but unused signals.')
+    parser.add_argument('file_path', type=str, help='Path to the VHDL file to be analyzed.')
+    args = parser.parse_args()
 
-tld = "//switcher-build2/users/robertj/crcconday/fpga/src/audio_monitor_12g_g3.vhd"
+    # Parse the VHDL file
+    target_vhdl = parse_vhdl(args.file_path)
+    signals = target_vhdl.signal
 
+    for signal in signals:
+        num_strings_match, num_line_match = find_string_matches(args.file_path, signal[0])
+        if num_strings_match < 2:
+            if len(num_line_match) > 0:
+                print(
+                    f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} time(s). line {COLORS[1]}{num_line_match[0][0]}{COLORS[6]}"
+                )
 
-# Parse the VHDL file
-target_vhdl = parse_vhdl(tld)
-
-signals = target_vhdl.signal
-
-for signal in signals:
-    num_strings_match, num_line_match = find_string_matches(tld, signal[0])
-    if num_strings_match < 2:
-        if len(num_line_match) > 0:
-            print(
-                f"{COLORS[1]}{signal[0]}{COLORS[6]} found in file {num_strings_match} time(s). line {COLORS[1]}{num_line_match[0][0]}{COLORS[6]}"
-            )
-        # for lines in num_line_match:
-        #     print(f"-----> {lines}")
+if __name__ == "__main__":
+    main()
