@@ -37,24 +37,24 @@ class TreeNode(object):
 
 class Tree:
     def __init__(self):
-        self.root = TreeNode("Insert File path", "Insert File path", "Insert File path")
+        self.root = TreeNode("ROOT", "NONE", "")
 
     def preorder_trav(self, node):
         if node is not None:
             print(node.data)
-            print("   ", end="Insert File path")
+            print("   ", end="")
             if len(node.children) != 0:
                 for n in node.children:
                     for x in range(node.depth):
-                        print("   ", end="Insert File path")
-                    print("Insert File path", end="Insert File path")
+                        print("   ", end="")
+                    print("|--", end="")
                     self.preorder_trav(n)
 
 
 ######################################################################
 
 # def get_data(node):
-#     path_list = "Insert File path"
+#     path_list = ""
 #     if (node.type == "file"):
 #         path_list = str("file: " + node.filename)
 #     if (node.type == "port"):
@@ -69,7 +69,7 @@ class Tree:
 
 
 def get_data_slim(node):
-    path_list = "Insert File path"
+    path_list = ""
     if node.type == "file":
         path_list = node.filename
     elif node.type == "port":
@@ -84,12 +84,12 @@ def get_data_slim(node):
     return path_list
 
 
-root_dir = "C:/Insert File path_builds/sdi_audio_test/oceanus"
-# root_dir = 'C:/Insert File path_builds/ava_2019_fresh'
+root_dir = "C:/BMD_builds/sdi_audio_test/oceanus"
+# root_dir = 'C:/BMD_builds/ava_2019_fresh'
 target_vhdl = parse_vhdl(
-    "C:/Insert File path_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd"
+    "C:/BMD_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd"
 )
-# target_vhdl = parse_vhdl('C:/Insert File path_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
+# target_vhdl = parse_vhdl('C:/BMD_builds/ava_2019_fresh/atemava1/src/atemava1.vhd')
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
@@ -135,13 +135,13 @@ assignments = []
 assign_log = []
 possible_assignments = []
 full_assign_list = []
-nodes.append(TreeNode(target_vhdl.data, find_str, "file", "Insert File path", "Insert File path"))
+nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
 
 ###################################
 
 
 def create_path(vhdl_obj_in, find_str, curent_node):
-    find_str_sub = "Insert File path"
+    find_str_sub = ""
     # this part looks for ways that the signals name may have changed via being assigned to another signal
     for (
         x
@@ -298,24 +298,24 @@ for ass in assignments:
 
 path_tree = nodes[0].paths()
 
-print("Insert File path")
+print("---------------------------------------------------")
 print("Searching for " + find_str + " in " + target_vhdl.data)
 
 for path in path_tree:
     for step in path:
-        print(" --> ", end="Insert File path")
+        print(" --> ", end="")
         if len(step) == 2:
             if verbose == False:
-                print(f"{step[0].if_mod_name} = '{step[1]}' ", end="Insert File path")
+                print(f"{step[0].if_mod_name} = '{step[1]}' ", end="")
             else:
                 print(
-                    f"{step[0].if_mod_name} : {step[0].filename} = '{step[1]}' ", end="Insert File path"
+                    f"{step[0].if_mod_name} : {step[0].filename} = '{step[1]}' ", end=""
                 )
         else:
-            print(f"{step} = '{find_str}' ", end="Insert File path")
-    print("Insert File path")
-print("Insert File path")
-print("Insert File path")
+            print(f"{step} = '{find_str}' ", end="")
+    print("")
+print("")
+print("---------------------------------------------------")
 
 
 if verbose == True:  ##print the full line for each assignment for context
@@ -351,13 +351,13 @@ def create_tree(data):
                     if verbose == False:
                         tree.node(
                             child_node,
-                            shape="Insert File path",
+                            shape="box",
                             label=f"{node_label_mod_name}\\n'{edge_label}'",
                         )
                     else:
                         tree.node(
                             child_node,
-                            shape="Insert File path",
+                            shape="box",
                             label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'",
                         )
                     if parent_node is not None:
@@ -377,4 +377,4 @@ tree_map = create_tree(data)
 tree_map.render("tree", format="png", view=True)
 
 
-print("Insert File path")
+print("")

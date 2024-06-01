@@ -380,7 +380,7 @@ for ass in assignments:
 path_tree = nodes[0].paths()
 
 print(f"---------------------------------------------------")
-print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {target_vhdl.data}")
+print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {COLORS[1]}{target_vhdl.data}{COLORS[7]}")
 
 for path in path_tree:
     for step in path:
@@ -393,7 +393,7 @@ for path in path_tree:
                     f"{COLORS[3]}{step[0].if_mod_name}{COLORS[7]} : {step[0].filename} = {COLORS[4]}'{step[1]}'{COLORS[7]} ", end=""
                 )
         else:
-            print(f"{step} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
+            print(f"{COLORS[1]}{step}{COLORS[7]} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
     print("")
 print("")
 print("---------------------------------------------------")

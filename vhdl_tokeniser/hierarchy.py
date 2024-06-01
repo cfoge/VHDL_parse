@@ -7,13 +7,13 @@ import argparse
 
 # ANSI escape codes for colors
 COLORS = [
-    "Insert File path",  # WHITE
-    "Insert File path",  # GREEN
-    "Insert File path",  # BLUE
-    "Insert File path",  # YELLOW
-    "Insert File path",  # CYAN
-    "Insert File path",  # MAGENTA
-    "Insert File path",  # RESET
+    "\033[97m",  # WHITE
+    "\033[92m",  # GREEN
+    "\033[94m",  # BLUE
+    "\033[93m",  # YELLOW
+    "\033[96m",  # CYAN
+    "\033[95m",  # MAGENTA
+    "\033[0m",  # RESET
 ]
 
 hierarchy_vis = []
@@ -83,9 +83,9 @@ def cl_depend(root_dir, tld, print_url):
     attach_dependent_objects(target_vhdl, entity_texts_with_path)
 
     def print_child(object, depth, parent, print_url):
-        url = "Insert File path"
+        url = ""
         if depth == 0:
-            spacing = "Insert File path"
+            spacing = ""
             object.modname = object.data
             if print_url == True:
                 url = object.url
@@ -95,11 +95,11 @@ def cl_depend(root_dir, tld, print_url):
         else:
             spacing = "    "
         if isinstance(object, vhdl_obj):
-            obj_type = "Insert File path"
+            obj_type = "obj"
             child_var = object.children_name
             if len(child_var) > 0:
                 spacing = "    " * (depth)
-                if obj_type == "Insert File path":
+                if obj_type == "obj":
                     # print (spacing + "├─ " + object.data[0])
 
                     for child in range(len(child_var)):
@@ -120,7 +120,7 @@ def cl_depend(root_dir, tld, print_url):
                 object.vhdl_obj.modname = object.name
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
-                if object.mod == "Insert File path":
+                if object.mod == "":
                     print(color + spacing + "├─ " + object.name + " " + url)
                 else:
                     print(
@@ -138,7 +138,7 @@ def cl_depend(root_dir, tld, print_url):
             else:
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
-                if object.mod == "Insert File path":
+                if object.mod == "":
                     print(color + spacing + "├─ " + object.name + " " + url)
                 else:
                     print(
@@ -153,7 +153,7 @@ def cl_depend(root_dir, tld, print_url):
                     )
         return
 
-    print("Insert File path")
+    print("---------------------------------------------------")
     print(f"Hierarchy of {target_vhdl.data} is: \n")
     global hierachy_vis
     hierachy_vis = []
@@ -167,21 +167,21 @@ def cl_depend(root_dir, tld, print_url):
             modname = vhdl_obj_in.name
         else:
             vhdl_obj = vhdl_obj_in
-            modname = "Insert File path"
+            modname = ""
 
         color_index = indent_level % (len(COLORS) - 1)  # Exclude RESET color
         color = COLORS[color_index]
         if print_url == True:
             url = vhdl_obj.url
         else:
-            url = "Insert File path"
+            url = ""
         if indent_level != 0:
-            arrow = "Insert File path"
+            arrow = "├─"
         else:
-            arrow = "Insert File path"
+            arrow = ""
 
         if vhdl_obj.data is not None and len(vhdl_obj.data) > 0:
-            if modname == "Insert File path":
+            if modname == "":
                 print(f"{color}{indent_str}{arrow} {vhdl_obj.data} {url}")
             else:
                 print(f"{color}{indent_str}{arrow} {modname} : {vhdl_obj.data} {url}")
@@ -198,12 +198,12 @@ def cl_depend(root_dir, tld, print_url):
 
     try:
         if target_vhdl.data is not None and len(target_vhdl.data) > 0:
-            print_child_with_name(target_vhdl, 0, "Insert File path", False, hierachy_vis)
+            print_child_with_name(target_vhdl, 0, "", False, hierachy_vis)
     except Exception as e:
         error_log.append(["print Hierarchy error", e])
 
     print(COLORS[-1])
-    print("Insert File path")
+    print("---------------------------------------------------")
     #################################
 
     return
@@ -214,10 +214,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="VHDL wrapper generator")
     parser.add_argument("tld", type=str, help="Input VHDL file (Your top level design)")
     parser.add_argument(
-        "Insert File path", "--directory", type=str, help="root directory for vhdl project"
+        "-d", "--directory", type=str, help="root directory for vhdl project"
     )
     parser.add_argument(
-        "Insert File path", "--verbose", action="store_true", help="Print verbose output"
+        "-v", "--verbose", action="store_true", help="Print verbose output"
     )
 
     # # Check if the correct number of arguments is provided
@@ -228,10 +228,10 @@ tld = args.tld
 ROOT_DIR = os.path.dirname(tld)
 root_dir = args.directory if args.directory is not None else ROOT_DIR
 
-print("Insert File path")
+print("---------------------------------------------")
 print(f"Running Show VHDL Hieracy of TLD '{tld}'")
 
 cl_depend(root_dir, tld, args.verbose)
 
 
-print("Insert File path")
+print("")

@@ -18,7 +18,7 @@ def generate_vhdl_wrapper(
     lib_list = []
     generic_list = []
     port_list = []
-    signals_list = "Insert File path"
+    signals_list = ""
 
     for decoded in decoded_list:
         for lib in decoded.lib:
@@ -36,7 +36,7 @@ def generate_vhdl_wrapper(
 
         genspacing = genlen + 4
         portspacing = portlen + 4
-        vb = "Insert File path"
+        vb = ""
         with open("wrapper_out.vhdl", "a") as f:
             f.write(f"{decoded.data}_i : entity work.{decoded.data} \n")
             if len(decoded.generic) > 0:
@@ -67,10 +67,10 @@ def generate_vhdl_wrapper(
                 f.write(f");\n")
                 f.write(f"\n")
 
-        signals = "Insert File path"
+        signals = ""
         if make_signals == True:
             for port in decoded.port:
-                end_of_port = "Insert File path"
+                end_of_port = ""
                 if port[3] != 1:
                     try:
                         port_msb = port[3] - 1
@@ -94,14 +94,14 @@ def generate_vhdl_wrapper(
 
     contents = None
     header = "--Auto generated VHDL Wrapper\n"
-    footer = "Insert File path"
+    footer = ""
 
     with open("wrapper_out.vhdl", "r") as contents:
         save = contents.read()
 
     # Generate header
     for lib in clean_lib_list:
-        if "Insert File path" not in lib:
+        if "." not in lib:
             header = header + f"LIBRARY {lib}; \n"
         else:
             header = header + f"USE {lib}; \n"
@@ -109,7 +109,7 @@ def generate_vhdl_wrapper(
     header = header + f"\nentity {wrapper_name} is \n"
 
     # for port in port_list:
-    #     end_of_port = "Insert File path"
+    #     end_of_port = ""
     #     if port[3] != 1:
     #         port_msb = port[3] - 1
     #         end_of_port = end_of_port + f"({port_msb} downto 0)"
@@ -123,7 +123,7 @@ def generate_vhdl_wrapper(
 
     header = header + f"begin \n"
 
-    with open("wrapper_out.vhdl", "Insert File path") as contents:
+    with open("wrapper_out.vhdl", "w") as contents:
         contents.write(header)
 
     if make_signals == True:
@@ -146,12 +146,12 @@ def generate_vhdl_wrapper(
 if __name__ == "__main__":
     # Add argparse for command-line arguments
     parser = argparse.ArgumentParser(description="VHDL wrapper generator")
-    parser.add_argument("files", type=str, nargs="Insert File path", help="Input VHDL files")
+    parser.add_argument("files", type=str, nargs="+", help="Input VHDL files")
     parser.add_argument(
         "-n", "--name", type=str, default="wrapper", help="Wrapper entity name"
     )
     parser.add_argument(
-        "Insert File path", "--verbose", action="store_true", help="Print verbose output"
+        "-v", "--verbose", action="store_true", help="Print verbose output"
     )
     parser.add_argument(
         "-sig",

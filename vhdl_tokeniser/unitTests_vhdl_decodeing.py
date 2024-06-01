@@ -3,7 +3,7 @@ from token_test import parse_vhdl
 
 
 class TestParseVHDLDecoding(unittest.TestCase):
-    def __init__(self, methodName="runTest", file_name="Insert File path", expected_result=None):
+    def __init__(self, methodName="runTest", file_name="", expected_result=None):
         super().__init__(methodName)
         self.file_name = file_name
         self.expected_result = expected_result
@@ -391,17 +391,17 @@ if __name__ == "__main__":
         ["ieee", "ieee.std_logic_1164.all"],
         5,
         [
-            ["Insert File path", "in", "std_logic", 1, None],
-            ["Insert File path", "in", "std_logic", 1, None],
+            ["x1", "in", "std_logic", 1, None],
+            ["x2", "in", "std_logic", 1, None],
             ["cin", "in", "std_logic", 1, None],
             ["s", "out", "std_logic", 1, None],
             ["cout", "out", "std_logic", 1, None],
         ],
         3,
         [
-            ["a1", "Insert File path", "std_logic", 1, None],
-            ["a2", "Insert File path", "std_logic", 1, None],
-            ["a3", "Insert File path", "std_logic", 1, None],
+            ["a1", "", "std_logic", 1, None],
+            ["a2", "", "std_logic", 1, None],
+            ["a3", "", "std_logic", 1, None],
         ],
         5,
         [
@@ -417,9 +417,9 @@ if __name__ == "__main__":
         [],  # constant
         3,
         [
-            ["a1", "Insert File path", "std_logic", 1, None],
-            ["a2", "Insert File path", "std_logic", 1, None],
-            ["a3", "Insert File path", "std_logic", 1, None],
+            ["a1", "", "std_logic", 1, None],
+            ["a2", "", "std_logic", 1, None],
+            ["a3", "", "std_logic", 1, None],
         ],
         0,
         [],  # subtype
@@ -446,7 +446,7 @@ if __name__ == "__main__":
         [
             ["clock", "in", "std_logic", 1, None],
             ["a", "in", "std_logic_vector", 8, None],
-            ["Insert File path", "in", "std_logic_vector", 8, None],
+            ["b", "in", "std_logic_vector", 8, None],
             ["iab", "in", "std_logic", 1, None],
             ["output", "out", "std_logic", 1, None],
         ],  # port
@@ -470,8 +470,8 @@ if __name__ == "__main__":
         [],  # constant
         2,
         [
-            ["ab", "Insert File path", "std_logic_vector", 8, None],
-            ["result", "Insert File path", "std_logic", 1, None],
+            ["ab", "", "std_logic_vector", 8, None],
+            ["result", "", "std_logic", 1, None],
         ],  # signal
         0,
         [],  # subtype
@@ -486,7 +486,7 @@ if __name__ == "__main__":
         0,
         [],  # generic
         1,
-        [["Unnammed", "clock", [["result", "Insert File path"], ["result", "Insert File path"]]]],  # process
+        [["Unnammed", "clock", [["result", "'0'"], ["result", "'1'"]]]],  # process
     ]
 
     file_name_main3 = "tests/test3.vhdl"
@@ -522,17 +522,17 @@ if __name__ == "__main__":
         [],  # constant
         11,
         [
-            ["counter_1s", "Insert File path", "std_logic_vector", 28, 'x"Insert File path"'],
-            ["delay_count", "Insert File path", "std_logic_vector", 4, 'x"Insert File path"'],
-            ["delay_10s", "Insert File path", "std_logic", 1, 0],
-            ["delay_3s_f", "Insert File path", "std_logic", 1, 0],
-            ["delay_3s_h", "Insert File path", "std_logic", 1, 0],
-            ["red_light_enable", "Insert File path", "std_logic", 1, 0],
-            ["yellow_light1_enable", "Insert File path", "std_logic", 1, 0],
-            ["yellow_light2_enable", "Insert File path", "std_logic", 1, 0],
-            ["clk_1s_enable", "Insert File path", "std_logic", 1, None],
-            ["current_state", "Insert File path", "null", "null", None],
-            ["next_state", "Insert File path", "null", "null", None],
+            ["counter_1s", "", "std_logic_vector", 28, 'x"0000000"'],
+            ["delay_count", "", "std_logic_vector", 4, 'x"0"'],
+            ["delay_10s", "", "std_logic", 1, 0],
+            ["delay_3s_f", "", "std_logic", 1, 0],
+            ["delay_3s_h", "", "std_logic", 1, 0],
+            ["red_light_enable", "", "std_logic", 1, 0],
+            ["yellow_light1_enable", "", "std_logic", 1, 0],
+            ["yellow_light2_enable", "", "std_logic", 1, 0],
+            ["clk_1s_enable", "", "std_logic", 1, None],
+            ["current_state", "", "null", "null", None],
+            ["next_state", "", "null", "null", None],
         ],  # sig , #signal
         0,
         [],  # subtype
@@ -547,7 +547,7 @@ if __name__ == "__main__":
         0,
         [],  # generic
         4,
-        [],  # process !!!!!! still has issues in the assign decoding look for "Insert File path"
+        [],  # process !!!!!! still has issues in the assign decoding look for "OTHWERS"
     ]
 
     # self.primitives = []

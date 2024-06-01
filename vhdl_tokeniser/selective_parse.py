@@ -20,7 +20,7 @@ def attach_dependent_objects(
         error_log.append(["file_path_error", e])
 
 
-root_dir = "C:/Insert File path_builds/audio_a_release/oceanus/src/"
+root_dir = "C:/BMD_builds/audio_a_release/oceanus/src/"
 find_str = "voip_rx_anc_vpid_array"
 verbose = True
 
@@ -50,7 +50,7 @@ for file_path in vhdl_files:
 print(f"{len(vhdl_files)} VHDL files found")
 print(f"{len(entity_texts_with_path)} entities extracted")
 
-target_vhdl = parse_vhdl("C:/Insert File path_builds/audio_a_release/oceanus/src/Oceanus.vhd")
+target_vhdl = parse_vhdl("C:/BMD_builds/audio_a_release/oceanus/src/Oceanus.vhd")
 
 # search list and and attach dependent objects as childerenfor vhdl_o in target_vhdl:
 # try:
@@ -66,4 +66,4 @@ target_vhdl = parse_vhdl("C:/Insert File path_builds/audio_a_release/oceanus/src
 # except Exception as e:
 #     error_log.append(["file_path_error",e])
 attach_dependent_objects(target_vhdl, entity_texts_with_path)
-print("Insert File path")
+print("")

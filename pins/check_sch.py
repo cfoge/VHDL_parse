@@ -28,18 +28,18 @@ def find_between( s, first, last ):
         end = s.index( last, start )
         return s[start:end]
     except ValueError:
-        return "Insert File path"
+        return ""
 
 for i in xdc:
     if("PACKAGE_PIN" in i): # Find lines with "PINPACKAGE" in them
         pin_name = find_between(i, "PACKAGE_PIN", "[get_ports")
-        sig_name = find_between(i, "get_ports {", "Insert File path")
+        sig_name = find_between(i, "get_ports {", "}")
         XDCPinName.append([sig_name.strip(),pin_name.strip()])
 
 for i in netlist:
-    if(not("Insert File path")in i):
+    if(not("$")in i):
         for j in XDCPinName:
-            part_of_longer_nameA = str("Insert File path" + j[0] + "Insert File path")
+            part_of_longer_nameA = str("'" + j[0] + "'")
             if(part_of_longer_nameA.casefold() in i.casefold()): #if xdc sign name in netlist
                 matched_pins.append([j[0], j[1], i.strip()])
 
@@ -54,9 +54,9 @@ for matches in matched_pins:
 
 
 print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
-print("Insert File path")
+print("---------------------------------------------------")
 
 for mismatch in mismatched_pin:
     print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
 
-print("Insert File path") 
+print("---------------------------------------------------") 

@@ -4,18 +4,18 @@ import argparse
 
 # ANSI escape codes for colors
 COLORS = [
-    "Insert File path",  # WHITE
-    "Insert File path",  # GREEN
-    "Insert File path",  # BLUE
-    "Insert File path",  # YELLOW
-    "Insert File path",  # CYAN
-    "Insert File path",  # MAGENTA
-    "Insert File path",  # RESET
+    "\033[97m",  # WHITE
+    "\033[92m",  # GREEN
+    "\033[94m",  # BLUE
+    "\033[93m",  # YELLOW
+    "\033[96m",  # CYAN
+    "\033[95m",  # MAGENTA
+    "\033[0m",  # RESET
 ]
 
 
-def print_directory_tree(folder_path, indent="Insert File path", depth=0, find_string=None):
-    "Insert File path"Insert File path"
+def print_directory_tree(folder_path, indent="", depth=0, find_string=None):
+    """
     Print the directory tree structure for the given folder.
 
     Args:
@@ -23,7 +23,7 @@ def print_directory_tree(folder_path, indent="Insert File path", depth=0, find_s
     - indent: Current indentation level for printing.
     - depth: Depth to control color cycling.
     - find_string: String to find in filenames and folder names.
-    "Insert File path"Insert File path"
+    """
     for item in os.listdir(folder_path):
         item_path = os.path.join(folder_path, item)
 
@@ -69,4 +69,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(f"Directory tree structure for '{folder_path}':")
-    print_directory_tree(folder_path, "Insert File path", depth, find_string)
+    print_directory_tree(folder_path, "", depth, find_string)

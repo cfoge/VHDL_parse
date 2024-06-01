@@ -19,7 +19,7 @@ def extract_module_content(file_path, verbose=False, save_to_file=False):
             ]
 
             # Extract content between "entity" and "end entity"
-            extracted_content = "Insert File path"
+            extracted_content = ""
             for start_index in start_indices:
                 end_index = min(
                     end_index for end_index in end_indices if end_index > start_index
@@ -27,17 +27,17 @@ def extract_module_content(file_path, verbose=False, save_to_file=False):
                 module_content_lines = content[start_index:end_index]
 
                 # Remove comments from each line
-                module_content = "Insert File path"
+                module_content = ""
                 for line in module_content_lines:
-                    if "Insert File path" in line and not verbose:
-                        no_comments = line.split("Insert File path")
+                    if "--" in line and not verbose:
+                        no_comments = line.split("--")
                         module_content += no_comments[0] + "\n"
                     else:
                         module_content += line
 
                 # Join the lines to form the module content
                 module_content_out = (
-                    "Insert File path".join(module_content)
+                    "".join(module_content)
                     .replace("entity", "module")
                     .replace("end entity", "end module")
                     .strip()
@@ -67,7 +67,7 @@ def extract_module_content(file_path, verbose=False, save_to_file=False):
 
     # Save to file if save_to_file is True
     if save_to_file:
-        with open("component_out.txt", "Insert File path") as output_file:
+        with open("component_out.txt", "w") as output_file:
             output_file.write(extracted_content)
 
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="VHDL module content extractor")
     parser.add_argument("file_path", type=str, help="Path to the VHDL file")
     parser.add_argument(
-        "Insert File path", "--verbose", action="store_true", help="Print comments in the VHDL file"
+        "-v", "--verbose", action="store_true", help="Print comments in the VHDL file"
     )
     parser.add_argument(
         "-s",

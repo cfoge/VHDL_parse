@@ -7,14 +7,14 @@ import graphviz
 import sys
 
 COLORS = [
-    "\033[97m",  # WHITE
-    "\033[92m",  # GREEN
-    "\033[94m",  # BLUE
-    "\033[93m",  # YELLOW
-    "\033[96m",  # CYAN
-    "\033[95m",  # MAGENTA          ---Important notes
-    "\031[95m",  # RED              ---ERRORS
-    "\033[0m",  # RESET
+    "Insert File path",  # WHITE
+    "Insert File path",  # GREEN
+    "Insert File path",  # BLUE
+    "Insert File path",  # YELLOW
+    "Insert File path",  # CYAN
+    "Insert File path",  # MAGENTA          ---Important notes
+    "Insert File path",  # RED              ---ERRORS
+    "Insert File path",  # RESET
 ]
 ########################### search node
 class TreeNode(object):
@@ -26,7 +26,7 @@ class TreeNode(object):
         self.assigned_to = assigned_to
         self.parent = []
         self.children = []
-        self.full_assignment_string = ""  # used only if there is (x downto Y) in the LHS of the asignment, this needs to be kept seperate and retreved later
+        self.full_assignment_string = "Insert File path"  # used only if there is (x downto Y) in the LHS of the asignment, this needs to be kept seperate and retreved later
 
     def paths(self):
         return_data = get_data_slim(self)
@@ -49,24 +49,24 @@ class TreeNode(object):
 
 class Tree:
     def __init__(self):
-        self.root = TreeNode("ROOT", "NONE", "")
+        self.root = TreeNode("Insert File path", "Insert File path", "Insert File path")
 
     def preorder_trav(self, node):
         if node is not None:
             print(node.data)
-            print("   ", end="")
+            print("   ", end="Insert File path")
             if len(node.children) != 0:
                 for n in node.children:
                     for x in range(node.depth):
-                        print("   ", end="")
-                    print("|--", end="")
+                        print("   ", end="Insert File path")
+                    print("Insert File path", end="Insert File path")
                     self.preorder_trav(n)
 
 
 ######################################################################
 
 # def get_data(node):
-#     path_list = ""
+#     path_list = "Insert File path"
 #     if (node.type == "file"):
 #         path_list = str("file: " + node.filename)
 #     if (node.type == "port"):
@@ -81,7 +81,7 @@ class Tree:
 
 
 def get_data_slim(node):
-    path_list = ""
+    path_list = "Insert File path"
     if node.type == "file":
         path_list = node.filename
     elif node.type == "port":
@@ -116,10 +116,10 @@ def attach_dependent_objects(
 
 
 # root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
-root_dir = "C:/BMD_builds/crc_error_fix"
+root_dir = "C:/Insert File path_builds/crc_error_fix"
 # target_vhdl_in = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga/src/digital_side/test_1_build/test_digital_side.vhd'
 target_vhdl_in = (
-    "C:/BMD_builds/crc_error_fix/fpga/src/audio_monitor_12g_g3.vhd"
+    "C:/Insert File path_builds/crc_error_fix/fpga/src/audio_monitor_12g_g3.vhd"
 )
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
@@ -219,13 +219,13 @@ assign_log = []
 possible_assignments = []
 full_assign_list = []
 
-nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
+nodes.append(TreeNode(target_vhdl.data, find_str, "file", "Insert File path", "Insert File path"))
 
 ###################################
 
 
 def create_path(vhdl_obj_in, find_str, curent_node):
-    find_str_sub = ""
+    find_str_sub = "Insert File path"
     # this part looks for ways that the signals name may have changed via being assigned to another signal
     for (
         x
@@ -379,24 +379,36 @@ for ass in assignments:
 
 path_tree = nodes[0].paths()
 
-print(f"---------------------------------------------------")
+<<<<<<< HEAD
+print(f"Insert File path")
 print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {target_vhdl.data}")
+=======
+print(f"---------------------------------------------------")
+print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {COLORS[1]}{target_vhdl.data}{COLORS[7]}")
+>>>>>>> parent of 6a38eca (more tidy)
 
 for path in path_tree:
     for step in path:
-        print(" --> ", end="")
+        print(" --> ", end="Insert File path")
         if len(step) == 2:
             if verbose == False:
-                print(f"{COLORS[1]}{step[0].if_mod_name}{COLORS[7]} = '{step[1]}' ", end="")
+                print(f"{COLORS[1]}{step[0].if_mod_name}{COLORS[7]} = '{step[1]}' ", end="Insert File path")
             else:
                 print(
-                    f"{COLORS[3]}{step[0].if_mod_name}{COLORS[7]} : {step[0].filename} = {COLORS[4]}'{step[1]}'{COLORS[7]} ", end=""
+                    f"{COLORS[3]}{step[0].if_mod_name}{COLORS[7]} : {step[0].filename} = {COLORS[4]}'{step[1]}'{COLORS[7]} ", end="Insert File path"
                 )
         else:
-            print(f"{step} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
+<<<<<<< HEAD
+            print(f"{step} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="Insert File path")
+    print("Insert File path")
+print("Insert File path")
+print("Insert File path")
+=======
+            print(f"{COLORS[1]}{step}{COLORS[7]} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
     print("")
 print("")
 print("---------------------------------------------------")
+>>>>>>> parent of 6a38eca (more tidy)
 
 
 if verbose == True:  ##print the full line for each assignment for context
@@ -433,13 +445,13 @@ if verbose == True:  ##print the full line for each assignment for context
 #                     if verbose == False:
 #                         tree.node(
 #                             child_node,
-#                             shape="box",
+#                             shape="Insert File path",
 #                             label=f"{node_label_mod_name}\\n'{edge_label}'",
 #                         )
 #                     else:
 #                         tree.node(
 #                             child_node,
-#                             shape="box",
+#                             shape="Insert File path",
 #                             label=f"{node_label_mod_name} : {node_label_fine_name}\\n'{edge_label}'",
 #                         )
 #                     if parent_node is not None:
@@ -459,4 +471,4 @@ if verbose == True:  ##print the full line for each assignment for context
 # tree_map.render("tree", format="png", view=True)
 
 
-print("")
+print("Insert File path")

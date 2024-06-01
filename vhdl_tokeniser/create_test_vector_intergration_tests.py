@@ -6,7 +6,7 @@ def test_file(file_name):
     vhdl_as_obj = parse_vhdl("tests/" + file_name + ".vhdl")
 
     # Save a test object if it is correct!!!
-    with open(f"test_vectors/{file_name}.vhdlobj", "Insert File path") as test_file:
+    with open(f"test_vectors/{file_name}.vhdlobj", "wb") as test_file:
         pickle.dump(vhdl_as_obj, test_file)
 
 
@@ -23,4 +23,4 @@ diff_object = test_file("AlphaBlend")
 
 # somthing is up with the tests it is not recognising types of changes
 # script doesnt recognise := after signals and maybe ports and constants
-print("Insert File path")
+print("")

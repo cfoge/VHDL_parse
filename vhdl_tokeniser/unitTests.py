@@ -21,7 +21,7 @@ from token_test import (
 
 class TestTokenizeVHDLCode(unittest.TestCase):
     def test_empty_input(self):
-        code = "Insert File path"
+        code = ""
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, [])
 
@@ -46,7 +46,7 @@ class TestTokenizeVHDLCode(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         self.assertEqual(tokens, expected_tokens)
 
@@ -54,41 +54,41 @@ class TestTokenizeVHDLCode(unittest.TestCase):
         code = ":, >, <"
         tokens = tokenize_vhdl_code(code)
         expected_tokens = [
-            ("DelimiterToken", "Insert File path"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ":"),
+            ("DelimiterToken", ","),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
-            ("DelimiterToken", "Insert File path"),
+            ("CharacterToken", ">"),
+            ("DelimiterToken", ","),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "<"),
         ]
         self.assertEqual(tokens, expected_tokens)
 
 
 class TestReplaceEndProcessTokens(unittest.TestCase):
     def test_replace_assignment_operator(self):
-        tokens = [("DelimiterToken", "Insert File path"), ("AssignKeyword", "Insert File path")]
-        expected_tokens = [("AssignKeyword", "Insert File path")]
+        tokens = [("DelimiterToken", ":"), ("AssignKeyword", "=")]
+        expected_tokens = [("AssignKeyword", ":=")]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
 
     def test_replace_association_operator(self):
-        tokens = [("AssignKeyword", "Insert File path"), ("CharacterToken", "Insert File path")]
-        expected_tokens = [("AssignKeyword", "Insert File path")]
+        tokens = [("AssignKeyword", "="), ("CharacterToken", ">")]
+        expected_tokens = [("AssignKeyword", "=>")]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
 
     def test_replace_association_operator_with_other_tokens(self):
         tokens = [
             ("CharacterToken", "a"),
-            ("CharacterToken", "Insert File path"),
-            ("AssignKeyword", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "<"),
+            ("AssignKeyword", "="),
+            ("CharacterToken", "b"),
         ]
         expected_tokens = [
             ("CharacterToken", "a"),
-            ("AssignKeyword", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("AssignKeyword", "<="),
+            ("CharacterToken", "b"),
         ]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
@@ -103,13 +103,13 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = [
             ("IdentifierToken", "a"),
             ("EndKeyword", "end"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "b"),
             ("ProcessKeyword", "process"),
         ]
         expected_tokens = [
             ("IdentifierToken", "a"),
             ("EndProcessKeyword", "end"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "b"),
         ]
         replace_end_process_tokens(tokens)
         self.assertEqual(tokens, expected_tokens)
@@ -121,10 +121,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = [
             ("IdentifierToken", "a"),
             ("EndKeyword", "end"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "b"),
             ("ProcessKeyword", "process"),
         ]
-        expected_result = "Insert File path"
+        expected_result = "b"
         result = find_next_ident(1, tokens)
         self.assertEqual(result, expected_result)
 
@@ -134,7 +134,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = [
             ("IdentifierToken", "identA"),
             ("EndKeyword", "end"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "b"),
             ("ProcessKeyword", "process"),
         ]
         expected_result = "identA"
@@ -147,8 +147,8 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = [
             ("IdentifierToken", "a"),
             ("EndKeyword", "end"),
-            ("AssignKeyword", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("AssignKeyword", "="),
+            ("CharacterToken", "b"),
             ("ProcessKeyword", "process"),
         ]
         expected_result = -1
@@ -162,10 +162,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         tokens = [
             ("IdentifierToken", "a"),
             ("EndKeyword", "end"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "b"),
             ("ProcessKeyword", "process"),
         ]
-        expected_result = "Insert File path"
+        expected_result = "b"
         result = find_prev_ident(3, tokens)
         self.assertEqual(result, expected_result)
 
@@ -173,12 +173,12 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
         self,
     ):  # tokens is global need to find a way to test this
         tokens = [
-            ("IdentifierToken", "Insert File path"),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "A"),
+            ("IdentifierToken", "K"),
             ("EndKeyword", "end"),
             ("ProcessKeyword", "process"),
         ]
-        expected_result = "Insert File path"
+        expected_result = "K"
         result = find_prev_ident(1, tokens)
         self.assertEqual(result, expected_result)
 
@@ -187,8 +187,8 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
     ):  # tokens is global need to find a way to test this
         tokens = [
             ("EndKeyword", "end"),
-            ("AssignKeyword", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("AssignKeyword", "="),
+            ("CharacterToken", "b"),
             ("ProcessKeyword", "process"),
         ]
         expected_result = -1
@@ -210,7 +210,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         expected_result = " is end entity"
         result = find_prev_till(10, "example", tokens)
@@ -230,10 +230,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         expected_result = " is end entity"
-        result = find_prev_till(10, ["Insert File path", "begin", "example", "\n\n"], tokens)
+        result = find_prev_till(10, [";", "begin", "example", "\n\n"], tokens)
         self.assertEqual(result, expected_result)
 
     def test_find_prev_till_multi_fail(
@@ -250,10 +250,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         expected_result = -1
-        result = find_prev_till(5, ["Insert File path", "begin", "\n\n"], tokens)
+        result = find_prev_till(5, [";", "begin", "\n\n"], tokens)
         self.assertEqual(result, expected_result)
 
     ###################################################### make_block() extracts untill text is found, ignores spaces
@@ -269,10 +269,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         expected_result = "endentityexampleisendentity"
-        result = make_block("EntityKeyword", 0, "Insert File path", 1, 0, 0, tokens)
+        result = make_block("EntityKeyword", 0, ";", 1, 0, 0, tokens)
         self.assertEqual(result, expected_result)
 
     def test_make_block_forward_fail(self):
@@ -287,10 +287,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", "x"),
         ]
         expected_result = -1
-        result = make_block("EntityKeyword", 0, "Insert File path", 1, 0, 0, tokens)
+        result = make_block("EntityKeyword", 0, ";", 1, 0, 0, tokens)
         self.assertEqual(result, expected_result)
 
     def test_make_block_rev(self):
@@ -305,7 +305,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", "x"),
         ]
         expected_result = -1
         result = make_block("EntityKeyword", 10, "is", 0, 0, 0, tokens)
@@ -323,10 +323,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", "x"),
         ]
         expected_result = -1
-        result = make_block("EntityKeyword", 10, "Insert File path", 0, 0, 0, tokens)
+        result = make_block("EntityKeyword", 10, ";", 0, 0, 0, tokens)
         self.assertEqual(result, expected_result)
 
     ######################################################
@@ -402,7 +402,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("EndKeyword", "end"),
             ("SpaceToken", " "),
             ("EntityKeyword", "entity"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, expected_tokens)
@@ -419,10 +419,10 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("SignalKeyword", "signal"),
             ("SpaceToken", " "),
             ("IdentifierToken", "my_signal"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ":"),
             ("SpaceToken", " "),
             ("IdentifierToken", "std_logic"),
-            ("DelimiterToken", "Insert File path"),
+            ("DelimiterToken", ";"),
         ]
         tokens = tokenize_vhdl_code(code)
         self.assertEqual(tokens, expected_tokens)
@@ -435,33 +435,33 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("KeywordToken", "is"),
             ("KeywordToken", "port"),
             ("IdentifierToken", "input_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "in"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
             ("IdentifierToken", "output_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "out"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
             ("KeywordToken", "end"),
             ("KeywordToken", "entity"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
         ]
         # Assuming you want to extract tokens between 'port' and 'end entity'
         start_token_text = "port"
         end_token_text = "end"
         expected_tokens = [
             ("IdentifierToken", "input_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "in"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
             ("IdentifierToken", "output_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "out"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
         ]
 
         result = extract_tokens_between(sample_tokens, start_token_text, end_token_text)
@@ -479,18 +479,18 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
             ("KeywordToken", "is"),
             ("KeywordToken", "port"),
             ("IdentifierToken", "input_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "in"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
             ("IdentifierToken", "output_signal"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ":"),
             ("KeywordToken", "out"),
             ("KeywordToken", "std_logic"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
             ("KeywordToken", "end"),
             ("KeywordToken", "entity"),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", ";"),
         ]
         # Test when the end token is not found
         start_token_text = "port"
@@ -504,22 +504,22 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
     def test_decode_block(self):
         # Test input data
         block = [
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "foo"),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "="),
             ("SpaceToken", " "),
-            ("NumberToken", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("NumberToken", "42"),
+            ("CharacterToken", ";"),
             ("SpaceToken", " "),
             ("IdentifierToken", "bar"),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "="),
             ("SpaceToken", " "),
-            ("NumberToken", "Insert File path"),
-            ("CharacterToken", "Insert File path"),
+            ("NumberToken", "123"),
+            ("CharacterToken", ";"),
         ]
 
-        endLine = "Insert File path"
+        endLine = ";"
 
         # Expected output
         expected_result = ["foo = 42 ", "bar = 123 "]
@@ -533,37 +533,37 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
     def test_extract_process_lines(self):
         # Test input data
         tokens = [
-            ("ProcessKeyword", "Insert File path"),
+            ("ProcessKeyword", "PROCESS"),
             ("SpaceToken", " "),
             ("IdentifierToken", "Process1"),
             ("SpaceToken", " "),
             ("KeywordToken", "BEGIN"),
             ("SpaceToken", " "),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "A"),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "="),
             ("SpaceToken", " "),
-            ("NumberToken", "Insert File path"),
+            ("NumberToken", "1"),
             ("SpaceToken", " "),
-            ("EndKeyword", "Insert File path"),
+            ("EndKeyword", "END"),
             ("SpaceToken", " "),
-            ("ProcessKeyword", "Insert File path"),
+            ("ProcessKeyword", "PROCESS"),
             ("SpaceToken", " "),
-            ("ProcessKeyword", "Insert File path"),
+            ("ProcessKeyword", "PROCESS"),
             ("SpaceToken", " "),
             ("IdentifierToken", "Process2"),
             ("SpaceToken", " "),
             ("KeywordToken", "BEGIN"),
             ("SpaceToken", " "),
-            ("IdentifierToken", "Insert File path"),
+            ("IdentifierToken", "B"),
             ("SpaceToken", " "),
-            ("CharacterToken", "Insert File path"),
+            ("CharacterToken", "="),
             ("SpaceToken", " "),
-            ("NumberToken", "Insert File path"),
+            ("NumberToken", "2"),
             ("SpaceToken", " "),
-            ("EndKeyword", "Insert File path"),
+            ("EndKeyword", "END"),
             ("SpaceToken", " "),
-            ("ProcessKeyword", "Insert File path"),
+            ("ProcessKeyword", "PROCESS"),
         ]
 
         start_keyword = "ProcessKeyword"
@@ -583,14 +583,14 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
     def test_format_port_single_port(self):
         entity_vhdl = vhdl_obj()
         decoded_gen = ["data real := 3.14"]
-        expected_result = [["data", "Insert File path", "real", "null", 3.14]]
+        expected_result = [["data", "", "real", "null", 3.14]]
         self.assertEqual(format_port(decoded_gen, obj_in=entity_vhdl), expected_result)
 
     def test_format_port_multiple_ports(self):
         entity_vhdl = vhdl_obj()
         decoded_gen = ["data real := 3.14", "clk : in std_logic"]
         expected_result = [
-            ["data", "Insert File path", "real", "null", 3.14],
+            ["data", "", "real", "null", 3.14],
             ["clk", "in", "std_logic", 1, None],
         ]
         self.assertEqual(format_port(decoded_gen, obj_in=entity_vhdl), expected_result)
@@ -607,7 +607,7 @@ class TestReplaceEndProcessTokens(unittest.TestCase):
     def test_format_port_invalid_value(self):
         entity_vhdl = vhdl_obj()
         decoded_gen = ["data real := abc"]
-        expected_result = [["data", "Insert File path", "real", "null", "abc"]]
+        expected_result = [["data", "", "real", "null", "abc"]]
         self.assertEqual(format_port(decoded_gen, obj_in=entity_vhdl), expected_result)
 
     # def test_format_port_subtype(self):

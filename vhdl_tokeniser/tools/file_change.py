@@ -7,12 +7,12 @@ CHANGE_LOG_FILE = "change_log.txt"
 
 
 def files_have_changed(directory):
-    "Insert File path"Insert File path"
+    """
     Check if any files in the directory have changed since the last check.
 
     Args:
     - directory: The directory to check for file changes.
-    "Insert File path"Insert File path"
+    """
     last_checked_time = load_last_checked_time()
 
     for root, _, files in os.walk(directory):
@@ -26,10 +26,10 @@ def files_have_changed(directory):
 
 
 def load_last_checked_time():
-    "Insert File path"Insert File path"
+    """
     Load the last checked time from the change log file.
     If no previous time is stored, return a default value (e.g., 0).
-    "Insert File path"Insert File path"
+    """
     if os.path.exists(CHANGE_LOG_FILE):
         with open(CHANGE_LOG_FILE, "r") as file:
             last_checked_time = float(file.readline().strip())
@@ -39,11 +39,11 @@ def load_last_checked_time():
 
 
 def update_last_checked_time():
-    "Insert File path"Insert File path"
+    """
     Update the last checked time in the change log file to the current time.
-    "Insert File path"Insert File path"
+    """
     current_time = time.time()
-    with open(CHANGE_LOG_FILE, "Insert File path") as file:
+    with open(CHANGE_LOG_FILE, "w") as file:
         file.write(str(current_time))
 
 

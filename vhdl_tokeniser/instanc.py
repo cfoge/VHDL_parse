@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
     description="VHDL instance generator", formatter_class=argparse.RawTextHelpFormatter
 )
 parser.add_argument("file", type=str, help="Input file")
-parser.add_argument("Insert File path", "--verbose", action="store_true", help="Print verbose output")
+parser.add_argument("-v", "--verbose", action="store_true", help="Print verbose output")
 parser.add_argument("-s", "--save", action="store_true", help="Save output to file")
 parser.add_argument(
     "--h",
@@ -62,12 +62,12 @@ if len(decoded.generic) > 0:
     last_gen = decoded.generic[-1]
     for gen in decoded.generic:
         spaces = " " * (genspacing - len(gen[0]))
-        vb = f"--{gen[1]} width = {gen[2]}" if True else "Insert File path"
+        vb = f"--{gen[1]} width = {gen[2]}" if True else ""
         if gen != last_gen:
             print(f"   {gen[0]}{spaces}=> {gen[0]}, {vb}")
         else:
             print(f"   {gen[0]}{spaces}=> {gen[0]}  {vb}")
-    print("Insert File path")
+    print(");")
 
 # Print port map if ports are present
 if len(decoded.port) > 0:
@@ -75,12 +75,12 @@ if len(decoded.port) > 0:
     last_port = decoded.port[-1]
     for port in decoded.port:
         spaces = " " * (portspacing - len(port[0]))
-        vb = f"{spaces}--{port[1]} width = {port[2]}" if True else "Insert File path"   
+        vb = f"{spaces}--{port[1]} width = {port[2]}" if True else ""   
         if port != last_port:
             print(f"   {port[0]}{spaces}=> {port[0]}, {vb}")
         else:
              print(f"   {port[0]}{spaces}=> {port[0]}  {vb}")
-    print("Insert File path")
+    print(");")
     print()
 
 # Save to file if save_to_file is True
@@ -91,22 +91,22 @@ if save_to_file:
             f.write("generic map (\n")
             for gen in decoded.generic[:-1]:
                 spaces = " " * (genspacing - len(gen[0]))
-                vb = f"{spaces}--{gen[1]} width = {gen[2]}" if True else "Insert File path"
+                vb = f"{spaces}--{gen[1]} width = {gen[2]}" if True else ""
                 
                 f.write(f"   {gen[0]}{spaces}=> {gen[0]}, {vb}\n")
             gen = decoded.generic[-1]
-            vb = f"{spaces}--{gen[1]} width = {gen[2]}" if True else "Insert File path"
+            vb = f"{spaces}--{gen[1]} width = {gen[2]}" if True else ""
             spaces = " " * (genspacing - len(gen[0]))
             f.write(f"   {gen[0]}{spaces}=> {gen[0]} {vb}\n")
             f.write(");\n")
         if len(decoded.port) > 0:
             f.write("port map (\n")
             for port in decoded.port[:-1]:
-                vb = f"{spaces}--{port[1]} width = {port[2]}" if True else "Insert File path"
+                vb = f"{spaces}--{port[1]} width = {port[2]}" if True else ""
                 spaces = " " * (portspacing - len(port[0]))
                 f.write(f"   {port[0]}{spaces}=> {port[0]}, {vb}\n")
             port = decoded.port[-1]
-            vb = f"--{spaces}{port[1]} width = {port[2]}" if True else "Insert File path"
+            vb = f"--{spaces}{port[1]} width = {port[2]}" if True else ""
             spaces = " " * (portspacing - len(port[0]))
             f.write(f"   {port[0]}{spaces}=> {port[0]} {vb}\n")
             f.write(");\n\n")

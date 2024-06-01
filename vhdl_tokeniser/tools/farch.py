@@ -15,7 +15,7 @@ if __name__ == "__main__":
         "search_term", type=str, help="Term to search for within files."
     )
     parser.add_argument(
-        "Insert File path", "--directory", type=str, help="Directory to search within.", default="Insert File path"
+        "-d", "--directory", type=str, help="Directory to search within.", default="."
     )
     args = parser.parse_args()
 
