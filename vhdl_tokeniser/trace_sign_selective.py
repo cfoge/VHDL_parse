@@ -125,7 +125,8 @@ target_vhdl_in = (
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "hdmi_tx_vid"
+find_str = "ext_pll_refclk_i"
+
 # find_str = 'sys_clk'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
@@ -179,7 +180,7 @@ vhdl_files = entity_texts_with_path_unique
 print(f"{len(duplicate_filenames)} duplicate files found")
 if (len(duplicate_filenames)) > 0:
     print(
-        f"{COLORS[5]}Duplicate files with the same name can create issues when searching through VHDL hierachys, so duplicates have been removed{COLORS[7]}"
+        f"{COLORS[5]}Duplicate files with the same name can create issues when searching through VHDL hierachys, so duplicates have been removed{COLORS[7]}\n"
     )
 
 
@@ -209,6 +210,23 @@ target_vhdl = parse_vhdl(target_vhdl_in)
 if isinstance(target_vhdl, str) == True:
     print(target_vhdl)
     sys.exit()
+
+# see if the search term is a port or a signal in the TLD
+search_is_port = False
+search_is_signal = False
+for port in target_vhdl.port:  
+    if find_str in port[0]:
+        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a port in {target_vhdl.data} --> {COLORS[4]}{port[0]}{COLORS[7]}  : {port[2]} length {port[3]}")
+        search_is_port = True
+for sig in target_vhdl.signal:  
+    if find_str in sig[0]:
+        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a signal in {target_vhdl.data} --> {COLORS[4]}{sig[0]}{COLORS[7]}  : {sig[2]} length {sig[3]}")
+        search_is_signal = True
+
+if search_is_port == False and search_is_signal == False:      
+    print(f"{COLORS[4]}{find_str}{COLORS[7]} was not found in {target_vhdl.data}!")
+    sys.exit()
+
 
 attach_dependent_objects(target_vhdl, entity_texts_with_path)
 
@@ -336,17 +354,30 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 vhdl_obj_in.children_name
             ):  # search for assignments in sub modules that have our search term going into them
                 for y in x.port:
-                    if string in y[1]:
-                        # string_out = y[0] + " => " + y[1]
-                        if y[1] == string:
-                            find_str_sub = y[0]
-                            new_node = TreeNode(
-                                x.mod, y[0], "module", x.name, find_str_sub
-                            )
+                    record_type_found = False
+                    assing_subset = ""
+                    if "." in y[1]: # lets see if the assignment into a sub module is done using a record type (eg: signal.subsignal)
+                        search_length = len(string)
+                        if (y[1][:search_length] == string) and (y[1][search_length+1] == "."):
+                            record_type_found = True
+                            assing_subset = y[1].split('.')[1].strip()
+                            assing_subset = f".{assing_subset}"
+                    elif "(" in y[1] and ")" in y[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
+                        search_length = len(string)
+                        if (y[1][:search_length] == string) and (y[1][search_length+1] == "("):
+                            record_type_found = True
+                            assing_subset = y[1].split('.')[1].strip()
+                            assing_subset = f"{assing_subset}"
 
-                            curent_node.add_child(new_node)
-                            if x.vhdl_obj != None:
-                                create_path(x.vhdl_obj, find_str_sub, new_node)
+                    if y[1] == string or (record_type_found == True):
+                        find_str_sub = y[0]
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset)
+                        new_node.full_assignment_string = y[
+                            0
+                        ]  # assign the full LHS to s specila veriable
+                        curent_node.add_child(new_node)
+                        if x.vhdl_obj != None:
+                            create_path(x.vhdl_obj, find_str_sub, new_node)
 
     else:
         string = find_str
@@ -365,6 +396,12 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                             record_type_found = True
                             assing_subset = y[1].split('.')[1].strip()
                             assing_subset = f".{assing_subset}"
+                    elif "(" in y[1] and ")" in y[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
+                        search_length = len(string)
+                        if (y[1][:search_length] == string) and (y[1][search_length+1] == "("):
+                            record_type_found = True
+                            assing_subset = y[1][search_length:].strip()
+
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
                         new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset)
