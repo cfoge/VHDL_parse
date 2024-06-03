@@ -18,13 +18,14 @@ COLORS = [
 ]
 ########################### search node
 class TreeNode(object):
-    def __init__(self, fname, search, hdl_type, if_mod_name, assigned_to, subset = ""):
+    def __init__(self, fname, search, hdl_type, if_mod_name, assigned_to, subset = "", infileassign= ""):
         self.filename = fname
         self.search_term = search
         self.type = hdl_type
         self.if_mod_name = if_mod_name
         self.assigned_to = assigned_to
         self.assign_subset = subset
+        self.infileassign = infileassign # for handaling the printout where a signal has had its name changed in a file before being passed to a sub module
         self.parent = []
         self.children = []
         self.full_assignment_string = ""  # used only if there is (x downto Y) in the LHS of the asignment, this needs to be kept seperate and retreved later
@@ -125,7 +126,7 @@ target_vhdl_in = (
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "hdmi_gt_tx_n"
+find_str = "clk_300mhz"
 
 # find_str = 'sys_clk'
 # find_str = 'clk_25'
@@ -245,6 +246,7 @@ assign_log = []
 possible_assignments = []
 full_assign_list = []
 search_term_assigned_to_port = [] # a list to handle the case where signals being searched for are assigned to ports in the TLD
+
 
 nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
 
@@ -373,11 +375,13 @@ def create_path(vhdl_obj_in, find_str, curent_node):
     if len(in_file_assignments)>0:
         find_string_latch = find_str
         find_str = [find_str] + in_file_assignments
+
+
         if vhdl_obj_in.data == target_vhdl.data: # if we are on the TLD and there have been in file assignements check to see if any of those were to a port
             for assigns in in_file_assignments:
                 for port in target_vhdl.port:  
                     if assigns == port[0]:
-                        search_term_assigned_to_port.append([assigns, find_string_latch])
+                        search_term_assigned_to_port.append([[assigns,port[1]], find_string_latch])
 
 
     if type(find_str) == list:
@@ -406,7 +410,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
-                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset)
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, in_file_assignments)
                         new_node.full_assignment_string = y[
                             0
                         ]  # assign the full LHS to s specila veriable
@@ -439,7 +443,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
-                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset)
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, in_file_assignments)
                         new_node.full_assignment_string = y[
                             0
                         ]  # assign the full LHS to s specila veriable
@@ -465,7 +469,11 @@ print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {target_vhdl.data}")
 for path in path_tree:
     for step in path:
         try: ################################################################### do this properly
-            print(f"{step[0].assign_subset}'{COLORS[7]}  --> ", end="")
+            if len(step[0].infileassign)>0: ########################handle inflie assignments that change a signals name pre assignment ot a sub modukle
+              infile_ass  = f" => '{step[0].infileassign}'"
+            else:
+                infile_ass = ""
+            print(f"{step[0].assign_subset}'{infile_ass}{COLORS[7]}  --> ", end="")
         except:
             print(f" --> ", end="")
         if len(step) == 2:
@@ -482,7 +490,7 @@ for path in path_tree:
 print("")    
 if len(search_term_assigned_to_port)>0: # if there were assignements of signals to ports in the TLD show them
     for sig_to_port in search_term_assigned_to_port:
-        print(f"{COLORS[4]}'{sig_to_port[1]}'{COLORS[7]} assigned to port {COLORS[4]}'{sig_to_port[0]}'{COLORS[7]} in {target_vhdl.data}")
+        print(f"{COLORS[4]}'{sig_to_port[1]}'{COLORS[7]} assigned to port {COLORS[4]}'{sig_to_port[0][0]}'{COLORS[7]} of type {COLORS[4]}'{sig_to_port[0][1]}'{COLORS[7]} in {target_vhdl.data}")
 
 
 print("")
