@@ -125,7 +125,7 @@ target_vhdl_in = (
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "ext_pll_refclk_i"
+find_str = "hdmi_gt_tx_n"
 
 # find_str = 'sys_clk'
 # find_str = 'clk_25'
@@ -214,17 +214,24 @@ if isinstance(target_vhdl, str) == True:
 # see if the search term is a port or a signal in the TLD
 search_is_port = False
 search_is_signal = False
+similer_search = []
 for port in target_vhdl.port:  
-    if find_str in port[0]:
+    if find_str == port[0]:
         print(f"{COLORS[4]}{find_str}{COLORS[7]} is a port in {target_vhdl.data} --> {COLORS[4]}{port[0]}{COLORS[7]}  : {port[2]} length {port[3]}")
         search_is_port = True
+    if find_str in port[0]:
+        similer_search.append(port[0])
 for sig in target_vhdl.signal:  
-    if find_str in sig[0]:
+    if find_str == sig[0]:
         print(f"{COLORS[4]}{find_str}{COLORS[7]} is a signal in {target_vhdl.data} --> {COLORS[4]}{sig[0]}{COLORS[7]}  : {sig[2]} length {sig[3]}")
         search_is_signal = True
+    if find_str in sig[0]:
+        similer_search.append(sig[0])
 
 if search_is_port == False and search_is_signal == False:      
-    print(f"{COLORS[4]}{find_str}{COLORS[7]} was not found in {target_vhdl.data}!")
+    print(f"{COLORS[4]}{find_str}{COLORS[7]} was not found in {target_vhdl.data}!!!")
+    if len(similer_search)>0:
+        print(f"Similarly named ports and signals include: {COLORS[1]}{similer_search}{COLORS[7]}")
     sys.exit()
 
 
@@ -237,6 +244,7 @@ assignments = []
 assign_log = []
 possible_assignments = []
 full_assign_list = []
+search_term_assigned_to_port = [] # a list to handle the case where signals being searched for are assigned to ports in the TLD
 
 nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
 
@@ -245,15 +253,16 @@ nodes.append(TreeNode(target_vhdl.data, find_str, "file", "", ""))
 
 def create_path(vhdl_obj_in, find_str, curent_node):
     find_str_sub = ""
+    in_file_assignments = [] # assignments that happen inside the file either in prcesses or combinational ect get put here and later added to the search terms
     # this part looks for ways that the signals name may have changed via being assigned to another signal
     for (
         x
     ) in (
         vhdl_obj_in.assign
     ):  # find asignments in assignment not in functions, processes ect..
-        if find_str in x[0] or find_str in x[1]:
+        if (find_str in x[0]) or (find_str in x[1]):
             if (
-                x[1] == find_str
+                x[1] == find_str 
             ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
 
                 assignments.append(
@@ -261,12 +270,24 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                 )  # filen name, assigned to,
                 full_assign_list.append(
                     f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} "
+                    
                 )
+                in_file_assignments.append(x[0])
                 temp = [find_str]
                 find_str = temp
                 find_str.append(x[0])
                 break
             elif find_str in x[1]:
+                if "." in x[1]: # lets see if the assignment into a sub module is done using a record txpe (eg: signal.subsignal)
+                        search_length = len(find_str)
+                        if (x[1][:search_length] == find_str) and (x[1][search_length+1] == "."):
+                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ") ########################## need to add a method for introducing this as a new search term!!!
+                            in_file_assignments.append(x[0])
+                elif "(" in x[1] and ")" in x[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
+                        search_length = len(find_str)
+                        if (x[1][:search_length] == find_str) and (x[1][search_length] == "("):
+                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
+                            in_file_assignments.append(x[0])
                 # this detects if the source of the assignment had the keyword in it, need to be more specific
                 # possible_assignments.append(['?Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
                 break
@@ -345,6 +366,20 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                             [vhdl_obj_in.data, x[0], x[1]]
                         )  # filen name, assigned to
                         break
+
+
+
+    # # if in file assignements were detected add them to the search terms
+    if len(in_file_assignments)>0:
+        find_string_latch = find_str
+        find_str = [find_str] + in_file_assignments
+        if vhdl_obj_in.data == target_vhdl.data: # if we are on the TLD and there have been in file assignements check to see if any of those were to a port
+            for assigns in in_file_assignments:
+                for port in target_vhdl.port:  
+                    if assigns == port[0]:
+                        search_term_assigned_to_port.append([assigns, find_string_latch])
+
+
     if type(find_str) == list:
         for string in find_str:
             # string = find_str
@@ -443,6 +478,13 @@ for path in path_tree:
         else:
             print(f"{step} = {COLORS[4]}'{find_str}", end="")
     print("")
+    
+print("")    
+if len(search_term_assigned_to_port)>0: # if there were assignements of signals to ports in the TLD show them
+    for sig_to_port in search_term_assigned_to_port:
+        print(f"{COLORS[4]}'{sig_to_port[1]}'{COLORS[7]} assigned to port {COLORS[4]}'{sig_to_port[0]}'{COLORS[7]} in {target_vhdl.data}")
+
+
 print("")
 print("---------------------------------------------------")
 
