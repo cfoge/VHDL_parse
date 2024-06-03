@@ -124,7 +124,7 @@ target_vhdl_in = (
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "clk_150mhz"
+find_str = "hdmi_tx_vid"
 # find_str = 'sys_clk'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
@@ -356,8 +356,12 @@ def create_path(vhdl_obj_in, find_str, curent_node):
         ):  # search for assignments in sub modules that have our search term going into them
             for y in x.port:
                 if string in y[1]:
-                    # string_out = y[0] + " => " + y[1]
-                    if y[1] == string:
+                    record_type_found = False
+                    if "." in y[1]: # lets see if the assignment into a sub module is done using a record type (eg: signal.subsignal)
+                        search_length = len(string)
+                        if (y[1][:search_length] == string) and (y[1][search_length+1] == "."):
+                            record_type_found = True
+                    if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
                         new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub)
                         new_node.full_assignment_string = y[
