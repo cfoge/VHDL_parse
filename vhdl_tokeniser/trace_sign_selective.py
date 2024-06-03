@@ -18,12 +18,13 @@ COLORS = [
 ]
 ########################### search node
 class TreeNode(object):
-    def __init__(self, fname, search, hdl_type, if_mod_name, assigned_to):
+    def __init__(self, fname, search, hdl_type, if_mod_name, assigned_to, subset = ""):
         self.filename = fname
         self.search_term = search
         self.type = hdl_type
         self.if_mod_name = if_mod_name
         self.assigned_to = assigned_to
+        self.assign_subset = subset
         self.parent = []
         self.children = []
         self.full_assignment_string = ""  # used only if there is (x downto Y) in the LHS of the asignment, this needs to be kept seperate and retreved later
@@ -357,13 +358,16 @@ def create_path(vhdl_obj_in, find_str, curent_node):
             for y in x.port:
                 if string in y[1]:
                     record_type_found = False
+                    assing_subset = ""
                     if "." in y[1]: # lets see if the assignment into a sub module is done using a record type (eg: signal.subsignal)
                         search_length = len(string)
                         if (y[1][:search_length] == string) and (y[1][search_length+1] == "."):
                             record_type_found = True
+                            assing_subset = y[1].split('.')[1].strip()
+                            assing_subset = f".{assing_subset}"
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
-                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub)
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset)
                         new_node.full_assignment_string = y[
                             0
                         ]  # assign the full LHS to s specila veriable
@@ -388,7 +392,10 @@ print(f"Searching for {COLORS[4]}{find_str}{COLORS[7]} in {target_vhdl.data}")
 
 for path in path_tree:
     for step in path:
-        print(" --> ", end="")
+        try: ################################################################### do this properly
+            print(f"{step[0].assign_subset}'{COLORS[7]}  --> ", end="")
+        except:
+            print(f" --> ", end="")
         if len(step) == 2:
             if verbose == False:
                 print(f"{COLORS[1]}{step[0].if_mod_name}{COLORS[7]} = '{step[1]}' ", end="")
@@ -397,14 +404,14 @@ for path in path_tree:
                     f"{COLORS[3]}{step[0].if_mod_name}{COLORS[7]} : {step[0].filename} = {COLORS[4]}'{step[1]}'{COLORS[7]} ", end=""
                 )
         else:
-            print(f"{step} = {COLORS[4]}'{find_str}'{COLORS[7]} ", end="")
+            print(f"{step} = {COLORS[4]}'{find_str}", end="")
     print("")
 print("")
 print("---------------------------------------------------")
 
 
 if verbose == True:  ##print the full line for each assignment for context
-    # print(full_assign_list)
+    print(full_assign_list)
     print(possible_assignments)
     # what to do with possible assignements
 
