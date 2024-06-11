@@ -1,6 +1,8 @@
 import re
 import sys
 
+## This script takes a Mentor Graphics netlist and createsa a VHDL TLD from it given the designator of the FPGA (eg u17), this can be used to create a TLD or as part of checking pins, contrants ect...
+
 def extract_text_between_single_quotes(text):
     pattern = r"'(.*?)'"
     match = re.search(pattern, text, flags=re.DOTALL)
@@ -58,8 +60,8 @@ def rearrange_and_group_strings(strings):
 #     sys.exit(1)
 
 filename = "test"#sys.argv[1]
-netlist_filename = 'fpga\syn\BMDPCB1120A_NETLIST.txt' #sys.argv[2] 
-chip_id = 'u12' #sys.argv[3]  #this si the symbol in the scematic for the FPGA ic
+netlist_filename = 'BMDPCB1118A_NETLIST.txt'# sys.argv[2] 
+chip_id = sys.argv[3]  #this si the symbol in the scematic for the FPGA ic
 prefix = "pl" # this is the prefix that sits in front of your pin names if that is how your scematic is layed out
 
 #add method for saying what the prefix for pins should be
@@ -68,30 +70,47 @@ prefix = "pl" # this is the prefix that sits in front of your pin names if that 
 # netlist_filename = sys.argv[2] 
 # chip_id = sys.argv[3] 
 
-with open(netlist_filename) as f:
-    netlist = f.readlines()
+try:
+    with open(netlist_filename) as f:
+        netlist = f.readlines()
+except:
+    print("Error opening netlist file!!! check File exists, matches the name/path given")
 
 pin_list = []
 possible_pin_list = []
 
 for line in netlist:
-    if((not("$") in line) and (chip_id.lower() in line.lower())):
-        signal_name = extract_text_between_single_quotes(line)
-        if "plo_" in line.lower():
-            pin_list.append(f'{signal_name.lower()} : out std_logic;')
-        elif "pli_" in line.lower():    
-            pin_list.append(f'{signal_name.lower()} : in std_logic;')
-        elif "plio_" in line.lower():    
-            pin_list.append(f'{signal_name.lower()} : inout std_logic;')
-        elif prefix.lower() in line.lower(): 
-            pin_list.append(f'{signal_name.lower()} : <in/out/inout> std_logic;')
-    #to help find when a resistor is in the way of the pin
-    if((not("$") in line) and not(chip_id.lower() in line.lower())) and ('pl' in line.lower()) and "r" in line.lower():
-        signal_name = extract_text_between_single_quotes(line)
-        connected_part_name = extract_text_between_space_dash_quotes(line)
-        possible_pin_list.append([signal_name.lower(),connected_part_name.lower()])
+    if(("net") in line.lower()) and (("flatnet") not in line.lower()): 
+        chip_id = chip_id.lower()
+        line_lc = line.lower()    
+        if (chip_id in line_lc):
+            signal_name = extract_text_between_single_quotes(line)
+            signal_name = f"{str(signal_name):<25}"
+            if "plo_" in line.lower():
+                pin_list.append(f'{signal_name.lower()} : out   std_logic;')
+            elif "pli_" in line.lower():    
+                pin_list.append(f'{signal_name.lower()} : in    std_logic;')
+            elif "plio_" in line.lower():    
+                pin_list.append(f'{signal_name.lower()} : inout std_logic;')
+            elif prefix.lower() in line.lower(): 
+                pin_list.append(f'{signal_name.lower()} : <in/out/inout> std_logic;')
+            elif 'pad' in line.lower(): ## look for padi pado naming convention
+                if 'padi_' in line.lower():
+                    pin_list.append(f'{signal_name.lower()} : in    std_logic;')
+                elif 'pado_' in line.lower():
+                    pin_list.append(f'{signal_name.lower()} : out   std_logic;')
+                elif 'padio_' in line.lower():
+                    pin_list.append(f'{signal_name.lower()} : inout std_logic;')
+                else:
+                    pin_list.append(f'{signal_name.lower()} : <in/out/inout> std_logic;')
+    # to help find when a resistor is in the way of the pin
+            else: # look for pins connected to the FPGA that dont have PL in the signal name
+                signal_name = extract_text_between_single_quotes(line)
+                connected_part_name = extract_text_between_space_dash_quotes(line)
+                if 'r' in connected_part_name.lower(): # if there is a resistor connected to the FPGA add it as a possible pin
+                    possible_pin_list.append([signal_name.lower(),connected_part_name.lower()])
 
-if len(possible_pin_list) > 0:
+if len(possible_pin_list) > 0: #now check all the pins on the FPGA that are connected to resistors and see if any of those reisitors are connected to a net with a prefix we are interested in
     for line in netlist:
         for possible_pin in possible_pin_list:
             test = line.lower()
@@ -109,8 +128,8 @@ if len(result) < 1:
     print("Error: No Matching Nets Found, VHDL file not created")
     exit()
 else:
-    print("Nets Found:")
-    print(result)
+    print(f"Nets Found = {len(result)}")
+    result[-1] = result[-1] [0:-1] # remove last semi colon
 
 
 # Writing the VHDL file

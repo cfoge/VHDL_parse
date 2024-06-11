@@ -1,6 +1,6 @@
 
 # A command line program for Comparing pins found in a .xdc file with those  from a netlist file
-# Arg 1 is the XDC file, Arg 2 is the netlist file
+# Arg 1 is the XDC file, Arg 2 is the netlist file, arg 3 is the chip designator
 # Robert D Jordan 2022
 
 
@@ -9,7 +9,7 @@ import sys
 
 if not ((len(sys.argv) == 4)): #check for correct number of arguments 
     print('This script needs two inputs, .XDC file and the netlist file')
-    print('example: check_sch.py this.xdc that.txt')
+    print('example: get_sch_loc.py const.xdc scematic.txt U17')
     sys.exit(1)
 
 with open(sys.argv[1]) as f: #import xdc file as string
@@ -17,6 +17,12 @@ with open(sys.argv[1]) as f: #import xdc file as string
 with open(sys.argv[2]) as f:
     netlist = f.readlines()
 chip_designator = sys.argv[3] + "-"
+
+# with open('test.xdc') as f: #import xdc file as string
+#     xdc = f.readlines()
+# with open('BMDPCB1118A_NETLIST.txt') as f:
+#     netlist = f.readlines()
+# chip_designator = 'U17' + "-"
 
 # create lists for pin names and intermediate steps
 matched_pins = []
@@ -55,7 +61,7 @@ for i in xdc:
         XDCPinName.append([sig_name.strip(),pin_name.strip()])
 
 for i in netlist:
-    if(not("$")in i):
+    if(not("FlatNet")in i):
         for j in XDCPinName:
             part_of_longer_nameA = str("'" + j[0] + "'")
             if(part_of_longer_nameA.casefold() in i.casefold()): #if xdc sign name in netlist
@@ -71,14 +77,17 @@ for matches in matched_pins:
         mismatched_pin.append([matches[0],matches[1],matches[2]])
 
 
-print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
+# print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
 print("---------------------------------------------------")
 f = open("matched_pins_with_sch.xdc", "w")  # create file
 for mismatch in mismatched_pin:
-    print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
-    if chip_designator in mismatch[2]:
+    # print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
+    if chip_designator.lower() in mismatch[2].lower():
         pin_no = extract_text_after_matching(mismatch[2],chip_designator)
-        f.writelines("set_property PACKAGE_PIN " + pin_no + "[get_ports {" + mismatch[0] + "}]\n")
+        try:
+            f.writelines(f"set_property PACKAGE_PIN {pin_no:<4} [get_ports {  {mismatch[0]}  }]\n")
+        except:
+            print("ERROR matched line to file!!")
 
 
 print("---------------------------------------------------") 

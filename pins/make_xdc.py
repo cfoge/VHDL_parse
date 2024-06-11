@@ -77,7 +77,7 @@ for i in vhd:
 
 # generate the .xdc or .tcl file with pins from the portName list and its widths
 if quartus == False:
-    outputFileName = sys.argv[1] 
+    outputFileName = sys.argv[1] + ".xdc"
 else:
     outputFileName = sys.argv[1] + ".tcl"
 
