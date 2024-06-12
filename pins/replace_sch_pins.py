@@ -1,6 +1,7 @@
 import sys
 
 def process_files(file1_path, file2_path, marker):
+    num_replaced = 0
     with open(file1_path, 'r') as f1, open(file2_path, 'r') as f2:
         lines_file1 = f1.readlines()
         lines_file2 = f2.readlines()
@@ -18,6 +19,7 @@ def process_files(file1_path, file2_path, marker):
             # Check if strings match and if line1 contains the marker
             if match1 is not None and match2 is not None and match1 == match2 and marker in line1:
                 output_lines.append(line2)
+                num_replaced = num_replaced + 1
                 replaced = True
                 break
 
@@ -26,6 +28,7 @@ def process_files(file1_path, file2_path, marker):
 
     with open(file1_path, 'w') as f1:
         f1.writelines(output_lines)
+    print(f"{num_replaced} locations were updated in {file1_path}")
 
 def get_string_in_braces(line):
     start_index = line.find('{')
@@ -46,4 +49,11 @@ if __name__ == "__main__":
     file2_path = sys.argv[2]
     marker = sys.argv[3]
 
+    # file1_path = "test.xdc"
+    # file2_path = "matched_pins_with_sch.xdc"
+    # marker = "XXX"
+
     process_files(file1_path, file2_path, marker)
+
+    print('Done!')
+    print()

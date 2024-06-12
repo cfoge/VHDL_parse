@@ -84,11 +84,9 @@ for i in inVhdNotXDC:
     if i in commentedOut:
         inVhdNotXDC[inVhdNotXDC.index(i)] = str(i + " * Commented Out")
      
-
-print("**************************************************")
+print(f"Comparing Ports in {(sys.argv[1]) } and {(sys.argv[2]) }")
 print("In XDC but NOT in Vhd:")
 print(*inXDCNotVhd, sep = "\n")
-print("**************************************************")
 print("In Vhd but NOT in XDC:")
 print(*inVhdNotXDC, sep = "\n")
-print("**************************************************")
+print()

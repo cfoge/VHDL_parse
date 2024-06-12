@@ -63,7 +63,7 @@ for i in xdc:
 for i in netlist:
     if(not("FlatNet")in i):
         for j in XDCPinName:
-            part_of_longer_nameA = str("'" + j[0] + "'")
+            part_of_longer_nameA = str( j[0])
             if(part_of_longer_nameA.casefold() in i.casefold()): #if xdc sign name in netlist
                 matched_pins.append([j[0], j[1], i.strip()])
 
@@ -78,16 +78,17 @@ for matches in matched_pins:
 
 
 # print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
-print("---------------------------------------------------")
 f = open("matched_pins_with_sch.xdc", "w")  # create file
 for mismatch in mismatched_pin:
     # print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
     if chip_designator.lower() in mismatch[2].lower():
         pin_no = extract_text_after_matching(mismatch[2],chip_designator)
         try:
-            f.writelines(f"set_property PACKAGE_PIN {pin_no:<4} [get_ports {  {mismatch[0]}  }]\n")
+            mismatch_wth_braces = "{" + mismatch[0] + "}"
+            f.writelines(f"set_property PACKAGE_PIN {pin_no:<4} [get_ports {mismatch_wth_braces}]\n")
+            # print(mismatch)
         except:
             print("ERROR matched line to file!!")
+print("Done!")
+print()
 
-
-print("---------------------------------------------------") 

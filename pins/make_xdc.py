@@ -117,7 +117,7 @@ else:
 
 
 print(outputFileName + " created from " + sys.argv[2])
-print("**************************************************")
-print("Commented out Ports not added to the output file:")
-print(*commentedOut, sep="\n")
-print("**************************************************")
+if len(commentedOut)>0:
+    print("Commented out Ports not added to the output file:")
+    print(*commentedOut, sep="\n")
+print()

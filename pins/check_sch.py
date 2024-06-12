@@ -37,7 +37,7 @@ for i in xdc:
         XDCPinName.append([sig_name.strip(),pin_name.strip()])
 
 for i in netlist:
-    if(not("$")in i):
+    if(not("FlatNet")in i):
         for j in XDCPinName:
             part_of_longer_nameA = str("'" + j[0] + "'")
             if(part_of_longer_nameA.casefold() in i.casefold()): #if xdc sign name in netlist
@@ -57,6 +57,6 @@ print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
 print("---------------------------------------------------")
 
 for mismatch in mismatched_pin:
-    print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
+    print ('   {: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
 
 print("---------------------------------------------------") 
