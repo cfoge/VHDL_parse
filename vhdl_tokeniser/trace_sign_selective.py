@@ -128,7 +128,7 @@ target_vhdl_in = (
 # search each child for
 find_str = "clk_300mhz"
 
-# find_str = 'sys_clk'
+# find_str = 'plo_lcd_sda'
 # find_str = 'clk_25'
 # find_str = 'genlock_sof'
 verbose = True
@@ -374,7 +374,8 @@ def create_path(vhdl_obj_in, find_str, curent_node):
     # # if in file assignements were detected add them to the search terms
     if len(in_file_assignments)>0:
         find_string_latch = find_str
-        find_str = [find_str] + in_file_assignments
+        # if 
+        # find_str = [find_str] + in_file_assignments
 
 
         if vhdl_obj_in.data == target_vhdl.data: # if we are on the TLD and there have been in file assignements check to see if any of those were to a port
@@ -410,14 +411,23 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
-                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, in_file_assignments)
+                        #########################################
+                        
+                        if y[1] in in_file_assignments: # only attach an infile assignment to a node if that re assigned signal was actualy used in the assignment in question
+                            for in_file_ass in in_file_assignments:
+                                if y[1]  == in_file_ass:
+                                    infile_ass_checked = in_file_ass
+                                    break
+                        else:
+                            infile_ass_checked = ""
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, infile_ass_checked)
+                        ###################################
                         new_node.full_assignment_string = y[
                             0
                         ]  # assign the full LHS to s specila veriable
                         curent_node.add_child(new_node)
                         if x.vhdl_obj != None:
                             create_path(x.vhdl_obj, find_str_sub, new_node)
-
     else:
         string = find_str
         for (
@@ -443,7 +453,18 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 
                     if y[1] == string or (record_type_found == True):
                         find_str_sub = y[0]
-                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, in_file_assignments)
+
+                        #########################################
+                        if y[1] in in_file_assignments: # only attach an infile assignment to a node if that re assigned signal was actualy used in the assignment in question
+                            for in_file_ass in in_file_assignments:
+                                if y[1] == in_file_ass:
+                                    infile_ass_checked = in_file_ass
+                                    break
+                        else:
+                            infile_ass_checked = ""
+                            ###################
+
+                        new_node = TreeNode(x.mod, y[0], "module", x.name, find_str_sub, assing_subset, infile_ass_checked)
                         new_node.full_assignment_string = y[
                             0
                         ]  # assign the full LHS to s specila veriable
@@ -457,9 +478,9 @@ def create_path(vhdl_obj_in, find_str, curent_node):
 treetop = target_vhdl
 path_unsorted = create_path(treetop, find_str, nodes[0])
 
-# aditional assignments:
-for ass in assignments:
-    assigned_path_unsorted = create_path(treetop, ass[1], nodes[0])
+# # aditional assignments:
+# for ass in assignments:
+#     assigned_path_unsorted = create_path(treetop, ass[1], nodes[0])
 
 path_tree = nodes[0].paths()
 
