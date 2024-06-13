@@ -461,6 +461,10 @@ def extract_process_lines(tokens, start_keyword, end_keyword):
             process_start = i
         elif token_type == end_keyword and inside_process:
             inside_process = False
+            # for x in range(20) :
+            #     print([tokens[process_start+x],i])
+            # print([process_start, i])
+            # print()
             process_lines.append((process_start, i))
 
     return process_lines
@@ -1097,11 +1101,13 @@ def extract_text_until_keywords(file_path):
 
 
 def is_in_ranges(ranges, current_position):
+    in_range = 0
     for range in ranges:
         if (current_position >= range[0]) and (current_position <= range[1]):
-            return 1
-        else:
-            return 0
+            in_range = 1
+            break
+    
+    return in_range
 
 
 #########################################################################
@@ -1142,15 +1148,15 @@ def parse_vhdl(file_name, just_port=False):
         proces_ranges = extract_process_lines(
             tokens, "ProcessKeyword", "EndProcessKeyword"
         )
-        generate_ranges = extract_process_lines(
-            tokens, "GenerateKeyword", "EndGenerateKeyword"
-        )
-        func_ranges = extract_process_lines(
-            tokens, "FunctionKeyword", "EndFunctionKeyword"
-        )
-        component_ranges = extract_process_lines(
-            tokens, "ComponentKeyword", "EndComponentKeyword"
-        )
+        # generate_ranges = extract_process_lines(
+        #     tokens, "GenerateKeyword", "EndGenerateKeyword"
+        # )
+        # func_ranges = extract_process_lines(
+        #     tokens, "FunctionKeyword", "EndFunctionKeyword"
+        # )
+        # component_ranges = extract_process_lines(
+        #     tokens, "ComponentKeyword", "EndComponentKeyword"
+        # )
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -1165,8 +1171,9 @@ def parse_vhdl(file_name, just_port=False):
         "LibraryKeyword": "lib",
         "UseKeyword": "lib",
     }
-
+    counter_loop = -1
     for token_type, token_text in tokens:
+        counter_loop = counter_loop +1
         if token_type in token_actions:
             entity_vhdl_list = getattr(entity_vhdl, token_actions[token_type])
             try:
@@ -1443,6 +1450,7 @@ def parse_vhdl(file_name, just_port=False):
 
             elif token_text == "<=":  # detect assignements
                 ignore = 0
+                # check_proc = is_in_ranges(proces_ranges, current_position)
                 # find out if the assign is inside of a func, generate or process and if so ignore for now
                 if (
                     is_in_ranges(func_ranges, current_position)
@@ -1469,6 +1477,7 @@ def parse_vhdl(file_name, just_port=False):
                             "=>",
                         ],
                     )
+
                     # assign_to  = find_name("IdentifierToken", current_position, 10, 0, ";") #using " " as a seperator could make issues in the future
                     if assign_to == -1:
                         assign_to = "error"
