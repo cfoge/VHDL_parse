@@ -116,6 +116,120 @@ def attach_dependent_objects(
     except Exception as e:
         error_log.append(["file_path_error", e])
 
+def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
+    for (
+        x
+    ) in (
+        vhdl_obj_in.assign
+    ):  # find asignments in assignment not in functions, processes ect..
+        if (find_str in x[0]) or (find_str in x[1]):
+            if (
+                x[1] == find_str 
+            ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+
+                assignments.append(
+                    [vhdl_obj_in.data, x[0], x[1]]
+                )  # filen name, assigned to,
+                full_assign_list.append(
+                    f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} "
+                    
+                )
+                in_file_assignments.append(x[0])
+                temp = [find_str]
+                find_str = temp
+                find_str.append(x[0])
+                break
+            elif find_str in x[1]:
+                if "." in x[1]: # lets see if the assignment into a sub module is done using a record txpe (eg: signal.subsignal)
+                        search_length = len(find_str)
+                        if (x[1][:search_length] == find_str) and (x[1][search_length+1] == "."):
+                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ") ########################## need to add a method for introducing this as a new search term!!!
+                            in_file_assignments.append(x[0])
+                elif "(" in x[1] and ")" in x[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
+                        search_length = len(find_str)
+                        if (x[1][:search_length] == find_str) and (x[1][search_length] == "("):
+                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
+                            in_file_assignments.append(x[0])
+                # this detects if the source of the assignment had the keyword in it, need to be more specific
+                # possible_assignments.append(['?Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                break
+    for y in vhdl_obj_in.process:  # find asignments in processes
+        for x in y[2]:
+            if type(find_str) != list:
+                if find_str in x[0] or find_str in x[1]:
+                    if (
+                        x[1] == find_str
+                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                        temp = [find_str]
+                        find_str = temp
+                        find_str.append(x[0])
+                        full_assign_list.append(
+                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
+                        )
+                        break
+                    else:
+                        # this acidently finds the keyword in the rocess trigger
+                        # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                        break
+            else:
+                for string in find_str:
+                    if (
+                        x[1] == find_str
+                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                        temp = [find_str]
+                        find_str = temp
+                        find_str.append(x[0])
+                        full_assign_list.append(
+                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
+                        )
+
+                        break
+                    else:
+                        # this acidently finds the keyword in the rocess trigger
+                        # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
+                        break
+
+    # search generate statements for direct assignments
+    for y in vhdl_obj_in.generate:  # find asignments in generate statements
+        for x in y[2]:
+            if type(find_str) != list:
+                if find_str in x[0] or find_str in x[1]:
+                    if (
+                        x[1] == find_str
+                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                        temp = [find_str]
+                        find_str = temp
+                        find_str.append(x[0])
+                        full_assign_list.append(
+                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
+                        )
+
+                        break
+                    else:
+                        possible_assignments.append(
+                            [vhdl_obj_in.data, x[0], x[1]]
+                        )  # filen name, assigned to
+                        break
+            else:
+                for string in find_str:
+                    if (
+                        x[1] == find_str
+                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
+                        temp = [find_str]
+                        find_str = temp
+                        find_str.append(x[0])
+                        full_assign_list.append(
+                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
+                        )
+
+                        break
+                    else:
+                        possible_assignments.append(
+                            [vhdl_obj_in.data, x[0], x[1]]
+                        )  # filen name, assigned to
+                        break    
+    return in_file_assignments
+
 
 # root_dir = 'C:/Users/robertjo/Downloads/ems_directory fixup/fpga'
 root_dir = "C:/BMD_builds/crc_error_fix"
@@ -126,10 +240,10 @@ target_vhdl_in = (
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
-find_str = "clk_300mhz"
+# find_str = "clk_300mhz"
 
 # find_str = 'plo_lcd_sda'
-# find_str = 'clk_25'
+find_str = 'iab_lcd_pen'
 # find_str = 'genlock_sof'
 verbose = True
 
@@ -257,119 +371,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
     find_str_sub = ""
     in_file_assignments = [] # assignments that happen inside the file either in prcesses or combinational ect get put here and later added to the search terms
     # this part looks for ways that the signals name may have changed via being assigned to another signal
-    for (
-        x
-    ) in (
-        vhdl_obj_in.assign
-    ):  # find asignments in assignment not in functions, processes ect..
-        if (find_str in x[0]) or (find_str in x[1]):
-            if (
-                x[1] == find_str 
-            ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-
-                assignments.append(
-                    [vhdl_obj_in.data, x[0], x[1]]
-                )  # filen name, assigned to,
-                full_assign_list.append(
-                    f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} "
-                    
-                )
-                in_file_assignments.append(x[0])
-                temp = [find_str]
-                find_str = temp
-                find_str.append(x[0])
-                break
-            elif find_str in x[1]:
-                if "." in x[1]: # lets see if the assignment into a sub module is done using a record txpe (eg: signal.subsignal)
-                        search_length = len(find_str)
-                        if (x[1][:search_length] == find_str) and (x[1][search_length+1] == "."):
-                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ") ########################## need to add a method for introducing this as a new search term!!!
-                            in_file_assignments.append(x[0])
-                elif "(" in x[1] and ")" in x[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
-                        search_length = len(find_str)
-                        if (x[1][:search_length] == find_str) and (x[1][search_length] == "("):
-                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
-                            in_file_assignments.append(x[0])
-                # this detects if the source of the assignment had the keyword in it, need to be more specific
-                # possible_assignments.append(['?Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
-                break
-    for y in vhdl_obj_in.process:  # find asignments in processes
-        for x in y[2]:
-            if type(find_str) != list:
-                if find_str in x[0] or find_str in x[1]:
-                    if (
-                        x[1] == find_str
-                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-                        temp = [find_str]
-                        find_str = temp
-                        find_str.append(x[0])
-                        full_assign_list.append(
-                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
-                        )
-                        break
-                    else:
-                        # this acidently finds the keyword in the rocess trigger
-                        # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
-                        break
-            else:
-                for string in find_str:
-                    if (
-                        x[1] == find_str
-                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-                        temp = [find_str]
-                        find_str = temp
-                        find_str.append(x[0])
-                        full_assign_list.append(
-                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
-                        )
-
-                        break
-                    else:
-                        # this acidently finds the keyword in the rocess trigger
-                        # possible_assignments.append([f'?Process: {y[0]}({y[1]})',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
-                        break
-
-    # search generate statements for direct assignments
-    for y in vhdl_obj_in.generate:  # find asignments in generate statements
-        for x in y[2]:
-            if type(find_str) != list:
-                if find_str in x[0] or find_str in x[1]:
-                    if (
-                        x[1] == find_str
-                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-                        temp = [find_str]
-                        find_str = temp
-                        find_str.append(x[0])
-                        full_assign_list.append(
-                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
-                        )
-
-                        break
-                    else:
-                        possible_assignments.append(
-                            [vhdl_obj_in.data, x[0], x[1]]
-                        )  # filen name, assigned to
-                        break
-            else:
-                for string in find_str:
-                    if (
-                        x[1] == find_str
-                    ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
-                        temp = [find_str]
-                        find_str = temp
-                        find_str.append(x[0])
-                        full_assign_list.append(
-                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
-                        )
-
-                        break
-                    else:
-                        possible_assignments.append(
-                            [vhdl_obj_in.data, x[0], x[1]]
-                        )  # filen name, assigned to
-                        break
-
-
+    in_file_assignments = search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments)
 
     # # if in file assignements were detected add them to the search terms
     if len(in_file_assignments)>0:
