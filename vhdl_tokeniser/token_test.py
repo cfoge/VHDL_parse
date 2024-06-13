@@ -1110,6 +1110,8 @@ def is_in_ranges(ranges, current_position):
     return in_range
 
 
+
+
 #########################################################################
 #### MAIN FUNCTION FOR PARSE VHDL
 #########################################################################
@@ -1144,19 +1146,19 @@ def parse_vhdl(file_name, just_port=False):
     func_ranges = []
     component_ranges = []
 
-    if just_port == False:
+    if just_port == False: # get rid of this if.... there is no reall speed up to doing this i think
         proces_ranges = extract_process_lines(
             tokens, "ProcessKeyword", "EndProcessKeyword"
         )
-        # generate_ranges = extract_process_lines(
-        #     tokens, "GenerateKeyword", "EndGenerateKeyword"
-        # )
-        # func_ranges = extract_process_lines(
-        #     tokens, "FunctionKeyword", "EndFunctionKeyword"
-        # )
-        # component_ranges = extract_process_lines(
-        #     tokens, "ComponentKeyword", "EndComponentKeyword"
-        # )
+        generate_ranges = extract_process_lines(
+            tokens, "GenerateKeyword", "EndGenerateKeyword"
+        )
+        func_ranges = extract_process_lines(
+            tokens, "FunctionKeyword", "EndFunctionKeyword"
+        )
+        component_ranges = extract_process_lines(
+            tokens, "ComponentKeyword", "EndComponentKeyword"
+        )
 
     entity_vhdl = vhdl_obj()
     entity_vhdl.url = file_path
@@ -1260,18 +1262,20 @@ def parse_vhdl(file_name, just_port=False):
         try:
             if (
                 token_type == "GenericKeyword"
-                and len(
-                    extract_tokens_between(tokens, "generic", "(", current_position)
-                )
-                < 3
             ):  # there is no 'map' following the generic keyword
-                # genericMAP = extract_tokens_between(tokens, "generic", "(",current_position)
-                decoded_gen = decode_port(
-                    token_type, current_position, end_keywords_mapping, "GenericKeyword"
-                )
-                entity_vhdl.generic = format_port(
-                    decoded_gen, True
-                )  # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names
+                is_map = extract_tokens_between(tokens, "generic", "(", current_position)
+                is_component = False
+                for tok_type_gen, tok_text_gen in is_map:
+                    if tok_text_gen == 'map':
+                        is_component = True
+                if is_component == False:
+                    # genericMAP = extract_tokens_between(tokens, "generic", "(",current_position)
+                    decoded_gen = decode_port(
+                        token_type, current_position, end_keywords_mapping, "GenericKeyword"
+                    )
+                    entity_vhdl.generic = format_port(
+                        decoded_gen, True
+                    )  # second arg tells the function that it is a generic and that it can ignore in/outs that appear in the line such as names
         except Exception as e:
             error_log.append(["GenericKeyword error", file_path_error, e])
 
