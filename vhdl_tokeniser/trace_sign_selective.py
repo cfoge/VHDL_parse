@@ -124,14 +124,15 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
     ):  # find asignments in assignment not in functions, processes ect..
         if (find_str in x[0]) or (find_str in x[1]):
             if (
-                x[1] == find_str 
+                # x[1] == find_str
+                find_str in x[1]
             ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
 
                 assignments.append(
                     [vhdl_obj_in.data, x[0], x[1]]
                 )  # filen name, assigned to,
                 full_assign_list.append(
-                    f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} "
+                    f"Combinational Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]}: {x[0]} <= {x[1]} "
                     
                 )
                 in_file_assignments.append(x[0])
@@ -143,12 +144,12 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
                 if "." in x[1]: # lets see if the assignment into a sub module is done using a record txpe (eg: signal.subsignal)
                         search_length = len(find_str)
                         if (x[1][:search_length] == find_str) and (x[1][search_length+1] == "."):
-                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ") ########################## need to add a method for introducing this as a new search term!!!
+                            full_assign_list.append(f"Combinational Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]}: {x[0]} <= {x[1]} ") ########################## need to add a method for introducing this as a new search term!!!
                             in_file_assignments.append(x[0])
                 elif "(" in x[1] and ")" in x[1]: # lets see if a subset of the signal is beign assigned (eg: signal(4 downto 0))
                         search_length = len(find_str)
                         if (x[1][:search_length] == find_str) and (x[1][search_length] == "("):
-                            full_assign_list.append(f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} ")
+                            full_assign_list.append(f"Combinational Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]}: {x[0]} <= {x[1]} ")
                             in_file_assignments.append(x[0])
                 # this detects if the source of the assignment had the keyword in it, need to be more specific
                 # possible_assignments.append(['?Combinational Assignment',vhdl_obj_in.data, x[0],x[1] ]) # filen name, assigned to
@@ -164,7 +165,7 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
                         find_str = temp
                         find_str.append(x[0])
                         full_assign_list.append(
-                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
+                            f"Process Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]} : {y[0]}({y[1]}) = {x[0]} <= {x[1]} "
                         )
                         break
                     else:
@@ -180,7 +181,7 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
                         find_str = temp
                         find_str.append(x[0])
                         full_assign_list.append(
-                            f"Process Assignment in {vhdl_obj_in.data}/{y[0]}({y[1]}): {x[0]} <= {x[1]} "
+                            f"Process Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]} : {y[0]}({y[1]}) = {x[0]} <= {x[1]} "
                         )
 
                         break
@@ -201,7 +202,7 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
                         find_str = temp
                         find_str.append(x[0])
                         full_assign_list.append(
-                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
+                            f"Generate Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]} {y[0]}: {x[0]} <= {x[1]} "
                         )
 
                         break
@@ -219,7 +220,7 @@ def search_assignement(vhdl_obj_in, find_str, curent_node, in_file_assignments):
                         find_str = temp
                         find_str.append(x[0])
                         full_assign_list.append(
-                            f"Generate Assignment in {vhdl_obj_in.data}/{y[0]}: {x[0]} <= {x[1]} "
+                            f"Generate Assignment in {COLORS[4]}{vhdl_obj_in.data}{COLORS[7]} {y[0]}: {x[0]} <= {x[1]} "
                         )
 
                         break
@@ -243,9 +244,15 @@ target_vhdl_in = (
 # find_str = "clk_300mhz"
 
 # find_str = 'plo_lcd_sda'
-find_str = 'iab_lcd_pen'
+find_str = 'sdi_in_present'
 # find_str = 'genlock_sof'
 verbose = True
+
+
+################################################################# START BULK OF CODE
+print(f"Running Trace Signal...")
+print(f"note: input signal will be searched for across VHDL hierachy including when combinational assignements change the name of the signal")
+print(f"at present signal assignements within 'if','processes', 'case' or 'generate' statements will not be traced")
 
 vhdl_files = []
 # print("VHDL Files Found:")
@@ -332,13 +339,13 @@ search_is_signal = False
 similer_search = []
 for port in target_vhdl.port:  
     if find_str == port[0]:
-        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a port in {target_vhdl.data} --> {COLORS[4]}{port[0]}{COLORS[7]}  : {port[2]} length {port[3]}")
+        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a {COLORS[1]}port{COLORS[7]} in {target_vhdl.data} --> {COLORS[4]}{port[0]}{COLORS[7]}  : {port[2]} length {port[3]}")
         search_is_port = True
     if find_str in port[0]:
         similer_search.append(port[0])
 for sig in target_vhdl.signal:  
     if find_str == sig[0]:
-        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a signal in {target_vhdl.data} --> {COLORS[4]}{sig[0]}{COLORS[7]}  : {sig[2]} length {sig[3]}")
+        print(f"{COLORS[4]}{find_str}{COLORS[7]} is a {COLORS[1]}signal{COLORS[7]} in {target_vhdl.data} --> {COLORS[4]}{sig[0]}{COLORS[7]}  : {sig[2]} length {sig[3]}")
         search_is_signal = True
     if find_str in sig[0]:
         similer_search.append(sig[0])
@@ -521,9 +528,11 @@ print("---------------------------------------------------")
 
 
 if verbose == True:  ##print the full line for each assignment for context
-    print(full_assign_list)
-    print(possible_assignments)
-    # what to do with possible assignements
+    print("Full ist of assignements:")
+    for assignment in full_assign_list:
+        print(assignment)
+        # print(possible_assignments)
+        # what to do with possible assignements
 
 
 # def create_tree(data):
