@@ -1280,9 +1280,9 @@ def parse_vhdl(file_name, just_port=False):
             error_log.append(["GenericKeyword error", file_path_error, e])
 
         if token_type == "PortKeyword":
-            find_map = make_block(token_type, current_position, "(")
+            find_map = make_block(token_type, current_position, "(").strip()
             if (
-                len(find_map) == 0 or find_map == " "
+                len(find_map) == 0 or find_map == " " or find_map == "\n"
             ):  # there is no 'map' following the generic keyword
                 port_belongs_to_component = False
                 for range in component_ranges:
