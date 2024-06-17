@@ -104,14 +104,14 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--cpp_out", action="store_true", help="Output as C/C++ header instead of VHDL.")
     args = parser.parse_args()
 
- 
-    parsed_vhdl_obj = parse_vhdl(args.input_file)  # Replace this with actual loading or definition of parsed_vhdl_obj
     reg_file = read_vhdl_file(args.input_file)
+    parsed_vhdl_obj = parse_vhdl(args.input_file)  # Replace this with actual loading or definition of parsed_vhdl_obj
 
-    print(reg_file)
+
+    # print(reg_file)
 
     if parsed_vhdl_obj is None:
         print("Error: parsed_vhdl_obj is not defined.")
         exit(1)
 
-    convert_vhdl_reg_to_code(args.input_file, parsed_vhdl_obj, args.cpp_out)
+    convert_vhdl_reg_to_code(reg_file, parsed_vhdl_obj, args.cpp_out)
