@@ -1,7 +1,7 @@
 import os
 import time
 
-# need to change this so it only checks the relivent vhdl files for a project
+# need to change this so it only checks the relivent vhdl files for a project, NOT CURRENTLY USED FOR ANYTHING
 
 CHANGE_LOG_FILE = "change_log.txt"
 

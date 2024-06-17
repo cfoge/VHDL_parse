@@ -1,4 +1,4 @@
-# WORK IN PROGRESS!!!!!
+# WORK IN PROGRESS!!!!! NOT CURTENTLY USED for anything
 
 import os
 import time

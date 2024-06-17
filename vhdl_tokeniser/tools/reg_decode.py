@@ -1,4 +1,6 @@
+import os
 import re
+import argparse
 
 
 def find_between(s, first, last):
@@ -12,11 +14,11 @@ def find_between(s, first, last):
 
 def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
     cpp_header = []
-    if cpp_out == True:
+    if cpp_out:
         print("// Auto Generated C/C++ header file for register file")
-
     else:
         print("-- Auto Generated VHDL header file for register file")
+    
     lower = input_str.lower()
     lines = lower.split(";")
     for line in lines:
@@ -33,7 +35,7 @@ def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
                             for dig in zeros:
                                 if dig != "0":
                                     constant = True
-                            if constant == False:
+                            if not constant:
                                 packed.append(int(len(zeros)) * 4)
                             else:
                                 packed.append(zeros)
@@ -48,68 +50,68 @@ def convert_vhdl_reg_to_code(input_str, vhdl_obj, cpp_out=False):
                 if "(" in from_to[1] and ")" in from_to[1]:
                     from_to[1] = find_between(from_to[1], "(", ")")
                 packed.append(from_to[1].strip())
+            
             match = re.search(r'x"([^"]*)"', from_to[0])
             if match:
                 regnum = match.group(1).strip()
-
-                # -- 0x0000   RW    Switcher video_format(4:0)
                 str_out = ""
                 start_bit = 0
 
-                for pack in reversed(packed):  # go from end to begining
+                for pack in reversed(packed):  # go from end to beginning
                     if isinstance(pack, int):
-                        start_bit = start_bit + pack
+                        start_bit += pack
                     else:
                         found_sig = False
                         for signal in vhdl_obj.signal:
                             if signal[0] == pack.strip():
                                 found_sig = True
-                                str_out = (
-                                    f"{pack.strip()}({int(signal[2])-1+start_bit}:{start_bit})  "
-                                    + str_out
-                                )  # extract the width
+                                str_out = f"{pack.strip()}({int(signal[2])-1+start_bit}:{start_bit})  " + str_out
                                 cpp_shift = start_bit
-                                start_bit = start_bit + signal[2]
-                                # cpp_header.append([f"#define {pack}     0x{regnum}", f"#define {pack}_shift     {start_bit}"])
-                                if cpp_out == True:
+                                start_bit += signal[2]
+                                if cpp_out:
                                     print(f"#define {pack.strip()}     0x{regnum}")
-                                    print(
-                                        f"#define {pack.strip()}_shift     {cpp_shift}"
-                                    )
-                                    print(
-                                        f"#define {pack.strip()}_size      {signal[2]}"
-                                    )
+                                    print(f"#define {pack.strip()}_shift     {cpp_shift}")
+                                    print(f"#define {pack.strip()}_size      {signal[2]}")
 
-                        if (
-                            found_sig == False
-                        ):  # if the assignment wasnt a signal check if it was a port
+                        if not found_sig:  # if the assignment wasn't a signal, check if it was a port
                             for signal in vhdl_obj.port:
                                 if signal[0] == pack.strip():
                                     found_sig = True
                                     try:
-                                        str_out = (
-                                            f"{pack.strip()}({int(signal[3])-1+start_bit}:{start_bit})  "
-                                            + str_out
-                                        )  # extract the width
+                                        str_out = f"{pack.strip()}({int(signal[3])-1+start_bit}:{start_bit})  " + str_out
                                         cpp_shift = start_bit
-                                        start_bit = start_bit + signal[3]
-                                        # cpp_header.append([f"#define {pack}     0x{regnum}", f"#define {pack}_shift     {start_bit}"])
-                                        if cpp_out == True:
-                                            print(
-                                                f"#define {pack.strip()}     0x{regnum}"
-                                            )
-                                            print(
-                                                f"#define {pack.strip()}_shift     {cpp_shift}"
-                                            )
-                                            print(
-                                                f"#define {pack.strip()}_size      {signal[3]}"
-                                            )
+                                        start_bit += signal[3]
+                                        if cpp_out:
+                                            print(f"#define {pack.strip()}     0x{regnum}")
+                                            print(f"#define {pack.strip()}_shift     {cpp_shift}")
+                                            print(f"#define {pack.strip()}_size      {signal[3]}")
                                     except:
                                         print("decode_error")
 
-                if cpp_out == False:
+                if not cpp_out:
                     print(f"-- 0x{regnum}   R    {str_out}")
-    if cpp_out == True:
-        print(
-            "// Macros for extracting and setting values based on the given specifications \n#define EXTRACT_BITS(value, shift, size) (((value) >> (shift)) & ((1 << (size)) - 1)) \n#define SET_BITS(value, shift, size, data) ((value) = ((value) & ~(((1 << (size)) - 1) << (shift))) | (((data) & ((1 << (size)) - 1)) << (shift)))"
-        )
+    
+    if cpp_out:
+        print("// Macros for extracting and setting values based on the given specifications")
+        print("#define EXTRACT_BITS(value, shift, size) (((value) >> (shift)) & ((1 << (size)) - 1))")
+        print("#define SET_BITS(value, shift, size, data) ((value) = ((value) & ~(((1 << (size)) - 1) << (shift))) | (((data) & ((1 << (size)) - 1)) << (shift)))")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Convert VHDL register definitions to code.")
+    parser.add_argument("input_str", type=str, help="Input VHDL register definitions as a string.")
+    parser.add_argument("vhdl_obj", type=str, help="VHDL object containing signals and ports.")
+    parser.add_argument("-c", "--cpp_out", action="store_true", help="Output as C/C++ header instead of VHDL.")
+    args = parser.parse_args()
+
+    # You need to load or define your vhdl_obj before calling the function
+    # Assuming vhdl_obj is a dictionary or an object with 'signal' and 'port' attributes
+    # Example:
+    # vhdl_obj = {'signal': [...], 'port': [...]}
+    vhdl_obj = None  # Replace this with actual loading or definition of vhdl_obj
+
+    if vhdl_obj is None:
+        print("Error: vhdl_obj is not defined.")
+        exit(1)
+
+    convert_vhdl_reg_to_code(args.input_str, vhdl_obj, args.cpp_out)

@@ -1,4 +1,5 @@
 import os
+import argparse
 
 
 def list_files(directory):
@@ -23,14 +24,22 @@ def compare_directories(dir1, dir2):
     files_in_dir2_not_in_dir1 = dir2_files - dir1_files
 
     print("Files in", dir1, "but not in", dir2, ":")
-    print(files_in_dir1_not_in_dir2)
+    for file in files_in_dir1_not_in_dir2:
+        print(file)
 
     print("\nFiles in", dir2, "but not in", dir1, ":")
-    print(files_in_dir2_not_in_dir1)
+    for file in files_in_dir2_not_in_dir1:
+        print(file)
 
 
 if __name__ == "__main__":
-    dir1 = "//switcher-build2/users/robertj/rev_0x5_fix/broadcast_common/audio_meter_v2"  # input("Enter the path to the first directory: ")
-    dir2 = "//switcher-build2/users/robertj/rev_0x5_fix/new/broadcast_common/audio_meter_v2"  # input("Enter the path to the second directory: ")
+    parser = argparse.ArgumentParser(description="Compare files in two directories.")
+    parser.add_argument(
+        "dir1", type=str, help="Path to the first directory."
+    )
+    parser.add_argument(
+        "dir2", type=str, help="Path to the second directory."
+    )
+    args = parser.parse_args()
 
-    compare_directories(dir1, dir2)
+    compare_directories(args.dir1, args.dir2)
