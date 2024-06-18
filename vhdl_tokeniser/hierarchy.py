@@ -38,6 +38,7 @@ def attach_dependent_objects(
             for vhdl_found_entities in entity_texts_with_path:
                 if len(vhdl_found_entities[0]) > 0:
                     if vhdl_found_entities[0] == child.mod:
+                        # Add a "." with no return to the terminal to show that it is still allive when parsing huge numbers of files
                         new_child = parse_vhdl(vhdl_found_entities[1])
                         child.vhdl_obj = new_child
                         attach_dependent_objects(
@@ -49,9 +50,12 @@ def attach_dependent_objects(
 
 
 # dependency search
-def cl_depend(root_dir, tld, print_url):
+def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
     vhdl_files = []
     for root, dirs, files in os.walk(root_dir):
+        # Check if the current directory is in the list of directories to exclude
+        if any(excluded_dir in root for excluded_dir in exclude_dirs):
+            continue
         for file in files:
             if file.endswith(".vhd") or file.endswith(".vhdl"):
                 # print(os.path.join(root, file))
@@ -75,12 +79,57 @@ def cl_depend(root_dir, tld, print_url):
                     if "\n" not in entity_text[:-1]:
                         entity_texts_with_path.append([entity_text, file_path])
         except:
-            unreadible_files = unreadible_files + 1
+            unreadible_files += 1
     print(f"{unreadible_files} vhdl files unreadable")
+
+    ###### FIND AND REMOVE DUPLICTES, VHDL files with the same name that contain the same named modules can cause issues
+    # Dictionary to store encountered filenames and their corresponding paths
+    filename_to_path = {}
+
+    # List to store duplicate filenames
+    duplicate_filenames = []
+
+    # Iterate over entity_texts_with_path
+    for entity_text, file_path in entity_texts_with_path:
+        filename = os.path.basename(file_path)
+        # Check if the filename is already in the dictionary
+        if filename in filename_to_path:
+            # If it is, add it to the list of duplicate filenames
+            duplicate_filenames.append(filename)
+        else:
+            # Otherwise, add it to the dictionary with its path
+            filename_to_path[filename] = file_path
+
+
+    # Remove duplicates from entity_texts_with_path
+    entity_texts_with_path_unique = []
+    for entity_text, file_path in entity_texts_with_path:
+        filename = os.path.basename(file_path)
+        if filename in duplicate_filenames:
+            # Skip duplicates
+            continue
+
+        # Remove file format from name
+        if "." in filename:
+            filename = filename.split(".")[0]
+        # Add non-duplicates to the unique list
+        entity_texts_with_path_unique.append([entity_text, file_path])
+
+    # Update entity_texts_with_path to contain only unique filenames
+    vhdl_files = entity_texts_with_path_unique
+
+    # Print the number of duplicate files found
+    print(f"{len(duplicate_filenames)} duplicate files found")
+    if len(duplicate_filenames) > 0:
+        print(
+            "Duplicate files with the same name can create issues when searching through VHDL hierarchies, so duplicates have been removed\n"
+        )
 
     target_vhdl = parse_vhdl(tld)
 
-    attach_dependent_objects(target_vhdl, entity_texts_with_path)
+    # Attach dependent objects
+    attach_dependent_objects(target_vhdl, vhdl_files)
+
 
     def print_child(object, depth, parent, print_url):
         url = ""
@@ -191,6 +240,13 @@ def cl_depend(root_dir, tld, print_url):
                 print_child_with_name(
                     child, indent_level + 1, indent_str + "  ", print_url, hierachy_vis
                 )
+            else:
+                color_index_tmp = (indent_level+1) % (len(COLORS) - 1)  # if the child has no VHDL object attched to it, we didnt find the vhdl file for it just print the module name.
+                color_tmp = COLORS[color_index_tmp]
+                if indent_level == 0:
+                    arrow = "├─"
+                indent_str_tmp = indent_str + "  "
+                print(f"{color_tmp}{indent_str_tmp}{arrow} {child.mod} : {child.name} {url}")
         # except Exception as e:
         #     print('error')
         #     error_log.append(["print Hierarchy error", e])
@@ -198,7 +254,7 @@ def cl_depend(root_dir, tld, print_url):
 
     try:
         if target_vhdl.data is not None and len(target_vhdl.data) > 0:
-            print_child_with_name(target_vhdl, 0, "", False, hierachy_vis)
+            print_child_with_name(target_vhdl, 0, "", print_url, hierachy_vis)
     except Exception as e:
         error_log.append(["print Hierarchy error", e])
 
@@ -217,6 +273,9 @@ if __name__ == "__main__":
         "-d", "--directory", type=str, help="root directory for vhdl project"
     )
     parser.add_argument(
+        "-ex", "--exclude", type=str, help="directory names to exclude form search"
+    )
+    parser.add_argument(
         "-v", "--verbose", action="store_true", help="Print verbose output"
     )
 
@@ -224,14 +283,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-tld = args.tld
-ROOT_DIR = os.path.dirname(tld)
-root_dir = args.directory if args.directory is not None else ROOT_DIR
+    tld = args.tld
+    ROOT_DIR = os.path.dirname(tld)
+    root_dir = args.directory if args.directory is not None else ROOT_DIR
 
-print("---------------------------------------------")
-print(f"Running Show VHDL Hieracy of TLD '{tld}'")
+    print("---------------------------------------------")
+    print(f"Running Show VHDL Hieracy of TLD '{tld}'")
 
-cl_depend(root_dir, tld, args.verbose)
+    cl_depend(root_dir, tld, args.verbose)
 
 
-print("")
+    print("")
