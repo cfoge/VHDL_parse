@@ -4,19 +4,26 @@ A collection of Python tools to simplify your VHDL workflow without heavyweight 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=LSMYWSM7M7EEA)
 Open to donations and contributors with VHDL or Python experience. 😀 
 
-## Purpose
-Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries required, just the magic of Python3.
+> [!IMPORTANT]
+> Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries required, just the magic of Python3.
 
 ## Tools 🕵️‍♂️
-#### found in the "vhdl_tokeniser/tools" folder 
-##### Searching:
-Find command, searches VHDL files in directory for VHDL FEATURE matching string.
-**farch.py/ftype.py/fconst.py/fpack.py...**
-| Arg 1        | Arg 2           |
-| ------------- |:-------------:| 
-| search string     | -d directory|
+found in the "vhdl_tokeniser/tools" folder 
+### Search:
+Searches all VHDL files in directory for VHDL FEATURES matching string. Eg. fconst.py seaches for constants, ftype.py searches for types ect...
+arg 1 = search string, arg 2 = -d directory
+Example: 
+```bash
+python .\farch.py Behavioral -d test
+```
 
-
+Returns:
+```
+Searching for architecture with 'Behavioral' in directory: test...
+test\my_entity.vhd  : line 14: architecture Behavioral of my_entity is
+Info: 2 files checked.
+```
+---
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
 - **component.py** = creates a template component decleration from a VHDL file in the terminal or as a .txt file
