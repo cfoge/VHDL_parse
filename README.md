@@ -12,7 +12,8 @@ found in the "vhdl_tokeniser/tools" folder
 ### Search:
 Searches all VHDL files in directory for VHDL FEATURES matching string. Eg. fconst.py seaches for constants, ftype.py searches for types ect...
 arg 1 = search string, arg 2 = -d directory
-Example: 
+
+**Example farch.py:** 
 ```bash
 python .\farch.py Behavioral -d test
 ```
@@ -21,6 +22,28 @@ Returns:
 ```
 Searching for architecture with 'Behavioral' in directory: test...
 test\my_entity.vhd  : line 14: architecture Behavioral of my_entity is
+Info: 2 files checked.
+```
+**Example ftype.py:** 
+```bash
+python .\ftype.py MY_TYPE -d test
+```
+
+Returns:
+```
+Searching for type with 'MY_TYPE' in directory: test...
+test\my_package.vhd  : line 10: type MY_TYPE is record    
+Info: 2 files checked.
+```
+**Example pfind.py:** 
+```bash
+python .\pfind.py clk in -d test
+```
+Searches for 2 words on the same line, usefull for doing things like finding all the VHDL modules with specific input names or libraries.
+
+Returns:
+```
+test\my_entity.vhd  : line 7: clk : in  std_logic;
 Info: 2 files checked.
 ```
 ---
