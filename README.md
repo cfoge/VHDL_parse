@@ -1,15 +1,21 @@
 # VHDL_parse 🚀
-Welcome to VHDL_parse, a collection of Python tools crafted to simplify your VHDL workflow without the fuss of heavyweight IDEs like Vivado or Quartus. Dive into efficient VHDL development with these lightweight scripts!
+A collection of Python tools to simplify your VHDL workflow without heavyweight IDEs like Vivado or Quartus. Great for automating boring tasks in VHDL!
 ---
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=LSMYWSM7M7EEA)
-Open to donations and contributors with VHDL/Python experience. 😀 
+Open to donations and contributors with VHDL or Python experience. 😀 
 
 ## Purpose
-Designed to seamlessly run in the command line, VHDL_parse empowers you to navigate and manipulate VHDL projects effortlessly. No additional libraries required—just the magic of Python3.
+Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries required, just the magic of Python3.
 
-## Scripts
-### parse_vhdl (in the "vhdl_tokeniser" folder) 🕵️‍♂️
-Revamped from scratch, parse_vhdl.py now utilizes a tokenizer and enhancing compatibility with differently formatted files. This script parses VHDL, creating a python object containing ports, signals, components, and more. Then this python object can be used to simplify VHDL development.
+## Tools 🕵️‍♂️
+#### found in the "vhdl_tokeniser/tools" folder 
+##### Searching:
+Find command, searches VHDL files in directory for VHDL FEATURE matching string.
+**farch.py/ftype.py/fconst.py/fpack.py...**
+| Arg 1        | Arg 2           |
+| ------------- |:-------------:| 
+| search string     | -d directory|
+
 
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
@@ -60,5 +66,5 @@ check_xdc.py output input.vhd
 (optional 3rd argument "q" generates Quartus output)
 
 
-#### I hope these scripts make your FPGA work a bit smoother! 🎉
+#### I hope these scripts make your FPGA and VHDL work a bit smoother! I use them all the time and they have saved me countless hrs already. 🎉
 
