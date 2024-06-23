@@ -5,12 +5,14 @@ A collection of Python tools to simplify your VHDL workflow without heavyweight 
 Open to donations and contributors with VHDL or Python experience. 😀 
 
 > [!IMPORTANT]
-> Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries required, just the magic of Python3.
+> Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries are required, just the magic of Python3.
+
+## VHDL_parse is for Automating VHDL creation, creating top-level and constraint files from schematics, searching large projects, and visualising module hierarchy and signal flow.
 
 ## Tools 🕵️‍♂️
 found in the "vhdl_tokeniser/tools" folder 
 ### Search:
-Searches all VHDL files in directory for VHDL FEATURES matching string. Eg. fconst.py seaches for constants, ftype.py searches for types ect...
+Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...
 arg 1 = search string, arg 2 = -d directory
 
 **Example farch.py:** 
@@ -39,7 +41,7 @@ Info: 2 files checked.
 ```bash
 python .\pfind.py clk in -d test
 ```
-Searches for 2 words on the same line, usefull for doing things like finding all the VHDL modules with specific input names or libraries.
+Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.
 
 Returns:
 ```
@@ -49,17 +51,17 @@ Info: 2 files checked.
 ---
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
-- **component.py** = creates a template component decleration from a VHDL file in the terminal or as a .txt file
-- **wrapper.py** = create a wrapper that declares an entity, instantiates the VHDL files passed to it annd optionally creates signals with matching port names connected to each instance.
+- **component.py** = creates a template component declaration from a VHDL file in the terminal or as a .txt file
+- **wrapper.py** = create a wrapper that declares an entity, instantiates the VHDL files passed to it and optionally creates signals with matching port names connected to each instance.
 
 ##### Current features:
-- Display VHDL module hierarchies from directory
+- Display VHDL module hierarchies from a directory
 - Auto-generate entity and module instantiations
-- Auto generate VHDL wrappers for multiple entitys
+- Auto-generate VHDL wrappers for multiple entities
 ##### Future potential:
 - Test bench creation automation
 - Signal tracing/search through multiple files
-- Diff two vhdl files by port,generics,contants ect.. rather then line by line like a regular diff would
+- Diff two vhdl files by port,generics,contants ect.. rather than line by line like a regular diff would
 
 ### what_in.py 📜
 List VHDL entities, constants, attributes, signals, and processes:
