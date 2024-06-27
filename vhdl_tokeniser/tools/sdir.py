@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import os
 import sys
 import argparse
@@ -12,6 +13,8 @@ COLORS = [
     "\033[95m",  # MAGENTA
     "\033[0m",   # RESET
 ]
+
+dr = u'\u2937' # down right arrow
 
 
 def print_directory_tree(folder_path, indent="", depth=0, find_string=None):
@@ -35,14 +38,14 @@ def print_directory_tree(folder_path, indent="", depth=0, find_string=None):
                 if find_string and find_string in item:
                     print(f"\033[91m  \033[4m{indent}- {item}\033[0m")
                 else:
-                    print(f"{color}{indent}- {item}")
+                    print(f"{indent}- {color}{item}\033[0m")
         elif os.path.isdir(item_path):
             if find_string and find_string in item:
-                print(f"\033[91m \033[4m{indent}|- {item}\033[0m")
+                print(f"\033[91m \033[4m{indent}{dr} {item}\033[0m")
             else:
-                print(f"{color}{indent}|- {item}")
+                print(f"{indent}{dr} {color}{item}\033[0m")
             new_depth = depth + 1 if depth != -1 else -1
-            print_directory_tree(item_path, indent + "|  ", new_depth, find_string)
+            print_directory_tree(item_path, indent + "    ", new_depth, find_string)
 
 
 if __name__ == "__main__":
@@ -55,12 +58,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "-d", "--dir", type=str, help="Directory to print the tree structure of."
     )
-    parser.add_argument("-color", action="store_true", help="Enable colorized output.")
+    parser.add_argument("-color", action="store_true",default=True, help="Enable colorized output.")
     parser.add_argument(
         "-find","-f", type=str, help="String to find in filenames and folder names."
     )
     args = parser.parse_args()
-
+    print(args)
     # Determine the directory path
     folder_path = args.directory if args.directory else args.dir
     if folder_path is None:
