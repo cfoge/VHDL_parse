@@ -17,7 +17,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 ## Tools 🕵️‍♂️
 found in the "vhdl_tokeniser/tools" folder 
 ### Search<a id='1.1'></a>:
-Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...
+*Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...*
 arg 1 = search string, arg 2 = -d directory
 
 **Example farch.py:** 
@@ -46,7 +46,7 @@ Info: 2 files checked.
 ```bash
 python .\pfind.py clk in -d test
 ```
-Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.
+*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.*
 
 Returns:
 ```
@@ -59,7 +59,7 @@ Info: 2 files checked.
 ```bash
 python .\sdiffile.py test/folderA test/folderB 
 ```
-Compares two directorys and returns the files found in one but not the other, and vise versa. 
+*Compares two directorys and returns the files found in one but not the other, and vise versa.*
 
 Returns:
 ```
@@ -73,7 +73,7 @@ test5.vhdl
 ```bash
 python .\sdifcont.py test/folderA test/folderB -e vhdl
 ```
-Compares contents of two files with the same name in two different directorys and returns the files that are not identical. 
+*Compares contents of two files with the same name in two different directorys and returns the files that are not identical.* 
 
 Returns:
 ```
@@ -84,7 +84,7 @@ test/folderA\test2.vhdl and test/folderB\test2.vhdl have different contents
 ```bash
 python sdir.py  . -f package 
 ```
-Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your search tearm highlighted in red.
+*Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your search tearm highlighted in red.*
 
 Returns:
 ```
