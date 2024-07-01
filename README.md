@@ -69,6 +69,16 @@ test1.vhdl
 Files in test/folderB but not in test/folderA :
 test5.vhdl
 ```
+**Example sdifcont.py:** 
+```bash
+python .\sdifcont.py test/folderA test/folderB -e vhdl
+```
+Compares contents of two files with the same name in two different directorys and returns the files that are not identical. 
+
+Returns:
+```
+test/folderA\test2.vhdl and test/folderB\test2.vhdl have different contents
+```
 
 **Example sdir.py:** 
 ```bash
