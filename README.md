@@ -9,9 +9,15 @@ Open to donations and contributors with VHDL or Python experience. 😀
 
 ## VHDL_parse is for Automating VHDL creation, creating top-level and constraint files from schematics, searching large projects, and visualising module hierarchy and signal flow.
 
+## Functions
+- [Search](#1.1) for somthing inside your VHDL files.
+- [Show](#1.2) vhdl files in folder structure.  
+
+
+
 ## Tools 🕵️‍♂️
 found in the "vhdl_tokeniser/tools" folder 
-### Search:
+### Search<a id='1.1'></a>:
 Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...
 arg 1 = search string, arg 2 = -d directory
 
@@ -48,6 +54,23 @@ Returns:
 test\my_entity.vhd  : line 7: clk : in  std_logic;
 Info: 2 files checked.
 ```
+---
+### Show<a id='1.2'></a>:
+**Example sdir.py:** 
+```bash
+python sdir.py  . -f package 
+```
+Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your search tearm highlighted in red.
+
+Returns:
+```
+Directory tree structure for '.':
+⤷ test
+    - my_entity.vhd
+      - my_package.vhd
+⤷ __pycache__
+```
+
 ---
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
