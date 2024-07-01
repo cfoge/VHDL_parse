@@ -1,13 +1,12 @@
 # VHDL_parse 🚀
-A collection of Python tools to simplify your VHDL workflow without heavyweight IDEs like Vivado or Quartus. Great for automating boring tasks in VHDL!
+
+#### VHDL_parse is for Automating VHDL creation, creating top-level and constraint files from schematics, searching large projects, and visualising module hierarchy and signal flow.
 ---
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=LSMYWSM7M7EEA)
 Open to donations and contributors with VHDL or Python experience. 😀 
 
 > [!IMPORTANT]
 > Designed to run in the command line, VHDL_parse lets you explore, navigate and manipulate VHDL files effortlessly. No additional libraries are required, just the magic of Python3. If you want to run these scripts from anywhere check [here](Global_setup.md).
-
-## VHDL_parse is for Automating VHDL creation, creating top-level and constraint files from schematics, searching large projects, and visualising module hierarchy and signal flow.
 
 ## Functions
 - [Search](#1.1) for somthing inside your VHDL files.
