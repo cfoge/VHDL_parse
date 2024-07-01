@@ -20,80 +20,78 @@ found in the "vhdl_tokeniser/tools" folder
 *Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...*
 arg 1 = search string, arg 2 = -d directory
 
-**Example farch.py:** 
-```bash
-python .\farch.py Behavioral -d test
-```
+>**Example farch.py:** 
+>```bash
+>python .\farch.py Behavioral -d test
+>```
+>Returns:
+>```
+>Searching for architecture with 'Behavioral' in directory: test...
+>test\my_entity.vhd  : line 14: architecture Behavioral of my_entity is
+>Info: 2 files checked.
+>```
 
-Returns:
-```
-Searching for architecture with 'Behavioral' in directory: test...
-test\my_entity.vhd  : line 14: architecture Behavioral of my_entity is
-Info: 2 files checked.
-```
-**Example ftype.py:** 
-```bash
-python .\ftype.py MY_TYPE -d test
-```
+>**Example ftype.py:** 
+>```bash
+>python .\ftype.py MY_TYPE -d test
+>```
+>Returns:
+>```
+>Searching for type with 'MY_TYPE' in directory: test...
+>test\my_package.vhd  : line 10: type MY_TYPE is record    
+>Info: 2 files checked.
+>```
 
-Returns:
-```
-Searching for type with 'MY_TYPE' in directory: test...
-test\my_package.vhd  : line 10: type MY_TYPE is record    
-Info: 2 files checked.
-```
-**Example pfind.py:** 
-```bash
-python .\pfind.py clk in -d test
-```
-*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.*
+>**Example pfind.py:** 
+>```bash
+>python .\pfind.py clk in -d test
+>```
+>*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input >names or libraries.*
+>Returns:
+>```
+>test\my_entity.vhd  : line 7: clk : in  std_logic;
+>Info: 2 files checked.
+>```
+>---
 
-Returns:
-```
-test\my_entity.vhd  : line 7: clk : in  std_logic;
-Info: 2 files checked.
-```
----
 ### Show<a id='1.2'></a>:
-**Example sdiffile.py:** 
-```bash
-python .\sdiffile.py test/folderA test/folderB 
-```
-*Compares two directorys and returns the files found in one but not the other, and vise versa.*
+>**Example sdiffile.py:** 
+>```bash
+>python .\sdiffile.py test/folderA test/folderB 
+>```
+>*Compares two directorys and returns the files found in one but not the other, and vise versa.*
+>Returns:
+>```
+>Files in test/folderA but not in test/folderB :
+>test1.vhdl
+>
+>Files in test/folderB but not in test/folderA :
+>test5.vhdl
+>```
 
-Returns:
-```
-Files in test/folderA but not in test/folderB :
-test1.vhdl
+>**Example sdifcont.py:** 
+>```bash
+>python .\sdifcont.py test/folderA test/folderB -e vhdl
+>```
+>*Compares contents of two files with the same name in two different directorys and returns the files that are not >identical.* 
+>Returns:
+>```
+>test/folderA\test2.vhdl and test/folderB\test2.vhdl have different contents
+>```
 
-Files in test/folderB but not in test/folderA :
-test5.vhdl
-```
-**Example sdifcont.py:** 
-```bash
-python .\sdifcont.py test/folderA test/folderB -e vhdl
-```
-*Compares contents of two files with the same name in two different directorys and returns the files that are not identical.* 
-
-Returns:
-```
-test/folderA\test2.vhdl and test/folderB\test2.vhdl have different contents
-```
-
-**Example sdir.py:** 
-```bash
-python sdir.py  . -f package 
-```
-*Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your search tearm highlighted in red.*
-
-Returns:
-```
-Directory tree structure for '.':
-⤷ test
-    - my_entity.vhd
-      - my_package.vhd
-⤷ __pycache__
-```
+>**Example sdir.py:** 
+>```bash
+>python sdir.py  . -f package 
+>```
+>*Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your >search tearm highlighted in red.*
+>Returns:
+>```
+>Directory tree structure for '.':
+>⤷ test
+>    - my_entity.vhd
+>      - my_package.vhd
+>⤷ __pycache__
+>```
 
 ---
 #### Working Python Comand Line Scripts
