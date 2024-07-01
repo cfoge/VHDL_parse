@@ -55,6 +55,21 @@ Info: 2 files checked.
 ```
 ---
 ### Show<a id='1.2'></a>:
+**Example sdiffile.py:** 
+```bash
+python .\sdiffile.py test/folderA test/folderB 
+```
+Compares two directorys and returns the files found in one but not the other, and vise versa. 
+
+Returns:
+```
+Files in test/folderA but not in test/folderB :
+test1.vhdl
+
+Files in test/folderB but not in test/folderA :
+test5.vhdl
+```
+
 **Example sdir.py:** 
 ```bash
 python sdir.py  . -f package 
