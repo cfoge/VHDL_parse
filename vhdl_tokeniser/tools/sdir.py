@@ -63,7 +63,7 @@ if __name__ == "__main__":
         "-find","-f", type=str, help="String to find in filenames and folder names."
     )
     args = parser.parse_args()
-    print(args)
+    # print(args)
     # Determine the directory path
     folder_path = args.directory if args.directory else args.dir
     if folder_path is None:
