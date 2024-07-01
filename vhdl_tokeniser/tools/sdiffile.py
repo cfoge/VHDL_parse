@@ -13,12 +13,22 @@ def list_files(directory):
     return files_list
 
 
+        
+
+
+
 def compare_directories(dir1, dir2):
     """
     Compare files in two directories and list files present in one directory but not in the other.
     """
     dir1_files = set(list_files(dir1))
     dir2_files = set(list_files(dir2))
+
+    if len(dir1_files) == 0:
+         print(f"No files found in {dir1}!")
+    if len(dir2_files) == 0:
+         print(f"No files found in {dir2}!")
+
 
     files_in_dir1_not_in_dir2 = dir1_files - dir2_files
     files_in_dir2_not_in_dir1 = dir2_files - dir1_files
@@ -30,6 +40,8 @@ def compare_directories(dir1, dir2):
     print("\nFiles in", dir2, "but not in", dir1, ":")
     for file in files_in_dir2_not_in_dir1:
         print(file)
+    
+    print()
 
 
 if __name__ == "__main__":
@@ -43,3 +55,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     compare_directories(args.dir1, args.dir2)
+    # compare_directories("test/folderA", "test/folderB")
+
