@@ -14,13 +14,13 @@ if not ((len(sys.argv) == 4)): #check for correct number of arguments
 
 with open(sys.argv[1]) as f: #import xdc file as string
     xdc = f.readlines()
-with open(sys.argv[2]) as f:
+with open(sys.argv[2]) as f: #import schematic
     netlist = f.readlines()
 chip_designator = sys.argv[3] + "-"
 
 # with open('test.xdc') as f: #import xdc file as string
 #     xdc = f.readlines()
-# with open('BMDPCB1118A_NETLIST.txt') as f:
+# with open('BMDPCB1120B_NETLIST.txt') as f:
 #     netlist = f.readlines()
 # chip_designator = 'U17' + "-"
 
@@ -76,8 +76,12 @@ for matches in matched_pins:
     else:
         mismatched_pin.append([matches[0],matches[1],matches[2]])
 
+# with open('indirect_net_connections.txt') as P:
+#     indirect = P.readlines()
+# indirect_connections = []
 
 # print("Mismatches found between " + sys.argv[1] + " and " + sys.argv[2])
+print("Matching connected pin locations with constraints file...")
 f = open("matched_pins_with_sch.xdc", "w")  # create file
 for mismatch in mismatched_pin:
     # print ('{: <20} in XDC:  {: <5}  in netlist: {: <20}'.format(mismatch[0],mismatch[1],mismatch[2] ))
@@ -88,7 +92,20 @@ for mismatch in mismatched_pin:
             f.writelines(f"set_property PACKAGE_PIN {pin_no:<4} [get_ports {mismatch_wth_braces}]\n")
             # print(mismatch)
         except:
-            print("ERROR matched line to file!!")
+            print("ERROR matching pin mumber to constaint!!")
+    # else:
+    #     for indirect_net in indirect: # search our indirect connection list 
+    #         if mismatch[0].lower() in indirect_net: # if the indirect net has one of our signal names on it
+    #             resistor_id = extract_text_after_matching(mismatch[2],'R') # get the resistor ID
+    #             if "-" in resistor_id:
+    #               resistor_id = resistor_id.split("-")[0]  
+    #             resistor_id = "r" + resistor_id
+    #             if resistor_id in indirect_net:
+    #                 for i in netlist:
+    #                     if (resistor_id in i) and (chip_designator in i):
+    #                         print()
+
+
 print("Done!")
 print()
 

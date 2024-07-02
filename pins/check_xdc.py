@@ -33,7 +33,7 @@ XDCPinName = [i for j, i in enumerate(pinNameFinal) if i not in pinNameFinal[:j]
 
 # print("Pin Names in XDC : " + str(XDCPinName)) # printing result
 
-with open(sys.argv[2]) as f: #import xdc file as string
+with open(sys.argv[2]) as f: #import VHDL file as string
    vhd = f.readlines()
 
 portStart = []
@@ -45,16 +45,23 @@ commentedOut = []
 # iterate through list of elements to find "port (" , the start of the port decleration and "end entity"
 for i in vhd:
    
-    if("port (" in i):
+    if("port (" in i) or ("port(" in i) :
        
         # Find possible index for the start of port decleration
         portStart.append(vhd.index(i))
 
-    if("end entity" in i):
+
+    if("end " in i):
        
         # Find possible index for the end of port decleration
         portEnd.append(vhd.index(i))
 
+if len(portStart) == 0:
+    print("ERROR CANT FIND VHDL PORT")
+    exit()
+if len(portEnd) == 0:
+    print("ERROR CANT FIND VHDL PORT")
+    exit()
 del vhd[portEnd[0]:len(vhd)] #remove from after port dec, do this first to preserve indexing
 del vhd[0:portStart[0]] #remove from before port dec
 
@@ -84,9 +91,11 @@ for i in inVhdNotXDC:
     if i in commentedOut:
         inVhdNotXDC[inVhdNotXDC.index(i)] = str(i + " * Commented Out")
      
+print("")     
 print(f"Comparing Ports in {(sys.argv[1]) } and {(sys.argv[2]) }")
 print("In XDC but NOT in Vhd:")
 print(*inXDCNotVhd, sep = "\n")
+print("")
 print("In Vhd but NOT in XDC:")
 print(*inVhdNotXDC, sep = "\n")
 print()
