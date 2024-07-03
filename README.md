@@ -95,7 +95,19 @@ arg 1 = search string, arg 2 = -d directory
 >```
 ---
 ### Automate<a id='1.3'></a>:
-TBD
+>**check_xdc.py:** (in the PINS Folder)
+>```bash
+>python check_xdc.py test\proj2.xdc test\proj1.vhd 
+>```
+>*Compares a .xdc constraints file with the ports of a top-level VHDL file and reports the differences*
+>Returns:
+>```
+>Comparing Ports in .\proj2.xdc and .\proj1.vhd
+>In XDC but NOT in Vhd:
+>
+>In Vhd but NOT in XDC:
+>in_vcxo_0_ctrl
+>```
 
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
