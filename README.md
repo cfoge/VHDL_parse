@@ -10,7 +10,8 @@ Open to donations and contributors with VHDL or Python experience. 😀
 
 ## Functions
 - [Search](#1.1) for somthing inside your VHDL files.
-- [Show](#1.2) vhdl files in folder structure.  
+- [Show](#1.2) vhdl files in folder structure.
+- [Automate](#1.3) the creation and checking of VHDL files.  
 
 
 
@@ -46,7 +47,7 @@ arg 1 = search string, arg 2 = -d directory
 >```bash
 >python .\pfind.py clk in -d test
 >```
->*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input >names or libraries.*
+>*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or >libraries.*
 >Returns:
 >```
 >test\my_entity.vhd  : line 7: clk : in  std_logic;
@@ -92,8 +93,10 @@ arg 1 = search string, arg 2 = -d directory
 >      - my_package.vhd
 >⤷ __pycache__
 >```
-
 ---
+### Automate<a id='1.3'></a>:
+TBD
+
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
 - **component.py** = creates a template component declaration from a VHDL file in the terminal or as a .txt file
