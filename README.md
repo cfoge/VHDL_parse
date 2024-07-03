@@ -47,7 +47,8 @@ arg 1 = search string, arg 2 = -d directory
 >```bash
 >python .\pfind.py clk in -d test
 >```
->*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or >libraries.*
+>*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.*
+>
 >Returns:
 >```
 >test\my_entity.vhd  : line 7: clk : in  std_logic;
@@ -61,6 +62,7 @@ arg 1 = search string, arg 2 = -d directory
 >python .\sdiffile.py test/folderA test/folderB 
 >```
 >*Compares two directorys and returns the files found in one but not the other, and vise versa.*
+>
 >Returns:
 >```
 >Files in test/folderA but not in test/folderB :
@@ -74,7 +76,8 @@ arg 1 = search string, arg 2 = -d directory
 >```bash
 >python .\sdifcont.py test/folderA test/folderB -e vhdl
 >```
->*Compares contents of two files with the same name in two different directorys and returns the files that are not >identical.* 
+>*Compares contents of two files with the same name in two different directorys and returns the files that are not >identical.*
+>
 >Returns:
 >```
 >test/folderA\test2.vhdl and test/folderB\test2.vhdl have different contents
@@ -85,6 +88,7 @@ arg 1 = search string, arg 2 = -d directory
 >python sdir.py  . -f package 
 >```
 >*Searches directory for VHDL files with keyword 'package' in filename, shows in file tree with files matching your >search tearm highlighted in red.*
+>
 >Returns:
 >```
 >Directory tree structure for '.':
@@ -99,7 +103,8 @@ arg 1 = search string, arg 2 = -d directory
 >```bash
 >python check_xdc.py test\proj2.xdc test\proj1.vhd 
 >```
->*Compares a .xdc constraints file with the ports of a top-level VHDL file and reports the differences*
+>*Compares a .xdc constraints file with the ports of a top-level VHDL file and reports the differences.*
+>
 >Returns:
 >```
 >Comparing Ports in .\proj2.xdc and .\proj1.vhd
