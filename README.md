@@ -10,7 +10,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 
 ## Functions
 - [Search](#1.1) for somthing inside your VHDL files.
-- [Show](#1.2) vhdl files in folder structure.
+- [Show](#1.2) differences in vhdl files and folder structure.
 - [Automate](#1.3) the creation and checking of VHDL files.  
 
 
