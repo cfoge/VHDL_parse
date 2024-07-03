@@ -108,6 +108,12 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >in_vcxo_0_ctrl
 >```
 
+
+
+
+(WORK IN PROGRESS FROM HERE ON)
+
+
 #### Working Python Comand Line Scripts
 - **instanc.py** = creates a template instantiation from a VHDL file in the terminal or as a .txt file
 - **component.py** = creates a template component declaration from a VHDL file in the terminal or as a .txt file
