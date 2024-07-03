@@ -14,9 +14,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 - [Automate](#1.3) the creation and checking of VHDL files.  
 
 
-
-## Tools 🕵️‍♂️
-### Search<a id='1.1'></a>:
+## Search<a id='1.1'></a>:
 #### Search within VHDL (found in the "vhdl_tokeniser/tools" folder )
 ##### Search functions: 
 - Constant = fconst.py
@@ -50,7 +48,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```
 >---
 
-### Show<a id='1.2'></a>:
+## Show<a id='1.2'></a>:
 #### Compare File Names in One Directroy vs. Another 
 >**Example sdiffile.py:** 
 >```bash
@@ -93,7 +91,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >⤷ __pycache__
 >```
 ---
-### Automate<a id='1.3'></a>:
+## Automate<a id='1.3'></a>:
 #### Check XDC vs. Top-level VHDL
 >**check_xdc.py:** (in the PINS Folder)
 >```bash
