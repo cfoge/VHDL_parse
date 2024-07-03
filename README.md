@@ -92,6 +92,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```
 ---
 ## Automate<a id='1.3'></a>:
+#### Make Constraints File from Top-Level VHDL
 #### Check XDC vs. Top-level VHDL
 >**check_xdc.py:** (in the PINS Folder)
 >```bash
@@ -107,7 +108,8 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >In Vhd but NOT in XDC:
 >in_vcxo_0_ctrl
 >```
-
+#### Make Constraints and Top-Level VHDL from Schematic Netlist
+#### Find Unused Signals in VHDL File
 
 
 
