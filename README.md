@@ -16,23 +16,16 @@ Open to donations and contributors with VHDL or Python experience. 😀
 
 
 ## Tools 🕵️‍♂️
-found in the "vhdl_tokeniser/tools" folder 
 ### Search<a id='1.1'></a>:
-*Searches all VHDL files in a directory for VHDL FEATURES matching string. Eg. fconst.py searches for constants, ftype.py searches for types ect...*
-arg 1 = search string, arg 2 = -d directory
-
->**Example farch.py:** 
->```bash
->python .\farch.py Behavioral -d test
->```
->Returns:
->```
->Searching for architecture with 'Behavioral' in directory: test...
->test\my_entity.vhd  : line 14: architecture Behavioral of my_entity is
->Info: 2 files checked.
->```
-
->**Example ftype.py:** 
+#### Search within VHDL (found in the "vhdl_tokeniser/tools" folder )
+##### Search functions: 
+- Constant = fconst.py
+- Package = fpack.py
+- Architecture = farch.py
+- Type = ftype.py
+#### Search for Type Name
+>**Example ftype.py:**
+>*Searches all VHDL files in a directory for VHDL FEATURES matching string. arg 1 = search string, arg 2 = -d directory*
 >```bash
 >python .\ftype.py MY_TYPE -d test
 >```
@@ -42,12 +35,13 @@ arg 1 = search string, arg 2 = -d directory
 >test\my_package.vhd  : line 10: type MY_TYPE is record    
 >Info: 2 files checked.
 >```
-
->**Example pfind.py:** 
+#### Search for Two strings in the Same Line
+>**Example pfind.py:**
+>*Searches all VHDL files in a directory for VHDL FEATURES matching string.*
 >```bash
 >python .\pfind.py clk in -d test
 >```
->*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries.*
+>*Searches for 2 words on the same line, useful for doing things like finding all the VHDL modules with specific input names or libraries. arg 1 = search string A, arg 2 = search string B, arg 3 = -d directory*
 >
 >Returns:
 >```
@@ -57,6 +51,7 @@ arg 1 = search string, arg 2 = -d directory
 >---
 
 ### Show<a id='1.2'></a>:
+#### Compare File Names in One Directroy vs. Another 
 >**Example sdiffile.py:** 
 >```bash
 >python .\sdiffile.py test/folderA test/folderB 
@@ -71,7 +66,7 @@ arg 1 = search string, arg 2 = -d directory
 >Files in test/folderB but not in test/folderA :
 >test5.vhdl
 >```
-
+#### Compare File Contents in One Directroy vs. Another
 >**Example sdifcont.py:** 
 >```bash
 >python .\sdifcont.py test/folderA test/folderB -e vhdl
@@ -99,6 +94,7 @@ arg 1 = search string, arg 2 = -d directory
 >```
 ---
 ### Automate<a id='1.3'></a>:
+#### Check XDC vs. Top-level VHDL
 >**check_xdc.py:** (in the PINS Folder)
 >```bash
 >python check_xdc.py test\proj2.xdc test\proj1.vhd 
