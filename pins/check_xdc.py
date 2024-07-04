@@ -45,7 +45,7 @@ commentedOut = []
 # iterate through list of elements to find "port (" , the start of the port decleration and "end entity"
 for i in vhd:
    
-    if("port (" in i) or ("port(" in i) :
+    if("port (" in i) or ("port(" in i):
        
         # Find possible index for the start of port decleration
         portStart.append(vhd.index(i))
@@ -58,6 +58,7 @@ for i in vhd:
 
 if len(portStart) == 0:
     print("ERROR CANT FIND VHDL PORT")
+    print("Must have 'port' and '(' on the same line in the entity decleration" )
     exit()
 if len(portEnd) == 0:
     print("ERROR CANT FIND VHDL PORT")

@@ -37,7 +37,7 @@ commentedOut = []
 
 # iterate through list of elements to find "port (" , the start of the port declaration and "end entity"
 for i in vhd:
-    if "port (" in i:
+    if ("port (" in i) or ("port(" in i):
         # Find possible index for the start of port declaration
         portStart.append(vhd.index(i))
 
