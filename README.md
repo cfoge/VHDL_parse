@@ -110,6 +110,18 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```
 #### Make Constraints and Top-Level VHDL from Schematic Netlist
 #### Find Unused Signals in VHDL File
+>**find_unused_sig.py:**
+>```bash
+>python find_unused_sig.py .\tests\unused_sig.vhdl
+>```
+>*Checks for signals declared in a VHDL file, that are not ever used. Good for cleaning up files.*
+>
+>Returns:
+>```
+>Searching for signals declared but never used in .\tests\unused_sig.vhdl...
+>counter_2s found in file 1 time(s). line 21
+>unused_delay found in file 1 time(s). line 23
+>```
 
 
 
