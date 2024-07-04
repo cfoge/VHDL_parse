@@ -93,6 +93,17 @@ Open to donations and contributors with VHDL or Python experience. 😀
 ---
 ## Automate<a id='1.3'></a>:
 #### Make Constraints File from Top-Level VHDL
+>**make_xdc.py:** (in the PINS Folder)
+>```bash
+>python make_xdc.py gen_file test\proj1.vhd
+>```
+>*Creates an .xdc constraints file from a top-level VHDL file named "gen_file"*
+>
+>Returns:
+>```
+>Running with default settings (Xilinx .xdc)
+>gen_file.xdc created from test\proj1.vhd  
+>```
 #### Check XDC vs. Top-level VHDL
 >**check_xdc.py:** (in the PINS Folder)
 >```bash
