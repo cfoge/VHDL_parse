@@ -92,6 +92,22 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```
 ---
 ## Automate<a id='1.3'></a>:
+#### Create Bus and Assignments from signals:
+>**bundle_sig.py:**
+>```bash
+>python bundle_sig.py tests\test2.vhdl new_bus a AB Result b
+>```
+>*Creates a signal definition as well as the assignements needted to explicitly asssign a group of signals to a new bus. Args are 1. vhdl file with the signals to be bundled, 2. the name of the new signal, 3. any signals from the VHDL file to be bundled*
+>
+>Returns:
+>```
+>signal new_bus : std_logic_vector(24 downto 0);
+>
+>new_bus(7 downto 0) <= a;
+>new_bus(15 downto 8) <= ab;
+>new_bus(16)           <= result;
+>new_bus(24 downto 17) <= b;
+>```
 #### Make Constraints File from Top-Level VHDL
 >**make_xdc.py:** (in the PINS Folder)
 >```bash
