@@ -151,6 +151,19 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >counter_2s found in file 1 time(s). line 21
 >unused_delay found in file 1 time(s). line 23
 >```
+#### Create Testbench from VHDL File
+>**testbench.py:**
+>```bash
+>python testbench.py tests/test3.vhdl
+>```
+>*Generates a VHDL test bench for a VHDL file. Detects clocks and resets, extracts signals form UUT and sets them to '0'*
+>
+>Returns:
+>```
+>Generating test bench for tests/test3.vhdl...
+>Clocks found:  ['clk']
+>Resets found:  ['rst_n']
+>```
 #### Create Wrapper for Multiple VHDL Files
 >**wrapper.py:**
 >```bash
