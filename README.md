@@ -156,7 +156,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```bash
 >python wrapper.py tests\test1.vhdl tests\test2.vhdl -sig
 >```
->*Generates a VHDL file consisting of instances of any VHDL files passed to it. "-sig" will create signals for each VHDL modules I/O signals,check the >script help for renaming and saving to disk*
+>*Generates a VHDL file consisting of instances of any VHDL files passed to it. "-sig" will create signals for each VHDL modules I/O signals,check the script help for renaming and saving to disk*
 >
 >Returns:
 >```
