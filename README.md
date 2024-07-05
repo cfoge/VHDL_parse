@@ -11,7 +11,8 @@ Open to donations and contributors with VHDL or Python experience. 😀
 ## Functions
 - [Search](#1.1) for somthing inside your VHDL files.
 - [Show](#1.2) differences in vhdl files and folder structure.
-- [Automate](#1.3) the creation and checking of VHDL files.  
+- [Automate](#1.3) the creation and checking of VHDL files.
+- [Insight](#1.4) into the contents of files and the overall structure of the design
 
 
 ## Search<a id='1.1'></a>:
@@ -136,6 +137,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >in_vcxo_0_ctrl
 >```
 #### Make Constraints and Top-Level VHDL from Schematic Netlist
+> WIP
 #### Find Unused Signals in VHDL File
 >**find_unused_sig.py:**
 >```bash
@@ -148,6 +150,43 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >Searching for signals declared but never used in .\tests\unused_sig.vhdl...
 >counter_2s found in file 1 time(s). line 21
 >unused_delay found in file 1 time(s). line 23
+>```
+## Insight<a id='1.4'></a>:
+#### Get Summery of VHDL file Contents
+>**get_info.py:**
+>```bash
+>python get_info.py tests\test8.vhdl
+>```
+>*Sumerises the contents of a VHDL file with colour coding. Some VHDL features are currently not shown.*
+>
+>Returns:
+>```
+>Getting Info For .\tests\test8.vhdl
+>Name: adder_tree  -  Arch: str
+>   Generics:
+>        -->['width', '', 'positive', 'null', 8]
+>        -->['topwidth', '', 'positive', 'null', 4]
+>   Port:
+>        -->['rst', 'in', 'std_logic', 1, None]
+>        -->['clk', 'in', 'std_logic', 1, None]
+>        -->['input', 'in', 'std_logic_vector', 'topwidth * width - 1 downto 0', None]
+>        -->['output', 'out', 'std_logic_vector', 'width - 1 downto 0', None]
+>        -->['valid_in', 'in', 'std_logic', 1, None]
+>        -->['valid_out', 'out', 'std_logic', 1, None]
+>   Components:
+>   Entities:
+>   Process:
+>   Constants:
+>        -->['treeheight', '', 'integer', 'null', 'integerceillog2realtopwidth']
+>   Attributes:
+>   Signals:
+>        -->['valid', '', 'std_logic', 1, None]
+>        -->['register_input', '', 'std_logic_vector', 'width - 1 downto 0', None]
+>        -->['register_input', '', 'std_logic_vector', 'topwidth / 2 * width - 1 downto 0', None]
+>        -->['register_output', '', 'std_logic_vector', 'topwidth / 2 * width - 1 downto 0', None]
+>        -->['base_case', '', 'std_logic_vector', 'width * 2 - 1 downto 0', None]
+>        -->['delay_chain', '', 'std_logic_vector', 'treeheight + 1 * width - 1 downto 0', None]
+>        -->['valid2', '', 'std_logic', 1, None]
 >```
 
 
