@@ -106,7 +106,7 @@ def generate_vhdl_wrapper(
         else:
             header = header + f"USE {lib}; \n"
 
-    header = header + f"\nentity {wrapper_name} is \nport(\n);"
+    header = header + f"\nentity {wrapper_name} is \nport(\n);\n"
 
     # for port in port_list:
     #     end_of_port = ""
