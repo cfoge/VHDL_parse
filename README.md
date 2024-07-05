@@ -151,6 +151,49 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >counter_2s found in file 1 time(s). line 21
 >unused_delay found in file 1 time(s). line 23
 >```
+#### Create Wrapper for Multiple VHDL Files
+>**wrapper.py:**
+>```bash
+>python wrapper.py tests\test1.vhdl tests\test2.vhdl -sig
+>```
+>*Generates a VHDL file consisting of instances of any VHDL files passed to it. "-sig" will create signals for each VHDL modules I/O signals,check the >script help for renaming and saving to disk*
+>
+>Returns:
+>```
+>--Auto generated VHDL Wrapper  
+>LIBRARY ieee;
+>USE ieee.std_logic_1164.all;   
+>
+>entity wrapper is
+>port();
+>end wrapper;
+>
+>architecture rtl of wrapper is 
+>
+>signal x1 : std_logic;   
+>signal x2 : std_logic;   
+>..... (Other signals omitted here to save space in this readme)
+>begin
+>
+>full_adder_structural_vhdl_i : entity work.full_adder_structural_vhdl
+>port map (
+>x1      => x1,
+>x2      => x2,
+>cin     => cin,
+>s       => s,
+>cout    => cout
+>);
+>
+>comparator_i : entity work.comparator
+>port map (
+>clock     => clock,
+>a         => a,
+>b         => b,
+>iab       => iab,
+>output    => output
+>);
+>end rtl;
+>```
 ## Insight<a id='1.4'></a>:
 #### Get Summery of VHDL file Contents
 >**get_info.py:**
