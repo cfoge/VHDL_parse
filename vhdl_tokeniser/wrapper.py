@@ -106,7 +106,7 @@ def generate_vhdl_wrapper(
         else:
             header = header + f"USE {lib}; \n"
 
-    header = header + f"\nentity {wrapper_name} is \n"
+    header = header + f"\nentity {wrapper_name} is \nport(\n);"
 
     # for port in port_list:
     #     end_of_port = ""
@@ -121,14 +121,14 @@ def generate_vhdl_wrapper(
         header + f"end {wrapper_name}; \n\narchitecture rtl of {wrapper_name} is \n"
     )
 
-    header = header + f"begin \n"
+    # header = header + f"begin \n"
 
     with open("wrapper_out.vhdl", "w") as contents:
         contents.write(header)
 
     if make_signals == True:
         save_out = (
-            signals_list + "\n" + save + footer + "\nend rtl;\n"
+            signals_list + "\nbegin\n\n" + save + footer + "\nend rtl;\n"
         )  # add the file contents and the footer/end of the file back in.
     else:
         save_out = (
