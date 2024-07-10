@@ -65,18 +65,30 @@ show_types = True
 
 
 # target_vhdl = parse_vhdl(sys.argv[1])
-file = "vhdl_tokeniser/tests/lifo.vhdl"
+file = "tests/test8.vhdl"
 target_vhdl = parse_vhdl(file)
-
+if(isinstance(target_vhdl, str)):
+    print(target_vhdl)
+    exit()
 
 print(color.GREEN + "---------------------------------------------------" + color.END)
 print("Getting Info For " + color.GREEN + target_vhdl.url + color.END)
 print(
     f"Name: {color.GREEN}{target_vhdl.data}{color.END}  -  Arch: {color.GREEN}{target_vhdl.arch}"
 )
+print(color.DARKCYAN + "   Generics:")
+for i in target_vhdl.generic:
+    print("        -->" + str(i))
+print(color.END + color.CYAN + "   Port:")
+for i in target_vhdl.port:
+    print("        -->" + str(i))
+
 print(color.BLUE + "   Components:")
 for i in target_vhdl.component:
     print("        -->" + str(i.data))
+print(color.END + color.PURPLE + "   Generate:")
+for i in target_vhdl.generate:
+    print("        -->" + str(i))
 print(color.END + color.GREEN + "   Entities:")
 for i in target_vhdl.children:
     print("        -->" + str(i.data))
@@ -96,4 +108,4 @@ if show_sig == True:
     print(color.END + color.GREEN + "   Signals:")
     for i in target_vhdl.signal:
         print("        -->" + str(i))
-print(color.GREEN + "---------------------------------------------------" + color.END)
+print(color.END + "---------------------------------------------------" + color.END)
