@@ -33,40 +33,40 @@ show_gen = True
 show_lib = True
 show_types = True
 
-# if not (
-#     (len(sys.argv) == 2) | (len(sys.argv) == 3)
-# ):  # check for correct number of arguments
-#     print(
-#         "This script needs one or two inputs, the first is a vhdl file, the second (optional) a paramiter"
-#     )
-#     print(
-#         '2nd arg "f" show all, "a" show attributes, "v" show variables, "c" show constants, "p" show processes, "s" show signals'
-#     )
-#     print("example: get_info.py input.vhd a")
-#     sys.exit(1)
+if not (
+    (len(sys.argv) == 2) | (len(sys.argv) == 3)
+):  # check for correct number of arguments
+    print(
+        "This script needs one or two inputs, the first is a vhdl file, the second (optional) a paramiter"
+    )
+    print(
+        '2nd arg "f" show all, "a" show attributes, "v" show variables, "c" show constants, "p" show processes, "s" show signals'
+    )
+    print("example: get_info.py input.vhd a")
+    sys.exit(1)
 
-# if len(sys.argv) == 3:  # if there is a 2ndrd argument
-#     if "f" in sys.argv[2]:
-#         show_att = True
-#         show_var = True
-#         show_const = True
-#         show_sig = True
-#         show_pros = True
-#     if "a" in sys.argv[2]:
-#         show_att = True
-#     if "v" in sys.argv[2]:
-#         show_var = True
-#     if "c" in sys.argv[2]:
-#         show_const = True
-#     if "p" in sys.argv[2]:
-#         show_pros = True
-#     if "s" in sys.argv[2]:
-#         show_sig = True
+if len(sys.argv) == 3:  # if there is a 2ndrd argument
+    if "f" in sys.argv[2]:
+        show_att = True
+        show_var = True
+        show_const = True
+        show_sig = True
+        show_pros = True
+    if "a" in sys.argv[2]:
+        show_att = True
+    if "v" in sys.argv[2]:
+        show_var = True
+    if "c" in sys.argv[2]:
+        show_const = True
+    if "p" in sys.argv[2]:
+        show_pros = True
+    if "s" in sys.argv[2]:
+        show_sig = True
 
 
-# target_vhdl = parse_vhdl(sys.argv[1])
-file = "tests/test8.vhdl"
-target_vhdl = parse_vhdl(file)
+target_vhdl = parse_vhdl(sys.argv[1])
+# file = "tests/test8.vhdl"
+# target_vhdl = parse_vhdl(file)
 if(isinstance(target_vhdl, str)):
     print(target_vhdl)
     exit()
@@ -90,8 +90,8 @@ print(color.END + color.PURPLE + "   Generate:")
 for i in target_vhdl.generate:
     print("        -->" + str(i))
 print(color.END + color.GREEN + "   Entities:")
-for i in target_vhdl.children:
-    print("        -->" + str(i.data))
+for i in target_vhdl.children_name:
+    print("        --> " + str(i.name) + " : " + str(i.mod))
 if show_pros == True:
     print(color.END + color.YELLOW + "   Process:")
     for i in target_vhdl.process:
