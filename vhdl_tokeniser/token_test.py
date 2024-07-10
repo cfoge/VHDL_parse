@@ -1085,8 +1085,8 @@ def read_vhdl_file(file_path):
         except Exception as e:
             error_log.append(["read_vhdl_file error", file_path_error, e])
         if len(vhdl_code_i) == 0:
-            # print(f"Error reading file {file_path_error} returned file length is 0")
-            error_log.append(["Error reading file length is 0", file_path_error])
+            print(f"Error reading file {file_path_error} returned file length is 0")
+            # error_log.append(["Error reading file length is 0", file_path_error])
     return vhdl_code_i
 
 
@@ -1350,7 +1350,12 @@ def parse_vhdl(file_name, just_port=False):
                     entity_vhdl.type_dec.append((decoded_por))
 
             elif token_type == "GenerateKeyword":
-                generate_name = find_name("IdentifierToken", current_position, 26)
+                generate_name = find_prev_till(current_position, ["\n",";"])
+                if ":" in generate_name:
+                    generate_name = generate_name.split(":")[0].strip()
+                else:
+                    generate_name = "unnamed"
+                # generate_name = find_name("IdentifierToken", current_position, 26)
                 gen_triger_str = decode_block(gen_trigger, ";")
                 gen_contents = extract_process_blocks(current_position)
                 assignments = find_index_by_keyword(gen_contents, "AssignKeyword_to")
