@@ -513,7 +513,7 @@ def find_prev_till(current_position, end_tokens, token_in=[]):
     else:
         tokens_to_parse = token_in
     tokens_list = []
-    end = current_position - 20
+    end = current_position - 60
     if end < 0:
         end = 0
     start = current_position - 1
@@ -1351,12 +1351,13 @@ def parse_vhdl(file_name, just_port=False):
 
             elif token_type == "GenerateKeyword":
                 generate_name = find_prev_till(current_position, ["\n",";"])
+                # print(f"{current_position} = {generate_name}")
                 if ":" in generate_name:
                     generate_name = generate_name.split(":")[0].strip()
                 else:
                     generate_name = "unnamed"
                 # generate_name = find_name("IdentifierToken", current_position, 26)
-                gen_triger_str = decode_block(gen_trigger, ";")
+                gen_triger_str = find_prev_till(current_position, ["\n",";",":"])#decode_block(gen_trigger, ";")
                 gen_contents = extract_process_blocks(current_position)
                 assignments = find_index_by_keyword(gen_contents, "AssignKeyword_to")
                 gen_assignments = []
@@ -1395,7 +1396,7 @@ def parse_vhdl(file_name, just_port=False):
                             )
                 try:
                     entity_vhdl.generate.append(
-                        [generate_name, gen_triger_str[0].strip(), gen_assignments]
+                        [generate_name, gen_triger_str.strip(), gen_assignments]
                     )
 
                 except Exception as e:
