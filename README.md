@@ -244,7 +244,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >        -->['delay_chain', '', 'std_logic_vector', 'treeheight + 1 * width - 1 downto 0', None]
 >        -->['valid2', '', 'std_logic', 1, None]
 >```
-#### Automate Creatign Signals:
+#### Automate Creating Signals:
 >**make_sig.py:**
 >```bash
 >python make_sig.py "siga" "sigb 12" "sigc int" "sigd bool" "sige sig 8" "sigf un 16"
