@@ -244,7 +244,22 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >        -->['delay_chain', '', 'std_logic_vector', 'treeheight + 1 * width - 1 downto 0', None]
 >        -->['valid2', '', 'std_logic', 1, None]
 >```
-
+#### Automate Creatign Signals:
+>**make_sig.py:**
+>```bash
+>python make_sig.py "siga" "sigb 12" "sigc int" "sigd bool" "sige sig 8" "sigf un 16"
+>```
+>*Creates formatted VHDL signals from simplified descriptions "name [type] [width]" where type and width are optinal and default to std_logic and sdt_logic_vector*
+>
+>Returns:
+>```
+>signal siga            : std_logic;
+>signal sigb            : std_logic_vector(11 downto 0);
+>signal sigc            : integer;
+>signal sigd            : boolean;
+>signal sige            : signed(7 downto 0);
+>signal sigf            : unsigned(15 downto 0);
+>```
 
 #### I hope these scripts make your FPGA and VHDL work a bit smoother! I use them all the time and they have saved me countless hrs already. 🎉
 
