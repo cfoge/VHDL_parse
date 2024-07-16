@@ -33,10 +33,15 @@ def create_tree(parents, children):
 def attach_dependent_objects(
     parent_vhdl_obj, entity_texts_with_path
 ):  # this function creates a vhdl object hieracy of only instanciated vhdl entitys
+    # for modules in entity_texts_with_path:
+        # if "am_audio" in modules[1]:
+        #     print()
     try:
         for child in parent_vhdl_obj.children_name:
             for vhdl_found_entities in entity_texts_with_path:
                 if len(vhdl_found_entities[0]) > 0:
+                    # if "am_audio_" in vhdl_found_entities[0]:
+                    #     print("")
                     if vhdl_found_entities[0] == child.mod:
                         # Add a "." with no return to the terminal to show that it is still allive when parsing huge numbers of files
                         new_child = parse_vhdl(vhdl_found_entities[1])
@@ -62,7 +67,10 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
                 vhdl_files.append(os.path.join(root, file))
 
     vhdl_file_as_obj = []
+    print(f"Printing VHDL Module Hierachy")
     print(f"{len(vhdl_files)} vhdl files found")
+    if len(vhdl_files) == 0:
+        exit()
 
     entity_texts_with_path = []
     unreadible_files = 0
@@ -114,6 +122,8 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
             filename = filename.split(".")[0]
         # Add non-duplicates to the unique list
         entity_texts_with_path_unique.append([entity_text, file_path])
+        # if "am_audio" in entity_text:
+        #     print()
 
     # Update entity_texts_with_path to contain only unique filenames
     vhdl_files = entity_texts_with_path_unique
@@ -188,7 +198,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
                 color_index = depth % (len(COLORS) - 1)  # Exclude RESET color
                 color = COLORS[color_index]
                 if object.mod == "":
-                    print(color + spacing + "├─ " + object.name + " " + url)
+                    print(color + spacing + "├─ " + object.name + " " + COLORS[6] + url)
                 else:
                     print(
                         color
@@ -233,7 +243,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
             if modname == "":
                 print(f"{color}{indent_str}{arrow} {vhdl_obj.data} {url}")
             else:
-                print(f"{color}{indent_str}{arrow} {modname} : {vhdl_obj.data} {url}")
+                print(f"{color}{indent_str}{arrow} {modname} : {vhdl_obj.data} {COLORS[6]}{url}")
                 # hierachy_vis.append([parent,vhdl_obj.name,vhdl_obj,object.mod])
         for child in vhdl_obj.children_name:
             if child.vhdl_obj is not None:
@@ -246,7 +256,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
                 if indent_level == 0:
                     arrow = "├─"
                 indent_str_tmp = indent_str + "  "
-                print(f"{color_tmp}{indent_str_tmp}{arrow} {child.mod} : {child.name} {url}")
+                print(f"{color_tmp}{indent_str_tmp}{arrow} {child.mod} : {child.name}  {COLORS[6]}{url}")
         # except Exception as e:
         #     print('error')
         #     error_log.append(["print Hierarchy error", e])
@@ -260,7 +270,26 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
 
     print(COLORS[-1])
     print("---------------------------------------------------")
-    #################################
+    # #################################
+    # # for error in error_log:
+    # #     print(error)
+    # # Create Plotly tree map
+    # fig = go.Figure(
+    #     go.Treemap(
+    #         labels=[lab for _, _, _, lab in hierachy_vis],
+    #         parents=[parent for parent, _, _, _ in hierachy_vis],
+    #         customdata=[mod for _, _, mod, _ in hierachy_vis],
+    #         # hoverinfo=customdata,
+    #         marker=dict(
+    #             # colors=[COLORS[depth % (len(COLORS) - 1)] for _, _, depth, _ in hierachy_vis],
+    #             line=dict(width=1, color="black")
+    #         ),
+    #     )
+    # )
+
+    # fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+    # fig.show()
+
 
     return
 
