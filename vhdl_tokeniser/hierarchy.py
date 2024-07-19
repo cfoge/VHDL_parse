@@ -42,7 +42,10 @@ def attach_dependent_objects(
                 if len(vhdl_found_entities[0]) > 0:
                     # if "am_audio_" in vhdl_found_entities[0]:
                     #     print("")
+                        # Add a "." wit
                     if vhdl_found_entities[0] == child.mod:
+                        if "sdi_wrapper" == child.mod:
+                            print()
                         # Add a "." with no return to the terminal to show that it is still allive when parsing huge numbers of files
                         new_child = parse_vhdl(vhdl_found_entities[1])
                         child.vhdl_obj = new_child
@@ -55,7 +58,7 @@ def attach_dependent_objects(
 
 
 # dependency search
-def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
+def cl_depend(root_dir, tld, print_url, exclude_dirs = [], print_ignore = False):
     vhdl_files = []
     for root, dirs, files in os.walk(root_dir):
         # Check if the current directory is in the list of directories to exclude
@@ -86,9 +89,12 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
                     # Exclude if the text contains "\n" unless it's at the very end
                     if "\n" not in entity_text[:-1]:
                         entity_texts_with_path.append([entity_text, file_path])
+                        
         except:
             unreadible_files += 1
     print(f"{unreadible_files} vhdl files unreadable")
+
+
 
     ###### FIND AND REMOVE DUPLICTES, VHDL files with the same name that contain the same named modules can cause issues
     # Dictionary to store encountered filenames and their corresponding paths
@@ -96,6 +102,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
 
     # List to store duplicate filenames
     duplicate_filenames = []
+    ignored_files = []
 
     # Iterate over entity_texts_with_path
     for entity_text, file_path in entity_texts_with_path:
@@ -114,6 +121,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
     for entity_text, file_path in entity_texts_with_path:
         filename = os.path.basename(file_path)
         if filename in duplicate_filenames:
+            ignored_files.append([filename,file_path])
             # Skip duplicates
             continue
 
@@ -132,8 +140,12 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
     print(f"{len(duplicate_filenames)} duplicate files found")
     if len(duplicate_filenames) > 0:
         print(
-            "Duplicate files with the same name can create issues when searching through VHDL hierarchies, so duplicates have been removed\n"
+            "Duplicate files with the same name can create issues when searching through VHDL hierarchies, so duplicates have been removed."
         )
+    if print_ignore == True:
+        print(f"Ignored files:")
+        for files in ignored_files:
+            print(f"  {files}")
 
     target_vhdl = parse_vhdl(tld)
 
@@ -230,7 +242,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
 
         color_index = indent_level % (len(COLORS) - 1)  # Exclude RESET color
         color = COLORS[color_index]
-        if print_url == True:
+        if (print_url == True):
             url = vhdl_obj.url
         else:
             url = ""
@@ -256,7 +268,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = []):
                 if indent_level == 0:
                     arrow = "├─"
                 indent_str_tmp = indent_str + "  "
-                print(f"{color_tmp}{indent_str_tmp}{arrow} {child.mod} : {child.name}  {COLORS[6]}{url}")
+                print(f"{color_tmp}{indent_str_tmp}{arrow} {child.name} : {child.mod}  {COLORS[6]}") # there is no URL printed here because if we didnt find a vhdl object in the child we dont know where what file the entity is found in
         # except Exception as e:
         #     print('error')
         #     error_log.append(["print Hierarchy error", e])
