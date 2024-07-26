@@ -1,6 +1,20 @@
 import os
 import argparse
 
+class color:
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[95m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
+
+
+
 
 def search_log_files(directory, search_string):
     found_strings = []
@@ -48,7 +62,7 @@ def search_log_files(directory, search_string):
             missing_suffixes.append(suffix)
 
     if missing_suffixes:
-        print(f"Warning: No log files found with suffixes: {', '.join(missing_suffixes)}")
+        print(f"{color.YELLOW}Warning:{color.END} No log files found with suffixes: {', '.join(missing_suffixes)}")
 
     # Sort found strings based on log file order
     found_strings.sort(key=lambda x: get_suffix_index(x[1]))
@@ -74,13 +88,13 @@ def main():
     # Determine the directory path
     directory = args.directory if args.directory else args.dir
     if directory is None:
-        print("Error: No directory specified.")
-        sys.exit(1)
+        print(f"{color.RED}Error:{color.END} No directory specified.")
+        exit(1)
 
     search_string = args.search
 
     print("*******************************************")
-    print(f"Searching log files in {directory} for '{search_string}'")
+    print(f"{color.GREEN}Searching log files in {directory} for '{search_string}'{color.END}")
 
     log_files_name = ["Synthesis", "Link", "Optimization", "Placement", "Routing"]
     log_files_order = [
@@ -96,7 +110,12 @@ def main():
         print(f"\n{log_files_name[index]}:")
         for found_string in found_strings:
             if found_string[1].endswith(f"{log_type.lower()}"):
-                print(f"    {found_string[0]}")  # found in '{found_string[1]}' at line {found_string[2]}'")
+                highlight = {color.END}
+                if "error" in found_string[0]:
+                    highlight = {color.red}
+                elif "warnning" in found_string[0]:
+                    highlight = {color.YELLOW}
+                print(f"{highlight}    {found_string[0]}{color.END}")  # found in '{found_string[1]}' at line {found_string[2]}'")
         index += 1
 
 
