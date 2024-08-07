@@ -100,19 +100,26 @@ def get_data_slim(node):
 
 
 # root_dir = "C:/BMD_builds/sdi_audio_test/oceanus"
-root_dir = 'C:/BMD_builds/am_sd_16ch/fpga'
+# root_dir = 'C:/BMD_builds/am_sd_16ch/fpga'
 # target_vhdl = parse_vhdl(
 #     "C:/BMD_builds/audio_a_release/oceanus/src/datapath_wrapper/src/datapath_wrapper.vhd"
 # )
-target_vhdl = parse_vhdl('C:/BMD_builds/am_sd_16ch/fpga/src/audio_monitor_12g_g3.vhd')
+# target_vhdl = parse_vhdl('C:/BMD_builds/am_sd_16ch/fpga/src/audio_monitor_12g_g3.vhd')
 # search for arg 2 in each each part of the top level file
 # search for other lines involving this signal
 # search each child for
 # find_str = 'f1i_vclk_p'
 # find_str = "voip_rx_video_bus_array_i"
-find_str = 'clk_150mhz'
+# find_str = 'clk_150mhz'
 # find_str = 'genlock_sof'
+
+root_dir = "C:/BMD_builds/parse_vhdl_11_6_24/vhdl_tokeniser/tests/stop_watch"
+target_vhdl = parse_vhdl("vhdl_tokeniser/tests/stop_watch/toplevel.vhdl")
+find_str = "NexysA7_SystemClock"
+
 verbose = True
+
+find_str = find_str.lower() # search string needs to be lower case to avoid missing the string during the search
 
 vhdl_files = []
 # print("VHDL Files Found:")
@@ -120,7 +127,7 @@ vhdl_files = []
 for root, dirs, files in os.walk(root_dir):
 
     for file in files:
-        if file.endswith(".vhd"):
+        if file.endswith(".vhd") or file.endswith(".vhdl") :
             # print(os.path.join(root, file))
             vhdl_files.append(os.path.join(root, file))
 
@@ -130,6 +137,9 @@ vhdl_file_as_obj = []
 for files in vhdl_files:
     vhdl_file_as_obj.append(parse_vhdl(files))
 
+if len(vhdl_file_as_obj) == 0:
+    print("ERROR: no VHDL Files found!")
+    exit(1)
 
 for vhdl_o in vhdl_file_as_obj:  # make external function!!!
     for child in vhdl_o.children_name:
@@ -169,7 +179,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
             ):  # if a direct assignment with no logic add the signal our search string is beign assigned to as a node
 
                 assignments.append(
-                    [vhdl_obj_in.data, x[0], x[1], vhdl_obj_in.url]
+                    [vhdl_obj_in.data, x[0], x[1], "Combinational"]
                 )  # filen name, assigned to,
                 full_assign_list.append(
                     f"Combinational Assignment in {vhdl_obj_in.data}: {x[0]} <= {x[1]} "
@@ -199,7 +209,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                         break
                     elif find_str in x[1]:
                         possible_assignments.append(
-                            [vhdl_obj_in.data, x[0], x[1], vhdl_obj_in.url]
+                            [vhdl_obj_in.data, x[0], x[1], "Process"]
                         )  # filen name, assigned to
                         break
                 else:
@@ -217,7 +227,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                             break
                         elif find_str in x[1]:
                             possible_assignments.append(
-                                [vhdl_obj_in.data, x[0], x[1], vhdl_obj_in.url]
+                                [vhdl_obj_in.data, x[0], x[1], 'Process']
                             )  # filen name, assigned to
                             break
 
@@ -239,7 +249,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                         break
                     elif find_str in x[1]:
                         possible_assignments.append(
-                            [vhdl_obj_in.data, x[0], x[1], vhdl_obj_in.url]
+                            [vhdl_obj_in.data, x[0], x[1], 'Generate']
                         )  # filen name, assigned to
                         break
                 else:
@@ -257,7 +267,7 @@ def create_path(vhdl_obj_in, find_str, curent_node):
                             break
                         elif find_str in x[1]:
                             possible_assignments.append(
-                                [vhdl_obj_in.data, x[0], x[1], vhdl_obj_in.url]
+                                [vhdl_obj_in.data, x[0], x[1], 'Generate']
                             )  # filen name, assigned to
                             break
     if type(find_str) == list:
