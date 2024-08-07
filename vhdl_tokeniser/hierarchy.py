@@ -5,6 +5,7 @@ from token_test import *
 import os
 import argparse
 
+
 # ANSI escape codes for colors
 COLORS = [
     "\033[97m",  # WHITE
@@ -53,7 +54,7 @@ def attach_dependent_objects(
                             new_child, entity_texts_with_path
                         )  # Recursive call
                         break
-    except Exception as e:
+    except Exception as e: # put back in
         error_log.append(["file_path_error", e])
 
 
@@ -67,7 +68,9 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = [], print_ignore = False)
         for file in files:
             if file.endswith(".vhd") or file.endswith(".vhdl"):
                 # print(os.path.join(root, file))
-                vhdl_files.append(os.path.join(root, file))
+                vhdl_files.append(f"{root}/{file}") # why does the OS.path.join add "\\" to the path?
+
+                #vhdl_files.append(os.path.join(root, file))
 
     vhdl_file_as_obj = []
     print(f"Printing VHDL Module Hierachy")
@@ -129,7 +132,7 @@ def cl_depend(root_dir, tld, print_url, exclude_dirs = [], print_ignore = False)
         if "." in filename:
             filename = filename.split(".")[0]
         # Add non-duplicates to the unique list
-        entity_texts_with_path_unique.append([entity_text, file_path])
+        entity_texts_with_path_unique.append([entity_text.lower(), file_path.lower()])
         # if "am_audio" in entity_text:
         #     print()
 

@@ -9,6 +9,7 @@ class instanc(object):
         self.line_num = line_num
         self.generic = []
         self.port = []
+        self.lib   = ""
         self.vhdl_obj = None
 
 
@@ -1190,6 +1191,7 @@ def parse_vhdl(file_name, just_port=False):
             or (token_text in component_list and first_begin_found == True)
             or (token_type == "PrimitiveKeyword" and first_begin_found == True)
         ) and global_entity == 1:  # if we have found the global entity and we come across another entity
+            current_lib =  "none"
             if (
                 token_text in component_list
             ) or token_type == "PrimitiveKeyword":  # if we find a component instanciated inside the global module it will be called differently so we need to decode it differently to a regular entity decleration
@@ -1205,13 +1207,19 @@ def parse_vhdl(file_name, just_port=False):
                 if ent_name == "generate":
                     ent_name = "unnamed"
                 entity = extract_tokens_between(tokens, "entity", ";", current_position)
-                if entity[0][1] == "work":
+                if entity[0][1] == "work" or entity[1][1] == ".":
                     mod_name = entity[0][1] + entity[1][1] + entity[2][1]
                 else:
                     mod_name = entity[0][1]
                 if "work." in mod_name:
                     tmp1 = mod_name.replace("work.", "")
                     mod_name = tmp1
+                    current_lib = "work"
+                elif "." in mod_name: # curwently doesnt run
+                    tmp0 = mod_name.split(".")
+                    tmp1 = tmp0[1]
+                    mod_name = tmp1
+                    current_lib = tmp0[0]
             generic = []
             port = []
             if any(token_type == "GenericKeyword" for token_type, _ in entity):
@@ -1224,6 +1232,7 @@ def parse_vhdl(file_name, just_port=False):
                 port.append(("EndKeyword", "end"))
 
             mod = instanc(mod_name, ent_name, 0)
+            mod.lib = current_lib
 
             if len(generic) > 0:
                 gen_dec = decode_ent_port(generic)
@@ -1333,7 +1342,10 @@ def parse_vhdl(file_name, just_port=False):
 
             elif token_type == "SubtypeKeyword":
                 decoded_por = decode_sig(token_type, current_position, ";")
-                entity_vhdl.subtype.append(format_port(decoded_por)[0])
+                if len(decoded_por) == 1:
+                    entity_vhdl.subtype.append(format_port(decoded_por))
+                else:
+                    entity_vhdl.subtype.append(format_port(decoded_por)[0])
 
             elif token_type == "TypeKeyword":
                 decoded_por = (decode_sig(token_type, current_position, ";"))[0]
@@ -1504,7 +1516,7 @@ def parse_vhdl(file_name, just_port=False):
                 return_type_tmp = extract_tokens_between(
                     tokens, "return", "is", current_position
                 )
-                if return_type_tmp != None:
+                if return_type_tmp != None and len(return_type_tmp) != 0:
                     return_type = ("returnType", return_type_tmp[0][1])
                 else:
                     return_type = ("returnType", "None")
