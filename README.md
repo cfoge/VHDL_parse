@@ -207,6 +207,22 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >);
 >end rtl;
 >```
+>#### Automate Creating Signals:
+>**make_sig.py:**
+>```bash
+>python make_sig.py "siga" "sigb 12" "sigc int" "sigd bool" "sige sig 8" "sigf un 16"
+>```
+>*Creates formatted VHDL signals from simplified descriptions "name [type] [width]" where type and width are optinal and default to std_logic and sdt_logic_vector*
+>
+>Returns:
+>```
+>signal siga            : std_logic;
+>signal sigb            : std_logic_vector(11 downto 0);
+>signal sigc            : integer;
+>signal sigd            : boolean;
+>signal sige            : signed(7 downto 0);
+>signal sigf            : unsigned(15 downto 0);
+>```
 ## Insight<a id='1.4'></a>:
 #### Get Summery of VHDL file Contents
 >**get_info.py:**
@@ -244,22 +260,33 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >        -->['delay_chain', '', 'std_logic_vector', 'treeheight + 1 * width - 1 downto 0', None]
 >        -->['valid2', '', 'std_logic', 1, None]
 >```
-#### Automate Creating Signals:
->**make_sig.py:**
+#### Show VHDL project Hierarchy
+>**hierarchy.py:**
 >```bash
->python make_sig.py "siga" "sigb 12" "sigc int" "sigd bool" "sige sig 8" "sigf un 16"
+>python hierarchy.py tests/stop_watch/toplevel.vhdl -d tests/stop_watch
 >```
->*Creates formatted VHDL signals from simplified descriptions "name [type] [width]" where type and width are optinal and default to std_logic and sdt_logic_vector*
+>*Shows a print out of the hierachy of modules instanciated by the VHDL module given.*
 >
 >Returns:
 >```
->signal siga            : std_logic;
->signal sigb            : std_logic_vector(11 downto 0);
->signal sigc            : integer;
->signal sigd            : boolean;
->signal sige            : signed(7 downto 0);
->signal sigf            : unsigned(15 downto 0);
+>Running Show VHDL Hieracy of TLD 'vhdl_tokeniser/tests/stop_watch/toplevel.vhdl'
+>Printing VHDL Module Hierachy
+>13 vhdl files found
+>0 vhdl files unreadable
+>0 duplicate files found
+>---------------------------------------------------
+>Hierarchy of toplevel is: 
+>
+> toplevel 
+>  ├─ debouncer : debouncer 
+>    ├─ sync : sync_bits 
+>  ├─ sw : stopwatch 
+>    ├─ timebasecnt : counter 
+>    ├─ cnt : counter 
+>
+>---------------------------------------------------
 >```
+
 
 #### I hope these scripts make your FPGA and VHDL work a bit smoother! I use them all the time and they have saved me countless hrs already. 🎉
 
