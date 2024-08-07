@@ -265,7 +265,7 @@ Open to donations and contributors with VHDL or Python experience. 😀
 >```bash
 >python hierarchy.py tests/stop_watch/toplevel.vhdl -d tests/stop_watch
 >```
->*Shows a print out of the hierachy of modules instanciated by the VHDL module given.*
+>*Shows a colour-coded print out of the hierachy of modules instanciated by the VHDL module given.*
 >
 >Returns:
 >```
